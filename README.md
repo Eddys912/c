@@ -20,11 +20,11 @@ This repository contains programming exercises in **C**, covering fundamentals, 
 
 | #   | Exercise                | Level | Description                                           |
 | --- | ----------------------- | ----- | ----------------------------------------------------- |
-| 1   | **Pointers Basics**     | 🟢    | Indirect data access and memory addressing.           |
-| 2   | **Pointer Arithmetic**  | 🟢    | Sequential memory navigation and offset management.   |
-| 3   | **Dynamic Memory**      | 🟢    | Manual lifetime management of memory blocks.          |
-| 4   | **Array Memory**        | 🟢    | Multidimensional data structures and lookup tables.   |
-| 5   | **Function Pointers**   | 🟡    | Dynamic execution flow and modular event handling.    |
+| 1   | **Pointers Basics**     | 🟢    | Memory introspection and data representation.         |
+| 2   | **Pointer Arithmetic**  | 🟢    | Raw buffer parsing and manual offset navigation.      |
+| 3   | **Dynamic Memory**      | 🟢    | Heap lifecycle management.                            |
+| 4   | **Array Pointers**      | 🟢    | Multi-level dynamic structures and heap hierarchy.    |
+| 5   | **Function Pointers**   | 🟡    | Callback implementation and decoupled execution flow. |
 | 6   | **Void Pointers**       | 🟡    | Abstract data handling and generic programming.       |
 | 7   | **String Manipulation** | 🟡    | Custom processing of character sequences in memory.   |
 | 8   | **File Read**           | 🟡    | Extracting formatted information from external files. |

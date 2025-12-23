@@ -6,7 +6,7 @@ int main() {
   unsigned int stations, pressures, i, j;
   double **matrix_stations;
 
-  printf("=== Array Memory Allocation ===\n\n");
+  printf("=== Array Pointers Allocation ===\n\n");
 
   printf("How many stations do you want to enter?: ");
   scanf("%u", &stations);
