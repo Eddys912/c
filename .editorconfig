@@ -1,0 +1,26 @@
+# EditorConfig for c-systems-fundamentals
+# Documentation: https://editorconfig.org
+
+root = true
+
+# Universal rules for all files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# C source files
+[*.c]
+max_line_length = 100
+
+# C header files
+[*.h]
+max_line_length = 100
+
+# Markdown files
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
