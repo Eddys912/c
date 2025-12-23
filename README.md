@@ -68,9 +68,9 @@ This repository contains programming exercises in **C**, covering fundamentals, 
    ```
 1. **Verify installation**:
    ```bash
-   gcc --version  # e.g. gcc (GCC) 15.2.1
-   gdb --version  # e.g. GNU gdb (GDB) 16.3
-   uname -m       # e.g. x86_64
+   gcc --version    # e.g. gcc (GCC) 15.2.1
+   gdb --version    # e.g. GNU gdb (GDB) 16.3
+   uname -m         # e.g. x86_64
    ```
 1. **Navigate to the exercises folder**. Adjust the path according to your repository location:
    ```bash
