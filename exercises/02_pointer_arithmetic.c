@@ -7,9 +7,9 @@ int main() {
 
   printf("=== Pointer Arithmetic ===\n\n");
   printf("Analyzing packet at address: %p\n", (void *)ptr_packet);
-  printf("  Extracted header: 0x%X\n", *(unsigned int *)ptr_packet);
-  printf("  Sensor ID:        %d\n", *(ptr_packet + 4));
-  printf("  Value:            %d\n", *(ptr_packet + 5));
+  printf("%-18s 0x%X\n", "  Extracted header:", *(unsigned int *)ptr_packet);
+  printf("%-19s %d\n", "  Sensor ID:", *(ptr_packet + 4));
+  printf("%-19s %d\n", "  Value:", *(ptr_packet + 5));
 
   return 0;
 }
