@@ -8,6 +8,7 @@ int main() {
   char c = 'Z';
 
   printf("=== Void Pointers ===\n\n");
+
   print_generic(&i, 'i');
   print_generic(&f, 'f');
   print_generic(&c, 'c');
@@ -16,8 +17,11 @@ int main() {
 }
 
 void print_generic(void *ptr, char type) {
-  if (ptr == NULL)
+  if (ptr == NULL) {
+    fprintf(stderr, "Error: NULL pointer received.\n");
     return;
+  }
+
   switch (type) {
   case 'i':
     printf("Generic Print %-10s %d\n", "(Integer):", *(int *)ptr);
@@ -29,7 +33,7 @@ void print_generic(void *ptr, char type) {
     printf("Generic Print %-10s %c\n", "(Char):", *(char *)ptr);
     break;
   default:
-    printf("Error: Unknown type '%c'\n", type);
+    fprintf(stderr, "Error: Unknown type '%c'\n", type);
     break;
   }
 }

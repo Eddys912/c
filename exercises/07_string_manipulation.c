@@ -8,15 +8,16 @@ int main() {
 
   int initial_length = 10;
   unsigned int n = 0;
-  unsigned int c;
-  char *sentence = (char *)malloc(initial_length * sizeof(char));
+  int c;
 
+  printf("=== String Manipulation ===\n\n");
+
+  char *sentence = (char *)malloc(initial_length * sizeof(char));
   if (sentence == NULL) {
-    printf("Error: Could not allocate memory.\n");
+    fprintf(stderr, "Error: Could not allocate memory.\n");
     return 1;
   }
 
-  printf("=== String Manipulation ===\n\n");
   printf("Enter a string: ");
   while ((c = getchar()) != '\n' && c != EOF) {
     *(sentence + n) = (char)c;
@@ -26,6 +27,7 @@ int main() {
       initial_length *= 2;
       char *temp = realloc(sentence, initial_length * sizeof(char));
       if (temp == NULL) {
+        fprintf(stderr, "Error: Could not reallocate memory.\n");
         free(sentence);
         return 1;
       }
@@ -34,10 +36,12 @@ int main() {
   }
 
   *(sentence + n) = '\0';
-  char *clean = realloc(sentence, (n + 1) * sizeof(char));
 
+  char *clean = realloc(sentence, (n + 1) * sizeof(char));
   if (clean != NULL) {
     sentence = clean;
+  } else {
+    fprintf(stderr, "Warning: Could not optimize memory allocation.\n");
   }
 
   print_string(sentence);
