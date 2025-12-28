@@ -7,11 +7,11 @@
 #define FILE_PATH "files/logs.txt"
 
 int read_user_input(char *buffer, size_t size);
+FILE *open_file_safe(const char *filepath, const char *mode);
+int close_file_safe(FILE *file);
 void generate_timestamp(char *timestamp, size_t size);
 int write_log_entry(const char *filepath, const char *message);
 int display_log_file(const char *filepath);
-FILE *open_file_safe(const char *filepath, const char *mode);
-int close_file_safe(FILE *file);
 
 int main() {
   char buffer[BUFFER_SIZE];

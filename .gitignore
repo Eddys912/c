@@ -4,6 +4,9 @@
 # Object files
 *.o
 
+# Binary files
+*.bin
+
 # Executables
 exercise
 exercise.exe
