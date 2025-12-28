@@ -1,58 +1,73 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void print_string(char *str);
+#define INITIAL_BUFFER_SIZE 10
+
+char *read_dynamic_string(const char *prompt);
+void print_string(const char *str);
 void reverse_string(char *str);
 
 int main() {
-
-  int initial_length = 10;
-  unsigned int n = 0;
-  int c;
+  char *sentence;
 
   printf("=== String Manipulation ===\n\n");
 
-  char *sentence = (char *)malloc(initial_length * sizeof(char));
+  sentence = read_dynamic_string("Enter a string: ");
   if (sentence == NULL) {
-    fprintf(stderr, "Error: Could not allocate memory.\n");
     return 1;
-  }
-
-  printf("Enter a string: ");
-  while ((c = getchar()) != '\n' && c != EOF) {
-    *(sentence + n) = (char)c;
-    n++;
-
-    if (n >= initial_length) {
-      initial_length *= 2;
-      char *temp = realloc(sentence, initial_length * sizeof(char));
-      if (temp == NULL) {
-        fprintf(stderr, "Error: Could not reallocate memory.\n");
-        free(sentence);
-        return 1;
-      }
-      sentence = temp;
-    }
-  }
-
-  *(sentence + n) = '\0';
-
-  char *clean = realloc(sentence, (n + 1) * sizeof(char));
-  if (clean != NULL) {
-    sentence = clean;
-  } else {
-    fprintf(stderr, "Warning: Could not optimize memory allocation.\n");
   }
 
   print_string(sentence);
   reverse_string(sentence);
+  print_string(sentence);
 
   free(sentence);
 
   return 0;
 }
 
-void print_string(char *str) { printf("  Original string: %s\n", str); }
+char *read_dynamic_string(const char *prompt) {
+  int buffer_size = INITIAL_BUFFER_SIZE;
+  unsigned int length = 0;
+  int c;
+  char *str = (char *)malloc(buffer_size * sizeof(char));
+
+  if (str == NULL) {
+    fprintf(stderr, "Error: Could not allocate memory.\n");
+    return NULL;
+  }
+
+  printf("%s", prompt);
+
+  while ((c = getchar()) != '\n' && c != EOF) {
+    *(str + length) = (char)c;
+    length++;
+
+    if (length >= buffer_size) {
+      buffer_size *= 2;
+      char *temp = realloc(str, buffer_size * sizeof(char));
+      if (temp == NULL) {
+        fprintf(stderr, "Error: Could not reallocate memory.\n");
+        free(str);
+        return NULL;
+      }
+      str = temp;
+    }
+  }
+
+  *(str + length) = '\0';
+
+  char *optimized = realloc(str, (length + 1) * sizeof(char));
+  if (optimized != NULL) {
+    str = optimized;
+  } else {
+    fprintf(stderr, "Warning: Could not optimize memory allocation.\n");
+  }
+
+  return str;
+}
+
+void print_string(const char *str) { printf("  String: %s\n", str); }
 
 void reverse_string(char *str) {
   char *start = str;
@@ -62,6 +77,7 @@ void reverse_string(char *str) {
   while (*end != '\0') {
     end++;
   }
+
   if (end != str) {
     end--;
   }
@@ -74,6 +90,4 @@ void reverse_string(char *str) {
     start++;
     end--;
   }
-
-  printf("  Reversed string: %s\n", str);
 }
