@@ -152,8 +152,8 @@ int read_sensor_from_file(SensorConfig *sensor, const char *filepath) {
 
 void display_sensor(const SensorConfig *sensor) {
   printf("\nSensor configuration:\n");
-  printf("  %-12s %d\n", "ID:", sensor->id);
-  printf("  %-12s %.2f\n", "Threshold:", sensor->threshold);
-  printf("  %-12s %c (%s)\n", "Status:", sensor->status,
-    sensor->status == 'A' ? "Active" : "Inactive");
+  printf("  %-10s %d\n", "ID:", sensor->id);
+  printf("  %-10s %.2f\n", "Threshold:", sensor->threshold);
+  printf("  %-10s %c (%s)\n", "Status:", sensor->status,
+         sensor->status == 'A' ? "Active" : "Inactive");
 }
