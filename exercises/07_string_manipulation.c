@@ -4,7 +4,7 @@
 #define INITIAL_BUFFER_SIZE 10
 
 char *read_dynamic_string(const char *prompt);
-void print_string(const char *str);
+void print_string(char *msg, const char *str);
 void reverse_string(char *str);
 
 int main() {
@@ -17,9 +17,9 @@ int main() {
     return 1;
   }
 
-  print_string(sentence);
+  print_string("Original string", sentence);
   reverse_string(sentence);
-  print_string(sentence);
+  print_string("Reversed string", sentence);
 
   free(sentence);
 
@@ -67,7 +67,7 @@ char *read_dynamic_string(const char *prompt) {
   return str;
 }
 
-void print_string(const char *str) { printf("  String: %s\n", str); }
+void print_string(char *msg, const char *str) { printf("  %s: %s\n", msg, str); }
 
 void reverse_string(char *str) {
   char *start = str;
