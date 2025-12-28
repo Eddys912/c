@@ -16,7 +16,7 @@ int main() {
   }
 
   while (fgets(buffer, BUFFER_SIZE, ptr_file) != NULL) {
-    printf("  [Line %u]: %s", count, buffer);
+    printf("  [Line %u] %s", count, buffer);
     count++;
   }
 
