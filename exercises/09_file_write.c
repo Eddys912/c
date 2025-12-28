@@ -29,7 +29,7 @@ int main() {
 
   printf("Log saved successfully.\n");
 
-  printf("\nLogs saved in: %s\n\n", FILE_PATH);
+  printf("\nLogs saved in: %s\n", FILE_PATH);
   if (display_log_file(FILE_PATH) != 0) {
     return 1;
   }
