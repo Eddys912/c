@@ -57,8 +57,7 @@ int main() {
 
 void clear_input_buffer() {
   int c;
-  while ((c = getchar()) != '\n' && c != EOF)
-    ;
+  while ((c = getchar()) != '\n' && c != EOF);
 }
 
 int read_positive(const char *prompt, unsigned int *value) {
