@@ -2,7 +2,7 @@
  ===============================================================================
  Exercise: 01_pointer_basics.c
  Description: Demonstrates pointer fundamentals, memory addresses and endianness
- Platform: C (C99 or later)
+ Platform: GNU/Linux (Arch/WSL) on x86_64
  ===============================================================================
  Features:
  - Displays variable values, addresses and sizes
