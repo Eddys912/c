@@ -15,12 +15,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define TITLE "=== Dynamic Memory Allocation ===\n\n"
+#define TITLE_MEMORY_ALLOCATED "\nMemory allocated at: %p\n"
+
+#define TEXT_AVERAGE_TEMP "  Average temperature: %.2f\n"
+#define TEXT_MEMORY_FREE "\nMemory freed successfully.\n"
+
+#define INPUT_TEMPERATURES "How many temperatures do you want to enter?: "
+#define INPUT_TEMPERATURE "  Enter temperature %u: "
+
+#define FORMAT_INPUT_PROMPT "%s"
+
+#define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
+#define ERR_MSG_INVALID_INPUT_TEMPERATURE "Error: Invalid temperature input.\n"
+#define ERR_MSG_LEAST_TEMPERATURE "Error: Must enter at least %d temperature.\n"
+#define ERR_MSG_COULD_MEMORY "Error: Could not allocate memory.\n"
+
 #define MIN_TEMPERATURES 1
 #define SCANF_SUCCESS 1
-#define INPUT_PROMPT_FORMAT "%s"
-#define TEMP_PROMPT_FORMAT "  Enter temperature %u: "
-#define MEMORY_INFO_FORMAT "\nMemory allocated at: %p\n"
-#define AVERAGE_FORMAT "  Average temperature: %.2f\n"
 
 typedef enum {
   SUCCESS = 0,
@@ -41,10 +53,9 @@ int main(void) {
   double *temperatures;
   double average_temperature;
 
-  printf("=== Dynamic Memory Allocation ===\n\n");
+  printf(TITLE);
 
-  if (read_positive_integer("How many temperatures do you want to enter?: ", &total_temperatures) !=
-      SUCCESS) {
+  if (read_positive_integer(INPUT_TEMPERATURES, &total_temperatures) != SUCCESS) {
     return ERROR_INVALID_INPUT;
   }
 
@@ -63,7 +74,7 @@ int main(void) {
 
   free(temperatures);
   temperatures = NULL;
-  printf("\nMemory freed successfully.\n");
+  printf(TEXT_MEMORY_FREE);
 
   return SUCCESS;
 }
@@ -75,17 +86,17 @@ void clear_input_buffer(void) {
 }
 
 StatusCode read_positive_integer(const char *prompt, unsigned int *value) {
-  printf(INPUT_PROMPT_FORMAT, prompt);
+  printf(FORMAT_INPUT_PROMPT, prompt);
 
   if (scanf("%u", value) != SCANF_SUCCESS) {
-    fprintf(stderr, "Error: Invalid input.\n");
+    fprintf(stderr, ERR_MSG_INVALID_INPUT);
     clear_input_buffer();
     return ERROR_INVALID_INPUT;
   }
   clear_input_buffer();
 
   if (*value < MIN_TEMPERATURES) {
-    fprintf(stderr, "Error: Must enter at least %d temperature.\n", MIN_TEMPERATURES);
+    fprintf(stderr, ERR_MSG_LEAST_TEMPERATURE, MIN_TEMPERATURES);
     return ERROR_ZERO_TEMPERATURES;
   }
 
@@ -96,7 +107,7 @@ double *allocate_temperature_array(unsigned int size) {
   double *array = (double *)malloc(size * sizeof(double));
 
   if (array == NULL) {
-    fprintf(stderr, "Error: Could not allocate memory.\n");
+    fprintf(stderr, ERR_MSG_COULD_MEMORY);
   }
 
   return array;
@@ -104,9 +115,9 @@ double *allocate_temperature_array(unsigned int size) {
 
 StatusCode read_temperatures(double *temperatures, unsigned int count) {
   for (unsigned int i = 0; i < count; i++) {
-    printf(TEMP_PROMPT_FORMAT, i + 1);
+    printf(INPUT_TEMPERATURE, i + 1);
     if (scanf("%lf", (temperatures + i)) != SCANF_SUCCESS) {
-      fprintf(stderr, "Error: Invalid temperature input.\n");
+      fprintf(stderr, ERR_MSG_INVALID_INPUT_TEMPERATURE);
       clear_input_buffer();
       return ERROR_INVALID_INPUT;
     }
@@ -127,6 +138,6 @@ double calculate_average(const double *temperatures, unsigned int count) {
 }
 
 void print_results(const double *temperatures, double average) {
-  printf(MEMORY_INFO_FORMAT, (const void *)temperatures);
-  printf(AVERAGE_FORMAT, average);
+  printf(TITLE_MEMORY_ALLOCATED, (const void *)temperatures);
+  printf(TEXT_AVERAGE_TEMP, average);
 }

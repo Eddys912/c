@@ -1,83 +1,126 @@
+/*
+ ===============================================================================
+ Exercise: 04_array_pointers.c
+ Description: Demonstrates 2D dynamic memory allocation for pressure readings
+ Platform: GNU/Linux (Arch/WSL) on x86_64
+ ===============================================================================
+ Features:
+ - Allocates 2D matrix dynamically (stations x pressure readings)
+ - Reads and validates matrix data from user input
+ - Displays formatted matrix output
+ - Proper memory cleanup with rollback on allocation failure
+ ===============================================================================
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
-void clear_input_buffer();
-int read_positive(const char *prompt, unsigned int *value);
+#define TITLE "=== Array Pointers Allocation ===\n\n"
+#define TITLE_PRESSURE_READINGS "\nPressure readings entered:\n"
+
+#define TEXT_MEMORY_FREE "\nMemory freed successfully.\n"
+#define TEXT_STATION "  Station %u: "
+
+#define INPUT_STATIONS "How many stations do you want to enter?: "
+#define INPUT_PRESSURE "How many pressure readings do you want to enter?: "
+#define INPUT_PRESSURE_FOR_STATION "  Enter pressure %u for station %u: "
+
+#define FORMAT_INPUT_PROMPT "%s"
+#define FORMAT_PRESSURE "%.4f "
+
+#define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
+#define ERR_MSG_INVALID_INPUT_PRESSURE "Error: Invalid pressure input.\n"
+#define ERR_MSG_GREATER_THAN_ZERO "Error: Value must be greater than zero.\n"
+#define ERR_MSG_COULD_MEMORY_FOR_ROWS "Error: Could not allocate memory for matrix rows.\n"
+#define ERR_MSG_COULD_MEMORY_FOR_COLUMNS "Error: Could not allocate memory.\n"
+
+#define MIN_VALUE 1
+#define SCANF_SUCCESS 1
+
+typedef enum {
+  SUCCESS = 0,
+  ERROR_INVALID_INPUT = 1,
+  ERROR_ALLOCATION_FAILED = 1,
+  ERROR_ZERO_VALUE = 1
+} StatusCode;
+
+void clear_input_buffer(void);
+StatusCode read_positive_integer(const char *prompt, unsigned int *value);
 double **allocate_matrix(unsigned int rows, unsigned int cols);
 void free_matrix(double **matrix, unsigned int rows);
-int read_matrix_data(double **matrix, unsigned int rows, unsigned int cols);
-void display_matrix(double **matrix, unsigned int rows, unsigned int cols);
+StatusCode read_matrix_data(double **matrix, unsigned int rows, unsigned int cols);
+void display_matrix(const double *const *matrix, unsigned int rows, unsigned int cols);
 
-int main() {
+int main(void) {
   unsigned int stations, pressures;
   double **matrix_stations;
 
-  printf("=== Array Pointers Allocation ===\n\n");
+  printf(TITLE);
 
-  if (read_positive("How many stations do you want to enter?: ", &stations) != 0) {
-    return 1;
+  if (read_positive_integer(INPUT_STATIONS, &stations) != SUCCESS) {
+    return ERROR_INVALID_INPUT;
   }
 
-  if (read_positive("How many pressure readings do you want to enter?: ", &pressures) != 0) {
-    return 1;
+  if (read_positive_integer(INPUT_PRESSURE, &pressures) != SUCCESS) {
+    return ERROR_INVALID_INPUT;
   }
 
   matrix_stations = allocate_matrix(stations, pressures);
   if (matrix_stations == NULL) {
-    return 1;
+    return ERROR_ALLOCATION_FAILED;
   }
 
-  if (read_matrix_data(matrix_stations, stations, pressures) != 0) {
+  if (read_matrix_data(matrix_stations, stations, pressures) != SUCCESS) {
     free_matrix(matrix_stations, stations);
-    return 1;
+    return ERROR_INVALID_INPUT;
   }
 
-  printf("\nPressure readings entered:\n");
-  display_matrix(matrix_stations, stations, pressures);
+  printf(TITLE_PRESSURE_READINGS);
+  display_matrix((const double *const *)matrix_stations, stations, pressures);
 
   free_matrix(matrix_stations, stations);
   matrix_stations = NULL;
-  printf("\nMemory freed successfully.\n");
+  printf(TEXT_MEMORY_FREE);
 
-  return 0;
+  return SUCCESS;
 }
 
-void clear_input_buffer() {
+void clear_input_buffer(void) {
   int c;
-  while ((c = getchar()) != '\n' && c != EOF);
+  while ((c = getchar()) != '\n' && c != EOF)
+    ;
 }
 
-int read_positive(const char *prompt, unsigned int *value) {
-  printf("%s", prompt);
+StatusCode read_positive_integer(const char *prompt, unsigned int *value) {
+  printf(FORMAT_INPUT_PROMPT, prompt);
 
-  if (scanf("%u", value) != 1) {
-    fprintf(stderr, "Error: Invalid input.\n");
-    return 1;
+  if (scanf("%u", value) != SCANF_SUCCESS) {
+    fprintf(stderr, ERR_MSG_INVALID_INPUT);
+    clear_input_buffer();
+    return ERROR_INVALID_INPUT;
   }
   clear_input_buffer();
 
-  if (*value == 0) {
-    fprintf(stderr, "Error: Value must be greater than zero.\n");
-    return 1;
+  if (*value < MIN_VALUE) {
+    fprintf(stderr, ERR_MSG_GREATER_THAN_ZERO);
+    return ERROR_ZERO_VALUE;
   }
 
-  return 0;
+  return SUCCESS;
 }
 
 double **allocate_matrix(unsigned int rows, unsigned int cols) {
-  double **matrix;
-  unsigned int i;
+  double **matrix = (double **)malloc(rows * sizeof(double *));
 
-  matrix = (double **)malloc(rows * sizeof(double *));
   if (matrix == NULL) {
-    fprintf(stderr, "Error: Could not allocate memory for matrix rows.\n");
+    fprintf(stderr, ERR_MSG_COULD_MEMORY_FOR_ROWS);
     return NULL;
   }
 
-  for (i = 0; i < rows; i++) {
+  for (unsigned int i = 0; i < rows; i++) {
     *(matrix + i) = (double *)malloc(cols * sizeof(double));
     if (*(matrix + i) == NULL) {
-      fprintf(stderr, "Error: Could not allocate memory for matrix columns.\n");
+      fprintf(stderr, ERR_MSG_COULD_MEMORY_FOR_COLUMNS);
       for (unsigned int k = 0; k < i; k++) {
         free(*(matrix + k));
       }
@@ -90,39 +133,34 @@ double **allocate_matrix(unsigned int rows, unsigned int cols) {
 }
 
 void free_matrix(double **matrix, unsigned int rows) {
-  unsigned int i;
-
-  for (i = 0; i < rows; i++) {
+  for (unsigned int i = 0; i < rows; i++) {
     free(*(matrix + i));
   }
   free(matrix);
 }
 
-int read_matrix_data(double **matrix, unsigned int rows, unsigned int cols) {
-  unsigned int i, j;
+StatusCode read_matrix_data(double **matrix, unsigned int rows, unsigned int cols) {
+  for (unsigned int i = 0; i < rows; i++) {
+    for (unsigned int j = 0; j < cols; j++) {
+      printf(INPUT_PRESSURE_FOR_STATION, j + 1, i + 1);
 
-  for (i = 0; i < rows; i++) {
-    for (j = 0; j < cols; j++) {
-      printf("  Enter pressure %u for station %u: ", j + 1, i + 1);
-
-      if (scanf("%lf", *(matrix + i) + j) != 1) {
-        fprintf(stderr, "Error: Invalid pressure input.\n");
-        return 1;
+      if (scanf("%lf", *(matrix + i) + j) != SCANF_SUCCESS) {
+        fprintf(stderr, ERR_MSG_INVALID_INPUT_PRESSURE);
+        clear_input_buffer();
+        return ERROR_INVALID_INPUT;
       }
       clear_input_buffer();
     }
   }
 
-  return 0;
+  return SUCCESS;
 }
 
-void display_matrix(double **matrix, unsigned int rows, unsigned int cols) {
-  unsigned int i, j;
-
-  for (i = 0; i < rows; i++) {
-    printf("  Station %u: ", i + 1);
-    for (j = 0; j < cols; j++) {
-      printf("%.4f ", *(*(matrix + i) + j));
+void display_matrix(const double *const *matrix, unsigned int rows, unsigned int cols) {
+  for (unsigned int i = 0; i < rows; i++) {
+    printf(TEXT_STATION, i + 1);
+    for (unsigned int j = 0; j < cols; j++) {
+      printf(FORMAT_PRESSURE, *(*(matrix + i) + j));
     }
     printf("\n");
   }
