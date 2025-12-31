@@ -48,7 +48,7 @@ This repository contains programming exercises in **C**, covering fundamentals, 
 - **C Compiler GCC**: version 15.2.1 or higher.
 - **GNU GDB**: version 16.3 or higher.
 
-## 🚀 How to Run the Exercises
+## 🚀 Execution Instructions
 
 ### 🖥️ Arch Linux/WSL (Recommended)
 
@@ -56,11 +56,12 @@ This repository contains programming exercises in **C**, covering fundamentals, 
    ```bash
    git clone https://github.com/edavsys/c-systems-fundamentals.git
    ```
+   > **Note**: When using Arch Linux natively, proceed to **Step 4**. For Windows environments, complete all steps to install and configure WSL Arch.
 2. **Download and install WSL Arch** (PowerShell):
    ```bash
    wsl --install -d archlinux
    ```
-3. **Restart system** and access Arch Linux.
+3. **Restart the system** and access Arch Linux.
 4. **Install GDB and compilation tools**:
    ```bash
    pacman -Syu
@@ -72,23 +73,23 @@ This repository contains programming exercises in **C**, covering fundamentals, 
    gdb --version    # e.g. GNU gdb (GDB) 16.3 or higher
    uname -m         # e.g. x86_64
    ```
-6. **Navigate to the exercises folder**. Adjust the path according to your repository location:
+6. **Navigate to the exercises directory** (adjust path as needed):
    ```bash
    cd c-systems-fundamentals/exercises
    ```
-7. **Run the exercise**: use the Makefile to compile, run, and clean in one command:
+7. **Execute exercises**:
    ```bash
-    make run 01_pointer_basics
+   make run 01_pointer_basics
    ```
 
 ### 🌐 OneCompiler (No Installation Required)
 
-Execute code without installation:
+Code execution without local installation:
 
-1. Open **[OneCompiler - C](https://onecompiler.com/c)**.
+1. Access **[OneCompiler - C](https://onecompiler.com/c)**.
 2. Copy and paste the exercise code.
-3. If the exercise requires user input:
-   - Go to the **STDIN** panel.
+3. For exercises requiring input:
+   - Navigate to the **STDIN** panel.
    - Enter values separated by a space.
 4. Click **Run**.
 
@@ -96,11 +97,11 @@ Execute code without installation:
 
 ## 📖 Official Documentation
 
-To learn more:
+Additional resources:
 
 - **[C Reference](https://en.cppreference.com/w/c)** - Complete C language reference.
-- **[Linux Man Pages](https://linux.die.net/man/)** - Reference for system calls
-- **[Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)** - Excellent guide for sockets
+- **[Linux Man Pages](https://linux.die.net/man/)** - Reference for system calls.
+- **[Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)** - Excellent guide for sockets.
 
 <div align="center">
  <br>
@@ -109,5 +110,5 @@ To learn more:
   alt="Made with C"
  />
  <br><br>
- <p>⭐ <strong>If you find this useful, consider leaving a star</strong> ⭐</p>
+ <p>⭐ <strong>Star this repository to show support</strong> ⭐</p>
 </div>
