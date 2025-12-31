@@ -27,8 +27,8 @@ This repository contains programming exercises in **C**, covering fundamentals, 
 | 5   | **Function Pointers**   | 🟡    | Callback implementation and decoupled execution flow. |
 | 6   | **Void Pointers**       | 🟡    | Abstract data handling and generic programming.       |
 | 7   | **String Manipulation** | 🟡    | Custom processing of character sequences in memory.   |
-| 8   | **File Read**           | 🟡    | Extracting formatted information from external files. |
-| 9   | **File Write**          | 🟡    | Persisting information into permanent text storage.   |
+| 8   | **File Reading**        | 🟡    | Extracting formatted information from external files. |
+| 9   | **File Writing**        | 🟡    | Persisting information into permanent text storage.   |
 | 10  | **Binary Files**        | 🔴    | Direct machine-level data storage and retrieval.      |
 | 11  | **Linked List**         | 🔴    | Dynamic and non-contiguous data organization.         |
 | 12  | **Stack Array**         | 🔴    | LIFO (Last-In, First-Out) data flow management.       |
