@@ -65,7 +65,7 @@ void explore_memory_bytes(const void *addr, size_t size) {
   printf("\nBase Address: %p\n", addr);
 
   for (size_t i = 0; i < size; i++) {
-    printf("  Byte [%zu] at %p: 0x%02x\n", i, (const void *)(byte_ptr + i), byte_ptr[i]);
+    printf("  Byte [%zu] at %p: 0x%02x\n", i, (const void *)(byte_ptr + i), *(byte_ptr + i));
   }
 }
 
