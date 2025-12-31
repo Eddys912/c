@@ -20,6 +20,11 @@ max_line_length = 100
 [*.h]
 max_line_length = 100
 
+# Makefile
+[Makefile]
+indent_size = 2
+indent_style = tab
+
 # Markdown files
 [*.md]
 max_line_length = off
