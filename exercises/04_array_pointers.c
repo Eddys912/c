@@ -25,7 +25,9 @@
 #define INPUT_PRESSURE "How many pressure readings do you want to enter?: "
 #define INPUT_PRESSURE_FOR_STATION "  Enter pressure %u for station %u: "
 
-#define FORMAT_INPUT_PROMPT "%s"
+#define FORMAT_INPUT_STRING "%s"
+#define FORMAT_INPUT_UNSIGNED "%u"
+#define FORMAT_INPUT_DOUBLE "%lf"
 #define FORMAT_PRESSURE "%.4f "
 
 #define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
@@ -36,6 +38,7 @@
 
 #define MIN_VALUE 1
 #define SCANF_SUCCESS 1
+#define NEWLINE '\n'
 
 typedef enum {
   SUCCESS = 0,
@@ -87,14 +90,14 @@ int main(void) {
 
 void clear_input_buffer(void) {
   int c;
-  while ((c = getchar()) != '\n' && c != EOF)
+  while ((c = getchar()) != NEWLINE && c != EOF)
     ;
 }
 
 StatusCode read_positive_integer(const char *prompt, unsigned int *value) {
-  printf(FORMAT_INPUT_PROMPT, prompt);
+  printf(FORMAT_INPUT_STRING, prompt);
 
-  if (scanf("%u", value) != SCANF_SUCCESS) {
+  if (scanf(FORMAT_INPUT_UNSIGNED, value) != SCANF_SUCCESS) {
     fprintf(stderr, ERR_MSG_INVALID_INPUT);
     clear_input_buffer();
     return ERROR_INVALID_INPUT;
@@ -144,7 +147,7 @@ StatusCode read_matrix_data(double **matrix, unsigned int rows, unsigned int col
     for (unsigned int j = 0; j < cols; j++) {
       printf(INPUT_PRESSURE_FOR_STATION, j + 1, i + 1);
 
-      if (scanf("%lf", *(matrix + i) + j) != SCANF_SUCCESS) {
+      if (scanf(FORMAT_INPUT_DOUBLE, *(matrix + i) + j) != SCANF_SUCCESS) {
         fprintf(stderr, ERR_MSG_INVALID_INPUT_PRESSURE);
         clear_input_buffer();
         return ERROR_INVALID_INPUT;

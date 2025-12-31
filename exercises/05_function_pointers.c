@@ -24,9 +24,13 @@
 
 #define INPUT_NUMBER "Enter a number: "
 
+#define FORMAT_INPUT_STRING "%s"
+#define FORMAT_INPUT_UNSIGNED "%u"
+
 #define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
 
 #define SCANF_SUCCESS 1
+#define NEWLINE '\n'
 
 typedef enum { SUCCESS = 0, ERROR_INVALID_INPUT = 1 } StatusCode;
 
@@ -56,14 +60,14 @@ int main(void) {
 
 void clear_input_buffer(void) {
   int c;
-  while ((c = getchar()) != '\n' && c != EOF)
+  while ((c = getchar()) != NEWLINE && c != EOF)
     ;
 }
 
 StatusCode read_number(const char *prompt, double *value) {
-  printf("%s", prompt);
+  printf(FORMAT_INPUT_STRING, prompt);
 
-  if (scanf("%lf", value) != SCANF_SUCCESS) {
+  if (scanf(FORMAT_INPUT_DOUBLE, value) != SCANF_SUCCESS) {
     fprintf(stderr, ERR_MSG_INVALID_INPUT);
     clear_input_buffer();
     return ERROR_INVALID_INPUT;
