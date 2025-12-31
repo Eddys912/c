@@ -50,47 +50,35 @@ This repository contains programming exercises in **C**, covering fundamentals, 
 
 ## 🚀 How to Run the Exercises
 
-### 🖥️ WSL Arch (Recommended)
+### 🖥️ Arch Linux/WSL (Recommended)
 
-1. **Clone the repository** on your machine:
+1. **Clone the repository**:
    ```bash
    git clone https://github.com/edavsys/c-systems-fundamentals.git
    ```
-1. **Download and install WSL Arch** in PowerShell:
+2. **Download and install WSL Arch** (PowerShell):
    ```bash
    wsl --install -d archlinux
    ```
-1. **Restart the machine**. Access archlinux.
-1. **Install GDB and compilation tools**:
+3. **Restart system** and access Arch Linux.
+4. **Install GDB and compilation tools**:
    ```bash
    pacman -Syu
    pacman -S gdb base-devel
    ```
-1. **Verify installation**:
+5. **Verify installation**:
    ```bash
-   gcc --version    # e.g. gcc (GCC) 15.2.1
-   gdb --version    # e.g. GNU gdb (GDB) 16.3
+   gcc --version    # e.g. gcc (GCC) 15.2.1 or higher
+   gdb --version    # e.g. GNU gdb (GDB) 16.3 or higher
    uname -m         # e.g. x86_64
    ```
-1. **Navigate to the exercises folder**. Adjust the path according to your repository location:
+6. **Navigate to the exercises folder**. Adjust the path according to your repository location:
    ```bash
-   cd /mnt/c/.../c-systems-fundamentals/exercises
+   cd c-systems-fundamentals/exercises
    ```
-1. **Compile the code**:
+7. **Run the exercise**: use the Makefile to compile, run, and clean in one command:
    ```bash
-    gcc 01_pointer_basics.c -o exercise
-   ```
-1. **Compile with Pthreads/Threads**:
-   ```bash
-   gcc 18_pthread_create.c -o thread_ex -pthread
-   ```
-1. **Run the program**:
-   ```bash
-    ./exercise
-   ```
-1. **All in one command**:
-   ```bash
-    gcc 01_pointer_basics.c -o exercise && ./exercise
+    make run 01_pointer_basics
    ```
 
 ### 🌐 OneCompiler (No Installation Required)
