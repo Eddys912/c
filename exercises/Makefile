@@ -6,10 +6,11 @@ CYAN = \033[0;36m
 NC = \033[0m
 
 run:
+	@mkdir -p files
 	@$(CC) $(CFLAGS) $(filter-out $@,$(MAKECMDGOALS)).c -o $(TARGET)
 	@printf "$(CYAN)----- Executing: %s -----$(NC)\n" "$(filter-out $@,$(MAKECMDGOALS))"
 	@./$(TARGET)
-	@rm -f $(TARGET)
+	@rm -f $(TARGET) files/*.bin
 
 %:
 	@:
