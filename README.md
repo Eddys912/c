@@ -43,7 +43,7 @@ This repository contains programming exercises in **C**, covering fundamentals, 
 
 ## 📋 Installation Requirements
 
-- **Operating System**: WSL2 on Windows or Linux distributions (Arch, Debian, Ubuntu, etc.).
+- **Operating System**: Linux (Arch, Debian, Ubuntu, etc.) or WSL2 on Windows.
 - **Architecture**: x86-64 (64-bit).
 - **C Compiler GCC**: version 15.2.1 or higher.
 - **GNU GDB**: version 16.3 or higher.
