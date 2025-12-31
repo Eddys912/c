@@ -1,16 +1,16 @@
 /*
- ===============================================================================
- Exercise: 10_binary_files.c
- Description: Demonstrates binary file operations with structured data
- Platform: GNU/Linux (Arch/WSL) on x86_64
- ===============================================================================
- Features:
- - Reads sensor configuration from user input with validation
- - Writes structured data to binary file using fwrite
- - Reads structured data from binary file using fread
- - Validates sensor status (Active/Inactive)
- - Displays formatted sensor configuration
- ===============================================================================
+===============================================================================
+Exercise: 10_binary_files.c
+Description: Demonstrates binary file operations with structured data
+Platform: GNU/Linux (Arch/WSL) on x86_64
+===============================================================================
+Features:
+- Reads sensor configuration from user input with validation
+- Writes structured data to binary file using fwrite
+- Reads structured data from binary file using fread
+- Validates sensor status (Active/Inactive)
+- Displays formatted sensor configuration
+===============================================================================
 */
 
 #include <stdio.h>
@@ -36,7 +36,7 @@
 #define FORMAT_DISPLAY_THRESHOLD "  %-10s %.2f\n"
 #define FORMAT_DISPLAY_STATUS "  %-10s %c (%s)\n"
 #define FORMAT_INT "%d"
-#define FORMAT_FLOAT "%.2f"
+#define FORMAT_FLOAT "%f"
 #define FORMAT_CHAR "%c"
 
 #define ERR_MSG_INVALID_ID "Error: Invalid ID input.\n"
