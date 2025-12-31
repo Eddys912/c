@@ -24,6 +24,7 @@
 
 #define FILE_PATH "files/data.txt"
 #define READING_MODE "r"
+
 #define BUFFER_SIZE 100
 #define INITIAL_LINE_COUNT 1
 #define FCLOSE_SUCCESS 0
