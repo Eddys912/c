@@ -61,7 +61,7 @@ Features:
 #define FWRITE_SUCCESS 1
 #define FREAD_SUCCESS 1
 #define MEMSET_ZERO 0
-#define NEWLINE '\n'
+#define NEWLINE_CHAR '\n'
 
 typedef enum {
   SUCCESS = 0,
@@ -113,7 +113,7 @@ int main(void) {
 
 void clear_input_buffer(void) {
   int c;
-  while ((c = getchar()) != NEWLINE && c != EOF)
+  while ((c = getchar()) != NEWLINE_CHAR && c != EOF)
     ;
 }
 

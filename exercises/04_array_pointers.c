@@ -38,7 +38,8 @@
 
 #define MIN_VALUE 1
 #define SCANF_SUCCESS 1
-#define NEWLINE '\n'
+#define NEWLINE_CHAR '\n'
+#define NEWLINE "\n"
 
 typedef enum {
   SUCCESS = 0,
@@ -90,7 +91,7 @@ int main(void) {
 
 void clear_input_buffer(void) {
   int c;
-  while ((c = getchar()) != NEWLINE && c != EOF)
+  while ((c = getchar()) != NEWLINE_CHAR && c != EOF)
     ;
 }
 
@@ -165,6 +166,6 @@ void display_matrix(const double *const *matrix, unsigned int rows, unsigned int
     for (unsigned int j = 0; j < cols; j++) {
       printf(FORMAT_PRESSURE, *(*(matrix + i) + j));
     }
-    printf("\n");
+    printf(NEWLINE);
   }
 }

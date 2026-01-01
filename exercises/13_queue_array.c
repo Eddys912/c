@@ -43,8 +43,11 @@ int main() {
       printf("  Valor %d en cola\n", extraido);
       break;
     case 2:
-      dequeue(&queue, &extraido);
-      printf("  Valor %d fuera de la cola\n", extraido);
+      if (dequeue(&queue, &extraido) == 0) {
+        printf("  Valor %d fuera de la cola\n", extraido);
+      } else {
+        printf("  Error: No hay elementos para extraer.\n");
+      }
       break;
     case 3:
       if (!is_empty(&queue)) {

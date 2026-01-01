@@ -1,107 +1,156 @@
+/*
+ ===============================================================================
+ Exercise: 11_linked_list.c
+ Description: Demonstrates singly linked list implementation for task management
+ Platform: GNU/Linux (Arch/WSL) on x86_64
+ ===============================================================================
+ Features:
+ - Creates singly linked list with dynamic allocation
+ - Adds nodes at the head of the list
+ - Traverses and displays list contents
+ - Proper memory deallocation of all nodes
+ - Handles empty list cases gracefully
+ ===============================================================================
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
+
+#define TITLE "=== Linked List ===\n\n"
+#define TITLE_LIST_CONTENTS "\nList contents:\n"
+
+#define TEXT_EMPTY_LIST "  (List is empty)\n"
+#define TEXT_FREEING_MEMORY "\nFreeing memory...\n"
+#define TEXT_MEMORY_FREED "Memory freed successfully.\n"
+#define TEXT_LIST_PREFIX "  "
+#define TEXT_NODE_FORMAT "[%d]"
+#define TEXT_ARROW " -> "
+#define TEXT_NULL_TERMINATOR " -> NULL\n"
+
+#define INPUT_ITEMS "How many items do you want to add to the list?: "
+#define INPUT_TASK_ID "  Enter task ID %u: "
+#define INPUT_PROMPT_FORMAT "%s"
+
+#define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
+#define ERR_MSG_INVALID_TASK_ID "Error: Invalid task ID input.\n"
+#define ERR_MSG_GREATER_THAN_ZERO "Error: Value must be greater than zero.\n"
+#define ERR_MSG_COULD_ALLOCATE_NODE "Error: Could not allocate memory for new node.\n"
+
+#define MIN_VALUE 1
+#define SCANF_SUCCESS 1
+#define NEWLINE_CHAR '\n'
+
+typedef enum {
+  SUCCESS = 0,
+  ERROR_INVALID_INPUT = 1,
+  ERROR_ALLOCATION_FAILED = 1,
+  ERROR_ZERO_VALUE = 1
+} StatusCode;
 
 typedef struct Node {
   int task_id;
   struct Node *next;
 } Node;
 
-void clear_input_buffer();
-int read_positive(const char *prompt, unsigned int *value);
-int add_node(Node **head, int id);
+void clear_input_buffer(void);
+StatusCode read_positive_integer(const char *prompt, unsigned int *value);
+StatusCode add_node(Node **head, int id);
 void print_list(const Node *head);
 void free_list(Node *head);
 int is_list_empty(const Node *head);
 
-int main() {
+int main(void) {
   Node *head = NULL;
-  unsigned int items, i;
+  unsigned int items;
   int task_id;
 
-  printf("=== Linked List ===\n\n");
+  printf(TITLE);
 
-  if (read_positive("How many items do you want to add to the list?: ", &items) != 0) {
-    return 1;
+  if (read_positive_integer(INPUT_ITEMS, &items) != SUCCESS) {
+    return ERROR_INVALID_INPUT;
   }
 
-  for (i = 0; i < items; i++) {
-    printf("  Enter task ID %u: ", i + 1);
+  for (unsigned int i = 0; i < items; i++) {
+    printf(INPUT_TASK_ID, i + 1);
 
-    if (scanf("%d", &task_id) != 1) {
-      fprintf(stderr, "Error: Invalid task ID input.\n");
+    if (scanf("%d", &task_id) != SCANF_SUCCESS) {
+      fprintf(stderr, ERR_MSG_INVALID_TASK_ID);
+      clear_input_buffer();
       free_list(head);
-      return 1;
+      return ERROR_INVALID_INPUT;
     }
     clear_input_buffer();
 
-    if (add_node(&head, task_id) != 0) {
+    if (add_node(&head, task_id) != SUCCESS) {
       free_list(head);
-      return 1;
+      return ERROR_ALLOCATION_FAILED;
     }
   }
 
-  printf("\nList contents:\n");
+  printf(TITLE_LIST_CONTENTS);
   if (is_list_empty(head)) {
-    printf("  (List is empty)\n");
+    printf(TEXT_EMPTY_LIST);
   } else {
-    printf("  ");
+    printf(TEXT_LIST_PREFIX);
     print_list(head);
   }
 
-  printf("\nFreeing memory...\n");
+  printf(TEXT_FREEING_MEMORY);
   free_list(head);
-  printf("Memory freed successfully.\n");
+  printf(TEXT_MEMORY_FREED);
 
-  return 0;
+  return SUCCESS;
 }
 
-void clear_input_buffer() {
+void clear_input_buffer(void) {
   int c;
-  while ((c = getchar()) != '\n' && c != EOF);
+  while ((c = getchar()) != NEWLINE_CHAR && c != EOF)
+    ;
 }
 
-int read_positive(const char *prompt, unsigned int *value) {
-  printf("%s", prompt);
+StatusCode read_positive_integer(const char *prompt, unsigned int *value) {
+  printf(INPUT_PROMPT_FORMAT, prompt);
 
-  if (scanf("%u", value) != 1) {
-    fprintf(stderr, "Error: Invalid input.\n");
-    return 1;
+  if (scanf("%u", value) != SCANF_SUCCESS) {
+    fprintf(stderr, ERR_MSG_INVALID_INPUT);
+    clear_input_buffer();
+    return ERROR_INVALID_INPUT;
   }
   clear_input_buffer();
 
-  if (*value == 0) {
-    fprintf(stderr, "Error: Value must be greater than zero.\n");
-    return 1;
+  if (*value < MIN_VALUE) {
+    fprintf(stderr, ERR_MSG_GREATER_THAN_ZERO);
+    return ERROR_ZERO_VALUE;
   }
 
-  return 0;
+  return SUCCESS;
 }
 
-int add_node(Node **head, int id) {
+StatusCode add_node(Node **head, int id) {
   Node *new_node = (Node *)malloc(sizeof(Node));
   if (new_node == NULL) {
-    fprintf(stderr, "Error: Could not allocate memory for new node.\n");
-    return 1;
+    fprintf(stderr, ERR_MSG_COULD_ALLOCATE_NODE);
+    return ERROR_ALLOCATION_FAILED;
   }
 
   new_node->task_id = id;
   new_node->next = *head;
   *head = new_node;
 
-  return 0;
+  return SUCCESS;
 }
 
 void print_list(const Node *head) {
   const Node *current = head;
 
   while (current != NULL) {
-    printf("[%d]", current->task_id);
+    printf(TEXT_NODE_FORMAT, current->task_id);
     if (current->next != NULL) {
-      printf(" -> ");
+      printf(TEXT_ARROW);
     }
     current = current->next;
   }
-  printf(" -> NULL\n");
+  printf(TEXT_NULL_TERMINATOR);
 }
 
 void free_list(Node *head) {

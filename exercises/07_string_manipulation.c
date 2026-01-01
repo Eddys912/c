@@ -33,7 +33,7 @@
 #define INITIAL_BUFFER_SIZE 10
 #define BUFFER_GROWTH_FACTOR 2
 #define NULL_TERMINATOR '\0'
-#define NEWLINE '\n'
+#define NEWLINE_CHAR '\n'
 
 typedef enum { SUCCESS = 0, ERROR_ALLOCATION_FAILED = 1 } StatusCode;
 
@@ -74,7 +74,7 @@ char *read_dynamic_string(const char *prompt) {
 
   printf(FORMAT_INPUT_STRING, prompt);
 
-  while ((c = getchar()) != NEWLINE && c != EOF) {
+  while ((c = getchar()) != NEWLINE_CHAR && c != EOF) {
     *(str + length) = (char)c;
     length++;
 

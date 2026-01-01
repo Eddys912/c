@@ -30,7 +30,7 @@
 #define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
 
 #define SCANF_SUCCESS 1
-#define NEWLINE '\n'
+#define NEWLINE_CHAR '\n'
 
 typedef enum { SUCCESS = 0, ERROR_INVALID_INPUT = 1 } StatusCode;
 
@@ -60,7 +60,7 @@ int main(void) {
 
 void clear_input_buffer(void) {
   int c;
-  while ((c = getchar()) != NEWLINE && c != EOF)
+  while ((c = getchar()) != NEWLINE_CHAR && c != EOF)
     ;
 }
 
