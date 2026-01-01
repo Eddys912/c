@@ -23,7 +23,7 @@
 
 #define INPUT_STRING "Enter a string: "
 
-#define FORMAT_INPUT_STRING "%s"
+#define FORMAT_STRING "%s"
 
 #define ERR_MSG_COULD_ALLOCATE "Error: Could not allocate memory.\n"
 #define ERR_MSG_COULD_REALLOCATE "Error: Could not reallocate memory.\n"
@@ -72,7 +72,7 @@ char *read_dynamic_string(const char *prompt) {
     return NULL;
   }
 
-  printf(FORMAT_INPUT_STRING, prompt);
+  printf(FORMAT_STRING, prompt);
 
   while ((c = getchar()) != NEWLINE_CHAR && c != EOF) {
     *(str + length) = (char)c;

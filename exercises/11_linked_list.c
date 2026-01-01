@@ -23,13 +23,15 @@
 #define TEXT_FREEING_MEMORY "\nFreeing memory...\n"
 #define TEXT_MEMORY_FREED "Memory freed successfully.\n"
 #define TEXT_LIST_PREFIX "  "
-#define TEXT_NODE_FORMAT "[%d]"
 #define TEXT_ARROW " -> "
 #define TEXT_NULL_TERMINATOR " -> NULL\n"
 
 #define INPUT_ITEMS "How many items do you want to add to the list?: "
 #define INPUT_TASK_ID "  Enter task ID %u: "
-#define INPUT_PROMPT_FORMAT "%s"
+
+#define FORMAT_STRING "%s"
+#define FORMAT_NODE "[%d]"
+#define FORMAT_UNSIGNED "%u"
 
 #define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
 #define ERR_MSG_INVALID_TASK_ID "Error: Invalid task ID input.\n"
@@ -109,9 +111,9 @@ void clear_input_buffer(void) {
 }
 
 StatusCode read_positive_integer(const char *prompt, unsigned int *value) {
-  printf(INPUT_PROMPT_FORMAT, prompt);
+  printf(FORMAT_STRING, prompt);
 
-  if (scanf("%u", value) != SCANF_SUCCESS) {
+  if (scanf(FORMAT_UNSIGNED, value) != SCANF_SUCCESS) {
     fprintf(stderr, ERR_MSG_INVALID_INPUT);
     clear_input_buffer();
     return ERROR_INVALID_INPUT;
@@ -144,7 +146,7 @@ void print_list(const Node *head) {
   const Node *current = head;
 
   while (current != NULL) {
-    printf(TEXT_NODE_FORMAT, current->task_id);
+    printf(FORMAT_NODE, current->task_id);
     if (current->next != NULL) {
       printf(TEXT_ARROW);
     }

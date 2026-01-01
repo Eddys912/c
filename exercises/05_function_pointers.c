@@ -19,13 +19,13 @@
 
 #define TEXT_RESULT_FORMAT "  [Callback %-7s] Input: %.2f | Result: %.2f\n"
 
+#define INPUT_NUMBER "Enter a number: "
+
 #define CALL_FUNCTION_SQUARE "Square"
 #define CALL_FUNCTION_CUBIC "Cubic"
 
-#define INPUT_NUMBER "Enter a number: "
-
-#define FORMAT_INPUT_STRING "%s"
-#define FORMAT_INPUT_UNSIGNED "%u"
+#define FORMAT_STRING "%s"
+#define FORMAT_DOUBLE "%lf"
 
 #define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
 
@@ -65,9 +65,9 @@ void clear_input_buffer(void) {
 }
 
 StatusCode read_number(const char *prompt, double *value) {
-  printf(FORMAT_INPUT_STRING, prompt);
+  printf(FORMAT_STRING, prompt);
 
-  if (scanf(FORMAT_INPUT_DOUBLE, value) != SCANF_SUCCESS) {
+  if (scanf(FORMAT_DOUBLE, value) != SCANF_SUCCESS) {
     fprintf(stderr, ERR_MSG_INVALID_INPUT);
     clear_input_buffer();
     return ERROR_INVALID_INPUT;

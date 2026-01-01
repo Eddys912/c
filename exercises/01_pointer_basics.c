@@ -28,7 +28,7 @@
 #define TEXT_BYTE "  Byte [%zu] at %p: 0x%02x\n"
 
 #define FORMAT_BUF_CHAR "'%c' (%u)"
-#define FORMAT_BUF_INT "%u"
+#define FORMAT_BUF_UNSIGNED "%u"
 #define FORMAT_BUF_DOUBLE "%.5f"
 #define FORMAT_HEADER "%-10s %-10s %-16s %s\n"
 #define FORMAT_ROW "%-10s %-10s %-16p %zu\n"
@@ -51,7 +51,7 @@ int main(void) {
   char buf_c[20], buf_i[20], buf_d[20];
 
   sprintf(buf_c, FORMAT_BUF_CHAR, val_1b, val_1b);
-  sprintf(buf_i, FORMAT_BUF_INT, val_4b);
+  sprintf(buf_i, FORMAT_BUF_UNSIGNED, val_4b);
   sprintf(buf_d, FORMAT_BUF_DOUBLE, val_8b);
 
   printf(TITLE);

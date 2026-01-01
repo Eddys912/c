@@ -35,7 +35,7 @@ Features:
 #define FORMAT_DISPLAY_ID "  %-10s %d\n"
 #define FORMAT_DISPLAY_THRESHOLD "  %-10s %.2f\n"
 #define FORMAT_DISPLAY_STATUS "  %-10s %c (%s)\n"
-#define FORMAT_INT "%d"
+#define FORMAT_INTEGER "%d"
 #define FORMAT_FLOAT "%f"
 #define FORMAT_CHAR "%c"
 
@@ -131,7 +131,7 @@ StatusCode read_user_input(SensorConfig *sensor) {
   char status;
 
   printf(INPUT_SENSOR_ID);
-  if (scanf(FORMAT_INT, &id) != SCANF_SUCCESS) {
+  if (scanf(FORMAT_INTEGER, &id) != SCANF_SUCCESS) {
     fprintf(stderr, ERR_MSG_INVALID_ID);
     clear_input_buffer();
     return ERROR_INPUT_FAILED;

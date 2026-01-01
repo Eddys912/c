@@ -24,9 +24,9 @@
 #define INPUT_TEMPERATURES "How many temperatures do you want to enter?: "
 #define INPUT_TEMPERATURE "  Enter temperature %u: "
 
-#define FORMAT_INPUT_STRING "%s"
-#define FORMAT_INPUT_UNSIGNED "%u"
-#define FORMAT_INPUT_DOUBLE "%lf"
+#define FORMAT_STRING "%s"
+#define FORMAT_UNSIGNED "%u"
+#define FORMAT_DOUBLE "%lf"
 
 #define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
 #define ERR_MSG_INVALID_INPUT_TEMPERATURE "Error: Invalid temperature input.\n"
@@ -89,9 +89,9 @@ void clear_input_buffer(void) {
 }
 
 StatusCode read_positive_integer(const char *prompt, unsigned int *value) {
-  printf(FORMAT_INPUT_STRING, prompt);
+  printf(FORMAT_STRING, prompt);
 
-  if (scanf(FORMAT_INPUT_UNSIGNED, value) != SCANF_SUCCESS) {
+  if (scanf(FORMAT_UNSIGNED, value) != SCANF_SUCCESS) {
     fprintf(stderr, ERR_MSG_INVALID_INPUT);
     clear_input_buffer();
     return ERROR_INVALID_INPUT;
@@ -119,7 +119,7 @@ double *allocate_temperature_array(unsigned int size) {
 StatusCode read_temperatures(double *temperatures, unsigned int count) {
   for (unsigned int i = 0; i < count; i++) {
     printf(INPUT_TEMPERATURE, i + 1);
-    if (scanf(FORMAT_INPUT_DOUBLE, (temperatures + i)) != SCANF_SUCCESS) {
+    if (scanf(FORMAT_DOUBLE, (temperatures + i)) != SCANF_SUCCESS) {
       fprintf(stderr, ERR_MSG_INVALID_INPUT_TEMPERATURE);
       clear_input_buffer();
       return ERROR_INVALID_INPUT;

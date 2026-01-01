@@ -22,10 +22,10 @@
 
 #define TEXT_LOG_SAVED "Log saved successfully.\n"
 #define TEXT_EMPTY_FILE "  (File is empty)\n"
-#define TEXT_LOG_OUTPUT "  %s"
 
 #define INPUT_DESCRIPTION "Write a short description: "
 
+#define FORMAT_STRING "  %s"
 #define FORMAT_LOG_ENTRY "[%s] [INFO] %s\n"
 #define FORMAT_TIMESTAMP "%Y-%m-%d %H:%M:%S"
 
@@ -156,7 +156,7 @@ StatusCode display_log_file(const char *filepath) {
   }
 
   while (fgets(buffer, BUFFER_SIZE, file) != NULL) {
-    printf(TEXT_LOG_OUTPUT, buffer);
+    printf(FORMAT_STRING, buffer);
     log_count++;
   }
 
