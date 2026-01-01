@@ -32,6 +32,7 @@
 #define FORMAT_STRING "%s"
 #define FORMAT_NODE "[%d]"
 #define FORMAT_UNSIGNED "%u"
+#define FORMAT_INTEGER "%d"
 
 #define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
 #define ERR_MSG_INVALID_TASK_ID "Error: Invalid task ID input.\n"
@@ -75,7 +76,7 @@ int main(void) {
   for (unsigned int i = 0; i < items; i++) {
     printf(INPUT_TASK_ID, i + 1);
 
-    if (scanf("%d", &task_id) != SCANF_SUCCESS) {
+    if (scanf(FORMAT_INTEGER, &task_id) != SCANF_SUCCESS) {
       fprintf(stderr, ERR_MSG_INVALID_TASK_ID);
       clear_input_buffer();
       free_list(head);
