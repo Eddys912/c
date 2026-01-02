@@ -7,6 +7,7 @@
  Features:
  - Builds a binary search tree from user input
  - Inserts nodes maintaining BST property (left < parent < right)
+ - Displays a diagram of the generated tree.
  - Displays tree contents using inorder, preorder, and postorder traversals
  - Proper memory cleanup with recursive tree deletion
  ===============================================================================
@@ -33,7 +34,7 @@
 #define FORMAT_STRING "%s"
 #define FORMAT_UNSIGNED "%u"
 #define FORMAT_INTEGER "%d"
-#define FORMAT_NODE "%d "
+#define FORMAT_NODE "[%d] "
 #define FORMAT_TREE_NODE "[%d]\n"
 
 #define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"

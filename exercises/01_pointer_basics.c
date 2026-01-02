@@ -15,10 +15,10 @@
 #include <stdio.h>
 
 #define TITLE "=== Pointer Basics ===\n\n"
-#define TITLE_SYSTEM_ENDIAN "\nSystem is %s-endian\n"
 #define TITLE_TABLE_HEADER "VARIABLE", "VALUE", "ADDRESS (HEX)", "SIZE (B)"
 #define TITLE_SEPARATOR "-----------------------------------------------\n"
 #define TITLE_BASE_ADDRESS "\nBase Address: %p\n"
+#define TITLE_SYSTEM_ENDIAN "\nSystem is %s-endian\n"
 
 #define TEXT_TYPE_CHAR "Char"
 #define TEXT_TYPE_INT "Int"
@@ -30,8 +30,8 @@
 #define FORMAT_BUF_CHAR "'%c' (%u)"
 #define FORMAT_BUF_UNSIGNED "%u"
 #define FORMAT_BUF_DOUBLE "%.5f"
-#define FORMAT_HEADER "%-10s %-10s %-16s %s\n"
-#define FORMAT_ROW "%-10s %-10s %-16p %zu\n"
+#define FORMAT_TABLE_HEADER "%-10s %-10s %-16s %s\n"
+#define FORMAT_TABLE_ROW "%-10s %-10s %-16p %zu\n"
 
 #define SAMPLE_CHAR 0x41
 #define SAMPLE_INT 0x12345678
@@ -69,12 +69,12 @@ int main(void) {
 }
 
 void print_table_header(void) {
-  printf(FORMAT_HEADER, TITLE_TABLE_HEADER);
+  printf(FORMAT_TABLE_HEADER, TITLE_TABLE_HEADER);
   printf(TITLE_SEPARATOR);
 }
 
 void print_variable_row(const char *name, const char *value_str, const void *addr, size_t size) {
-  printf(FORMAT_ROW, name, value_str, addr, size);
+  printf(FORMAT_TABLE_ROW, name, value_str, addr, size);
 }
 
 void explore_memory_bytes(const void *addr, size_t size) {

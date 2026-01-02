@@ -22,10 +22,10 @@
 #define TEXT_VALUE "Value:"
 
 #define FORMAT_BUF_ADDR "%p"
-#define FORMAT_BUF_HEADER "0x%08X"
-#define FORMAT_BUF_SENSOR "%u"
+#define FORMAT_BUF_EXTRACTED_HEADER "0x%08X"
+#define FORMAT_BUF_SENSOR_ID "%u"
 #define FORMAT_BUF_VALUE "%u"
-#define FORMAT_FIELD "  %-16s %s\n"
+#define FORMAT_FIELD "  %-17s %s\n"
 
 #define ERR_MSG_PACKET_SMALL "Error: Packet too small (minimum %d bytes required).\n"
 
@@ -87,8 +87,8 @@ void print_packet_info(const Packet *packet) {
   char buf_addr[32], buf_header[32], buf_sensor[32], buf_value[32];
 
   sprintf(buf_addr, FORMAT_BUF_ADDR, (const void *)packet->data);
-  sprintf(buf_header, FORMAT_BUF_HEADER, extract_header(packet->data));
-  sprintf(buf_sensor, FORMAT_BUF_SENSOR, extract_sensor_id(packet->data));
+  sprintf(buf_header, FORMAT_BUF_EXTRACTED_HEADER, extract_header(packet->data));
+  sprintf(buf_sensor, FORMAT_BUF_SENSOR_ID, extract_sensor_id(packet->data));
   sprintf(buf_value, FORMAT_BUF_VALUE, extract_value(packet->data));
 
   printf(TITLE_ANALYZING_PACKET, buf_addr);

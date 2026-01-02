@@ -17,9 +17,8 @@
 
 #define TITLE "=== String Manipulation ===\n\n"
 
-#define TEXT_ORIGINAL_STRING "Original string"
-#define TEXT_REVERSED_STRING "Reversed string"
-#define TEXT_STRING_OUTPUT "  %s: %s\n"
+#define TEXT_ORIGINAL_STRING "  Original string: %s\n"
+#define TEXT_REVERSED_STRING "  Reversed string: %s\n"
 
 #define INPUT_STRING "Enter a string: "
 
@@ -102,7 +101,7 @@ char *read_dynamic_string(const char *prompt) {
   return str;
 }
 
-void print_string(const char *msg, const char *str) { printf(TEXT_STRING_OUTPUT, msg, str); }
+void print_string(const char *msg, const char *str) { printf(msg, str); }
 
 void reverse_string(char *str) {
   char *start = str;
