@@ -1,14 +1,14 @@
 /*
  ===============================================================================
- Exercise: 13_queue_fifo.c
+ Exercise: 13_queue_array.c
  Description: Demonstrates queue (FIFO) implementation using linked list
  Platform: GNU/Linux (Arch/WSL) on x86_64
  ===============================================================================
  Features:
  - Implements queue with enqueue and dequeue operations
- - Interactive menu for adding, removing and displaying elements
- - Maintains front and rear pointers for efficient operations
- - Handles empty queue cases gracefully
+ - Builds initial queue from user input
+ - Interactive menu for removing items one by one
+ - Displays queue contents after each operation
  - Proper memory cleanup on exit
  ===============================================================================
 */
@@ -17,46 +17,52 @@
 #include <stdlib.h>
 
 #define TITLE "=== Queue Array (FIFO) ===\n\n"
+#define TITLE_INITIAL_QUEUE "\nInitial queue contents:\n"
+#define TITLE_INTERACTIVE_MENU "\n=== Interactive Dequeue Menu ===\n"
+#define TITLE_QUEUE_CONTENTS "\nQueue contents:\n  "
 
-#define TEXT_MENU_ENQUEUE "1. Enqueue\n"
-#define TEXT_MENU_DEQUEUE "2. Dequeue\n"
-#define TEXT_MENU_SHOW "3. Show\n"
-#define TEXT_MENU_EXIT "4. Exit\n"
-#define TEXT_ENQUEUED "  Value %d enqueued successfully\n"
-#define TEXT_DEQUEUED "  Value %d dequeued successfully\n"
-#define TEXT_EMPTY_QUEUE "  Queue is empty\n"
-#define TEXT_EXITING "Exiting program...\n"
-#define TEXT_QUEUE_PREFIX "Queue: "
+#define TEXT_EMPTY_QUEUE "  (Queue is empty)\n"
+#define TEXT_QUEUE_PREFIX "  "
+#define TEXT_FREEING_MEMORY "\nFreeing remaining memory...\n"
+#define TEXT_MEMORY_FREED "Memory freed successfully.\n"
+#define TEXT_EXITING_MENU "Exiting menu.\n"
+#define TEXT_ITEM_REMOVED "  Item [%d] removed successfully.\n"
 #define TEXT_ARROW " -> "
-#define TEXT_NULL_TERMINATOR "NULL\n"
+#define TEXT_NULL_TERMINATOR " -> NULL\n"
+#define TEXT_NULL "NULL\n"
+#define TEXT_INVALID_OPTION "  Invalid option. Please enter Y or N.\n"
 
-#define INPUT_OPTION "Enter option: "
-#define INPUT_VALUE "  Enter value: "
+#define INPUT_ITEMS "How many items do you want to add to the queue?: "
+#define INPUT_VALUE "  Enter value %u: "
+#define INPUT_MENU_OPTION "\nDo you want to remove an item? (Y/N): "
 
 #define FORMAT_NODE "[%d]"
+#define FORMAT_CHAR "%c"
+#define FORMAT_STRING "%s"
+#define FORMAT_UNSIGNED "%u"
 #define FORMAT_INTEGER "%d"
 
-#define ERR_MSG_INVALID_OPTION "  Invalid option. Please try again.\n"
-#define ERR_MSG_EMPTY_DEQUEUE "  Error: Cannot dequeue from empty queue.\n"
-#define ERR_MSG_INVALID_INPUT "  Error: Invalid input.\n"
-#define ERR_MSG_COULD_ALLOCATE_NODE "  Error: Could not allocate memory for new node.\n"
+#define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
+#define ERR_MSG_INVALID_VALUE "Error: Invalid value input.\n"
+#define ERR_MSG_GREATER_THAN_ZERO "Error: Value must be greater than zero.\n"
+#define ERR_MSG_COULD_ALLOCATE_NODE "Error: Could not allocate memory for new node.\n"
+#define ERR_MSG_QUEUE_EMPTY "Error: Queue is empty.\n"
+#define ERR_MSG_QUEUE_ALREADY_EMPTY "  Error: Queue is already empty.\n"
 
-#define MENU_OPTION_ENQUEUE 1
-#define MENU_OPTION_DEQUEUE 2
-#define MENU_OPTION_SHOW 3
-#define MENU_OPTION_EXIT 4
-
+#define MIN_VALUE 1
 #define SCANF_SUCCESS 1
-#define TRUE 1
-#define FALSE 0
+#define OPTION_YES_UPPER 'Y'
+#define OPTION_YES_LOWER 'y'
+#define OPTION_NO_UPPER 'N'
+#define OPTION_NO_LOWER 'n'
 #define NEWLINE_CHAR '\n'
-#define NEWLINE "\n"
 
 typedef enum {
   SUCCESS = 0,
-  ERROR_QUEUE_EMPTY = 1,
+  ERROR_INVALID_INPUT = 1,
   ERROR_ALLOCATION_FAILED = 1,
-  ERROR_INVALID_INPUT = 1
+  ERROR_ZERO_VALUE = 1,
+  ERROR_QUEUE_EMPTY = 1
 } StatusCode;
 
 typedef struct Node {
@@ -70,34 +76,44 @@ typedef struct {
 } Queue;
 
 void clear_input_buffer(void);
-StatusCode read_menu_option(int *option);
-StatusCode read_value(int *value);
-StatusCode enqueue(Queue *queue, int value);
+StatusCode read_positive_integer(const char *prompt, unsigned int *value);
+StatusCode enqueue(Queue *queue, int data);
 StatusCode dequeue(Queue *queue, int *out_value);
-void print_queue(const Queue *queue);
-int is_empty(const Queue *queue);
+StatusCode build_queue(Queue *queue, unsigned int items);
 void free_queue(Queue *queue);
-void display_menu(void);
-void process_menu_option(Queue *queue, int option, int *continue_running);
+int is_queue_empty(const Queue *queue);
+void print_queue(const Queue *queue);
+StatusCode read_menu_option(char *option);
+void interactive_menu(Queue *queue);
 
 int main(void) {
   Queue queue = {NULL, NULL};
-  int option;
-  int continue_running = TRUE;
+  unsigned int items;
 
   printf(TITLE);
 
-  while (continue_running) {
-    display_menu();
-
-    if (read_menu_option(&option) != SUCCESS) {
-      continue;
-    }
-
-    process_menu_option(&queue, option, &continue_running);
+  if (read_positive_integer(INPUT_ITEMS, &items) != SUCCESS) {
+    return ERROR_INVALID_INPUT;
   }
 
+  if (build_queue(&queue, items) != SUCCESS) {
+    free_queue(&queue);
+    return ERROR_INVALID_INPUT;
+  }
+
+  printf(TITLE_INITIAL_QUEUE);
+  if (is_queue_empty(&queue)) {
+    printf(TEXT_EMPTY_QUEUE);
+  } else {
+    printf(TEXT_QUEUE_PREFIX);
+    print_queue(&queue);
+  }
+
+  interactive_menu(&queue);
+
+  printf(TEXT_FREEING_MEMORY);
   free_queue(&queue);
+  printf(TEXT_MEMORY_FREED);
 
   return SUCCESS;
 }
@@ -108,33 +124,25 @@ void clear_input_buffer(void) {
     ;
 }
 
-StatusCode read_menu_option(int *option) {
-  printf(INPUT_OPTION);
+StatusCode read_positive_integer(const char *prompt, unsigned int *value) {
+  printf(FORMAT_STRING, prompt);
 
-  if (scanf(FORMAT_INTEGER, option) != SCANF_SUCCESS) {
+  if (scanf(FORMAT_UNSIGNED, value) != SCANF_SUCCESS) {
     fprintf(stderr, ERR_MSG_INVALID_INPUT);
     clear_input_buffer();
     return ERROR_INVALID_INPUT;
   }
   clear_input_buffer();
 
-  return SUCCESS;
-}
-
-StatusCode read_value(int *value) {
-  printf(INPUT_VALUE);
-
-  if (scanf(FORMAT_INTEGER, value) != SCANF_SUCCESS) {
-    fprintf(stderr, ERR_MSG_INVALID_INPUT);
-    clear_input_buffer();
-    return ERROR_INVALID_INPUT;
+  if (*value < MIN_VALUE) {
+    fprintf(stderr, ERR_MSG_GREATER_THAN_ZERO);
+    return ERROR_ZERO_VALUE;
   }
-  clear_input_buffer();
 
   return SUCCESS;
 }
 
-StatusCode enqueue(Queue *queue, int value) {
+StatusCode enqueue(Queue *queue, int data) {
   Node *new_node = (Node *)malloc(sizeof(Node));
 
   if (new_node == NULL) {
@@ -142,17 +150,16 @@ StatusCode enqueue(Queue *queue, int value) {
     return ERROR_ALLOCATION_FAILED;
   }
 
-  new_node->value = value;
+  new_node->value = data;
   new_node->next = NULL;
 
-  if (is_empty(queue)) {
+  if (is_queue_empty(queue)) {
     queue->front = new_node;
     queue->rear = new_node;
-    return SUCCESS;
+  } else {
+    queue->rear->next = new_node;
+    queue->rear = new_node;
   }
-
-  queue->rear->next = new_node;
-  queue->rear = new_node;
 
   return SUCCESS;
 }
@@ -160,7 +167,8 @@ StatusCode enqueue(Queue *queue, int value) {
 StatusCode dequeue(Queue *queue, int *out_value) {
   Node *current = queue->front;
 
-  if (is_empty(queue)) {
+  if (is_queue_empty(queue)) {
+    fprintf(stderr, ERR_MSG_QUEUE_EMPTY);
     return ERROR_QUEUE_EMPTY;
   }
 
@@ -176,23 +184,26 @@ StatusCode dequeue(Queue *queue, int *out_value) {
   return SUCCESS;
 }
 
-void print_queue(const Queue *queue) {
-  const Node *current = queue->front;
+StatusCode build_queue(Queue *queue, unsigned int items) {
+  int value;
 
-  if (is_empty(queue)) {
-    return;
+  for (unsigned int i = 0; i < items; i++) {
+    printf(INPUT_VALUE, i + 1);
+
+    if (scanf(FORMAT_INTEGER, &value) != SCANF_SUCCESS) {
+      fprintf(stderr, ERR_MSG_INVALID_VALUE);
+      clear_input_buffer();
+      return ERROR_INVALID_INPUT;
+    }
+    clear_input_buffer();
+
+    if (enqueue(queue, value) != SUCCESS) {
+      return ERROR_ALLOCATION_FAILED;
+    }
   }
 
-  printf(TEXT_QUEUE_PREFIX);
-  while (current != NULL) {
-    printf(FORMAT_NODE, current->value);
-    printf(TEXT_ARROW);
-    current = current->next;
-  }
-  printf(TEXT_NULL_TERMINATOR);
+  return SUCCESS;
 }
-
-int is_empty(const Queue *queue) { return (queue->front == NULL) ? TRUE : FALSE; }
 
 void free_queue(Queue *queue) {
   Node *current = queue->front;
@@ -208,49 +219,69 @@ void free_queue(Queue *queue) {
   queue->rear = NULL;
 }
 
-void display_menu(void) {
-  printf(NEWLINE);
-  printf(TEXT_MENU_ENQUEUE);
-  printf(TEXT_MENU_DEQUEUE);
-  printf(TEXT_MENU_SHOW);
-  printf(TEXT_MENU_EXIT);
+int is_queue_empty(const Queue *queue) { return queue->front == NULL; }
+
+void print_queue(const Queue *queue) {
+  const Node *current = queue->front;
+
+  if (current == NULL) {
+    printf(TEXT_NULL);
+    return;
+  }
+
+  while (current != NULL) {
+    printf(FORMAT_NODE, current->value);
+    if (current->next != NULL) {
+      printf(TEXT_ARROW);
+    }
+    current = current->next;
+  }
+  printf(TEXT_NULL_TERMINATOR);
 }
 
-void process_menu_option(Queue *queue, int option, int *continue_running) {
+StatusCode read_menu_option(char *option) {
+  printf(INPUT_MENU_OPTION);
+
+  if (scanf(FORMAT_CHAR, option) != SCANF_SUCCESS) {
+    fprintf(stderr, ERR_MSG_INVALID_INPUT);
+    clear_input_buffer();
+    return ERROR_INVALID_INPUT;
+  }
+  clear_input_buffer();
+
+  return SUCCESS;
+}
+
+void interactive_menu(Queue *queue) {
+  char option;
   int value;
 
-  switch (option) {
-  case MENU_OPTION_ENQUEUE:
-    if (read_value(&value) == SUCCESS) {
-      if (enqueue(queue, value) == SUCCESS) {
-        printf(TEXT_ENQUEUED, value);
+  printf(TITLE_INTERACTIVE_MENU);
+
+  while (1) {
+    if (read_menu_option(&option) != SUCCESS) {
+      continue;
+    }
+
+    if (option == OPTION_YES_UPPER || option == OPTION_YES_LOWER) {
+      if (is_queue_empty(queue)) {
+        printf(ERR_MSG_QUEUE_ALREADY_EMPTY);
+        break;
       }
-    }
-    break;
 
-  case MENU_OPTION_DEQUEUE:
-    if (dequeue(queue, &value) == SUCCESS) {
-      printf(TEXT_DEQUEUED, value);
-    } else {
-      printf(ERR_MSG_EMPTY_DEQUEUE);
-    }
-    break;
+      if (dequeue(queue, &value) == SUCCESS) {
+        printf(TEXT_ITEM_REMOVED, value);
+      }
 
-  case MENU_OPTION_SHOW:
-    if (is_empty(queue)) {
-      printf(TEXT_EMPTY_QUEUE);
-    } else {
+      printf(TITLE_QUEUE_CONTENTS);
       print_queue(queue);
+
+    } else if (option == OPTION_NO_UPPER || option == OPTION_NO_LOWER) {
+      printf(TEXT_EXITING_MENU);
+      break;
+
+    } else {
+      printf(TEXT_INVALID_OPTION);
     }
-    break;
-
-  case MENU_OPTION_EXIT:
-    printf(TEXT_EXITING);
-    *continue_running = FALSE;
-    break;
-
-  default:
-    printf(ERR_MSG_INVALID_OPTION);
-    break;
   }
 }
