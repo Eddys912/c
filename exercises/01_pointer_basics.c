@@ -48,18 +48,18 @@ int main(void) {
   unsigned char val_1b = SAMPLE_CHAR;
   unsigned int val_4b = SAMPLE_INT;
   double val_8b = SAMPLE_DOUBLE;
-  char buf_c[20], buf_i[20], buf_d[20];
+  char buf_char[20], buf_int[20], buf_double[20];
 
-  sprintf(buf_c, FORMAT_BUF_CHAR, val_1b, val_1b);
-  sprintf(buf_i, FORMAT_BUF_UNSIGNED, val_4b);
-  sprintf(buf_d, FORMAT_BUF_DOUBLE, val_8b);
+  sprintf(buf_char, FORMAT_BUF_CHAR, val_1b, val_1b);
+  sprintf(buf_int, FORMAT_BUF_UNSIGNED, val_4b);
+  sprintf(buf_double, FORMAT_BUF_DOUBLE, val_8b);
 
   printf(TITLE);
 
   print_table_header();
-  print_variable_row(TEXT_TYPE_CHAR, buf_c, &val_1b, sizeof(val_1b));
-  print_variable_row(TEXT_TYPE_INT, buf_i, &val_4b, sizeof(val_4b));
-  print_variable_row(TEXT_TYPE_DOUBLE, buf_d, &val_8b, sizeof(val_8b));
+  print_variable_row(TEXT_TYPE_CHAR, buf_char, &val_1b, sizeof(val_1b));
+  print_variable_row(TEXT_TYPE_INT, buf_int, &val_4b, sizeof(val_4b));
+  print_variable_row(TEXT_TYPE_DOUBLE, buf_double, &val_8b, sizeof(val_8b));
 
   explore_memory_bytes(&val_4b, sizeof(val_4b));
 

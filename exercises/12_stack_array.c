@@ -72,13 +72,13 @@ typedef struct Node {
 
 void clear_input_buffer(void);
 StatusCode read_positive_integer(const char *prompt, unsigned int *value);
-StatusCode read_menu_option(char *option);
 StatusCode push(Node **top, int data);
 StatusCode pop(Node **top, int *out_value);
-void print_stack(const Node *top);
-int is_stack_empty(const Node *top);
-void free_stack(Node *top);
 StatusCode build_stack(Node **top, unsigned int items);
+void free_stack(Node *top);
+int is_stack_empty(const Node *top);
+void print_stack(const Node *top);
+StatusCode read_menu_option(char *option);
 void interactive_menu(Node **top);
 
 int main(void) {
@@ -137,19 +137,6 @@ StatusCode read_positive_integer(const char *prompt, unsigned int *value) {
   return SUCCESS;
 }
 
-StatusCode read_menu_option(char *option) {
-  printf(INPUT_MENU_OPTION);
-
-  if (scanf(FORMAT_CHAR, option) != SCANF_SUCCESS) {
-    fprintf(stderr, ERR_MSG_INVALID_INPUT);
-    clear_input_buffer();
-    return ERROR_INVALID_INPUT;
-  }
-  clear_input_buffer();
-
-  return SUCCESS;
-}
-
 StatusCode push(Node **top, int data) {
   Node *new_node = (Node *)malloc(sizeof(Node));
 
@@ -180,6 +167,40 @@ StatusCode pop(Node **top, int *out_value) {
   return SUCCESS;
 }
 
+StatusCode build_stack(Node **top, unsigned int items) {
+  int value;
+
+  for (unsigned int i = 0; i < items; i++) {
+    printf(INPUT_VALUE, i + 1);
+
+    if (scanf(FORMAT_INTEGER, &value) != SCANF_SUCCESS) {
+      fprintf(stderr, ERR_MSG_INVALID_VALUE);
+      clear_input_buffer();
+      return ERROR_INVALID_INPUT;
+    }
+    clear_input_buffer();
+
+    if (push(top, value) != SUCCESS) {
+      return ERROR_ALLOCATION_FAILED;
+    }
+  }
+
+  return SUCCESS;
+}
+
+void free_stack(Node *top) {
+  Node *current = top;
+  Node *next;
+
+  while (current != NULL) {
+    next = current->next;
+    free(current);
+    current = next;
+  }
+}
+
+int is_stack_empty(const Node *top) { return top == NULL; }
+
 void print_stack(const Node *top) {
   const Node *current = top;
 
@@ -198,36 +219,15 @@ void print_stack(const Node *top) {
   printf(TEXT_NULL_TERMINATOR);
 }
 
-int is_stack_empty(const Node *top) { return top == NULL; }
+StatusCode read_menu_option(char *option) {
+  printf(INPUT_MENU_OPTION);
 
-void free_stack(Node *top) {
-  Node *current = top;
-  Node *next;
-
-  while (current != NULL) {
-    next = current->next;
-    free(current);
-    current = next;
-  }
-}
-
-StatusCode build_stack(Node **top, unsigned int items) {
-  int value;
-
-  for (unsigned int i = 0; i < items; i++) {
-    printf(INPUT_VALUE, i + 1);
-
-    if (scanf(FORMAT_INTEGER, &value) != SCANF_SUCCESS) {
-      fprintf(stderr, ERR_MSG_INVALID_VALUE);
-      clear_input_buffer();
-      return ERROR_INVALID_INPUT;
-    }
+  if (scanf(FORMAT_CHAR, option) != SCANF_SUCCESS) {
+    fprintf(stderr, ERR_MSG_INVALID_INPUT);
     clear_input_buffer();
-
-    if (push(top, value) != SUCCESS) {
-      return ERROR_ALLOCATION_FAILED;
-    }
+    return ERROR_INVALID_INPUT;
   }
+  clear_input_buffer();
 
   return SUCCESS;
 }
