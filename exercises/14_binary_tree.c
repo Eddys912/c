@@ -25,6 +25,7 @@
 #define TEXT_POSTORDER "\n  Postorder: "
 #define TEXT_FREEING_MEMORY "\n\nFreeing remaining memory...\n"
 #define TEXT_MEMORY_FREED "Memory freed successfully.\n"
+#define TEXT_SPACE " "
 
 #define INPUT_ITEMS "How many items do you want to add to the tree?: "
 #define INPUT_VALUE "  Enter value %u: "
@@ -33,6 +34,7 @@
 #define FORMAT_UNSIGNED "%u"
 #define FORMAT_INTEGER "%d"
 #define FORMAT_NODE "%d "
+#define FORMAT_TREE_NODE "[%d]\n"
 
 #define ERR_MSG_INVALID_INPUT "Error: Invalid input.\n"
 #define ERR_MSG_INVALID_VALUE "Error: Invalid value input.\n"
@@ -42,6 +44,11 @@
 #define MIN_VALUE 1
 #define SCANF_SUCCESS 1
 #define NEWLINE_CHAR '\n'
+#define NEWLINE "\n"
+
+#define TREE_SPACE_START 0
+#define TREE_SPACE_INCREMENT 8
+#define TREE_SPACE_INITIAL 10
 
 typedef enum {
   SUCCESS = 0,
@@ -69,7 +76,7 @@ void free_tree(TreeNode *root);
 
 int main(void) {
   TreeNode *root = NULL;
-  unsigned int items, space = 0;
+  unsigned int items;
 
   printf(TITLE);
 
@@ -83,7 +90,7 @@ int main(void) {
   }
 
   printf(TITLE_GRAPH_TREE);
-  print_tree(root, space);
+  print_tree(root, TREE_SPACE_START);
 
   printf(TITLE_INITIAL_TREE);
   if (is_tree_empty(root)) {
@@ -179,14 +186,14 @@ void print_tree(TreeNode *root, int space) {
   if (root == NULL)
     return;
 
-  space += 8;
+  space += TREE_SPACE_INCREMENT;
 
   print_tree(root->right, space);
 
-  printf("\n");
-  for (int i = 10; i < space; i++)
-    printf(" ");
-  printf("[%d]\n", root->id);
+  printf(NEWLINE);
+  for (int i = TREE_SPACE_INITIAL; i < space; i++)
+    printf(TEXT_SPACE);
+  printf(FORMAT_TREE_NODE, root->id);
 
   print_tree(root->left, space);
 }
