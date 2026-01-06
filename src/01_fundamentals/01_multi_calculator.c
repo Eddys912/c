@@ -121,101 +121,54 @@ int read_integer(int *value) {
   return TRUE;
 }
 
-OperationResult add(double a, double b) {
-  OperationResult result;
-  result.value = a + b;
-  result.status = STATUS_SUCCESS;
-  return result;
-}
+OperationResult add(double a, double b) { return (OperationResult){a + b, STATUS_SUCCESS}; }
 
-OperationResult subtract(double a, double b) {
-  OperationResult result;
-  result.value = a - b;
-  result.status = STATUS_SUCCESS;
-  return result;
-}
+OperationResult subtract(double a, double b) { return (OperationResult){a - b, STATUS_SUCCESS}; }
 
-OperationResult multiply(double a, double b) {
-  OperationResult result;
-  result.value = a * b;
-  result.status = STATUS_SUCCESS;
-  return result;
-}
+OperationResult multiply(double a, double b) { return (OperationResult){a * b, STATUS_SUCCESS}; }
 
 OperationResult divide(double a, double b) {
-  OperationResult result;
-
-  if (b == 0.0) {
-    result.value = 0.0;
-    result.status = STATUS_ERROR_DIV_ZERO;
-    return result;
-  }
-
-  result.value = a / b;
-  result.status = STATUS_SUCCESS;
-  return result;
+  if (b == 0.0)
+    return (OperationResult){0.0, STATUS_ERROR_DIV_ZERO};
+  return (OperationResult){a / b, STATUS_SUCCESS};
 }
 
 OperationResult power(double base, int exponent) {
-  OperationResult result;
-  result.status = STATUS_SUCCESS;
+  OperationResult result = {1.0, STATUS_SUCCESS};
 
-  double res = 1.0;
-  int exp = exponent;
-  double b = base;
-
-  if (exp < 0) {
-    b = 1.0 / b;
-    exp = -exp;
+  if (exponent < 0) {
+    base = 1.0 / base;
+    exponent = -exponent;
   }
 
-  for (int i = 0; i < exp; i++) {
-    res *= b;
+  while (exponent--) {
+    result.value *= base;
   }
 
-  result.value = res;
   return result;
 }
 
 OperationResult sqroot(double num) {
-  OperationResult result;
+  if (num < 0.0)
+    return (OperationResult){0.0, STATUS_ERROR_SQRT_NEGATIVE};
 
-  if (num < 0.0) {
-    result.value = 0.0;
-    result.status = STATUS_ERROR_SQRT_NEGATIVE;
-    return result;
-  }
-
-  if (num == 0.0) {
-    result.value = 0.0;
-    result.status = STATUS_SUCCESS;
-    return result;
-  }
+  if (num == 0.0)
+    return (OperationResult){0.0, STATUS_SUCCESS};
 
   double res = num;
   for (int i = 0; i < SQRT_ITERATIONS; i++) {
     res = 0.5 * (res + num / res);
   }
 
-  result.value = res;
-  result.status = STATUS_SUCCESS;
-  return result;
+  return (OperationResult){res, STATUS_SUCCESS};
 }
 
 OperationResult factorial(double num) {
-  OperationResult result;
+  if (num < 0.0)
+    return (OperationResult){0.0, STATUS_ERROR_FACT_NEGATIVE};
 
-  if (num < 0.0) {
-    result.value = 0.0;
-    result.status = STATUS_ERROR_FACT_NEGATIVE;
-    return result;
-  }
-
-  if (!is_integer(num)) {
-    result.value = 0.0;
-    result.status = STATUS_ERROR_FACT_NON_INTEGER;
-    return result;
-  }
+  if (!is_integer(num))
+    return (OperationResult){0.0, STATUS_ERROR_FACT_NON_INTEGER};
 
   int n = (int)num;
   double res = 1.0;
@@ -224,9 +177,7 @@ OperationResult factorial(double num) {
     res *= i;
   }
 
-  result.value = res;
-  result.status = STATUS_SUCCESS;
-  return result;
+  return (OperationResult){res, STATUS_SUCCESS};
 }
 
 void display_menu(void) {
