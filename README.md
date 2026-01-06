@@ -54,7 +54,7 @@ This repository contains programming exercises in **C**, covering fundamentals, 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/edavsys/c-systems-fundamentals.git
+   git clone https://github.com/edavnix/c-systems-fundamentals.git
    ```
    > **Note**: When using Arch Linux natively, proceed to **Step 4**. For Windows environments, complete all steps to install and configure WSL Arch.
 2. **Download and install WSL Arch** (PowerShell):
@@ -77,9 +77,10 @@ This repository contains programming exercises in **C**, covering fundamentals, 
    ```bash
    cd c-systems-fundamentals/exercises
    ```
-7. **Execute exercises**:
+7. **Execute exercises** use make run followed by the path to the file:
    ```bash
-   make run 01_pointer_basics
+   make help                                                    # view available commands
+   make run file=src/01_fundamentals/01_multi_calculator.asm    # practical example
    ```
 
 ### 🌐 OneCompiler (No Installation Required)
