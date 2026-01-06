@@ -79,8 +79,8 @@ This repository contains programming exercises in **C**, covering fundamentals, 
    ```
 7. **Execute exercises** use make run followed by the path to the file:
    ```bash
-   make help                                                    # view available commands
-   make run file=src/01_fundamentals/01_multi_calculator.asm    # practical example
+   make help                                                  # view available commands
+   make run file=src/01_fundamentals/01_multi_calculator.c    # practical example
    ```
 
 ### 🌐 OneCompiler (No Installation Required)
