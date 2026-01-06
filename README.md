@@ -75,7 +75,7 @@ This repository contains programming exercises in **C**, covering fundamentals, 
    ```
 6. **Navigate to the exercises directory** (adjust path as needed):
    ```bash
-   cd c-systems-fundamentals/exercises
+    cd c-systems-fundamentals
    ```
 7. **Execute exercises** use make run followed by the path to the file:
    ```bash

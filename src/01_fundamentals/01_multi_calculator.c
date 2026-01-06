@@ -1,230 +1,431 @@
-#include <stdbool.h>
 #include <stdio.h>
 
-// --- Constantes de mensajes y formatos ---
-const char *MENU_TITLE = "=== Calculadora Científica ===\n\n";
-const char *MENU_OPTIONS = "1. Suma\n"
-                           "2. Resta\n"
-                           "3. Multiplicación\n"
-                           "4. División\n"
-                           "5. Potencia\n"
-                           "6. Raíz cuadrada\n"
-                           "7. Factorial\n"
-                           "8. Salir\n";
+static const char *MSG_MENU_TITLE = "=== Scientific Calculator ===\n\n";
+static const char *MSG_MENU_OPTIONS = "1. Addition\n"
+                                      "2. Subtraction\n"
+                                      "3. Multiplication\n"
+                                      "4. Division\n"
+                                      "5. Power\n"
+                                      "6. Square Root\n"
+                                      "7. Factorial\n"
+                                      "8. Exit\n";
+static const char *MSG_MENU_ADDITION = "ADDITION";
+static const char *MSG_MENU_SUBTRACTION = "SUBTRACTION";
+static const char *MSG_MENU_MULTIPLICATION = "MULTIPLICATION";
+static const char *MSG_MENU_DIVISION = "DIVISION";
+static const char *MSG_MENU_POWER = "POWER";
+static const char *MSG_MENU_SQRT = "SQUARE ROOT";
+static const char *MSG_MENU_FACTORIAL = "FACTORIAL";
+static const char *MSG_GOODBYE = "Thank you for using the calculator!\n";
 
-const char *PROMPT_OPTION = "\nSeleccione una opción: ";
-const char *PROMPT_FIRST_NUM = "Ingrese el primer número: ";
-const char *PROMPT_SECOND_NUM = "Ingrese el segundo número: ";
-const char *PROMPT_NUMBER = "Ingrese el número: ";
-const char *PROMPT_BASE = "Ingrese la base: ";
-const char *PROMPT_EXPONENT = "Ingrese el exponente (entero): ";
+static const char *INPUT_OPTION = "\nSelect an option: ";
+static const char *INPUT_FIRST_NUMBER = "Enter the first number: ";
+static const char *INPUT_SECOND_NUMBER = "Enter the second number: ";
+static const char *INPUT_NUMBER = "Enter the number: ";
+static const char *INPUT_BASE = "Enter the base: ";
+static const char *INPUT_EXPONENT = "Enter the exponent (integer): ";
 
-const char *RESULT_FORMAT = "\n  - El resultado es: %.6f\n\n";
-const char *RESULT_INT_FORMAT = "\n  - El resultado es: %.0f\n\n";
+static const char *FMT_OPERATION_HEADER = "\n  === %s === \n\n";
+static const char *FMT_RESULT_FLOAT = "\n  - Result: %.6f\n\n";
+static const char *FMT_RESULT_INT = "\n  - Result: %.0f\n\n";
 
-const char *ERROR_INVALID_OPTION = "Opción no válida. Por favor intente de nuevo.\n\n";
-const char *ERROR_DIV_ZERO = "Error: No se puede dividir por cero.\n\n";
-const char *ERROR_SQRT_NEG =
-    "Error: No se puede calcular la raíz cuadrada de un número negativo.\n\n";
-const char *ERROR_FACT_NEG =
-    "Error: El factorial solo está definido para enteros no negativos.\n\n";
-const char *ERROR_FACT_NON_INT = "Error: El factorial solo se calcula para números enteros.\n\n";
+static const char *ERR_MSG_INVALID_OPTION = "Invalid option. Please try again.\n\n";
+static const char *ERR_MSG_DIV_ZERO = "Error: Cannot divide by zero.\n\n";
+static const char *ERR_MSG_SQRT_NEGATIVE =
+    "Error: Cannot calculate square root of negative number.\n\n";
+static const char *ERR_MSG_FACT_NEGATIVE =
+    "Error: Factorial only defined for non-negative integers.\n\n";
+static const char *ERR_MSG_FACT_NON_INTEGER = "Error: Factorial only calculated for integers.\n\n";
+static const char *ERR_MSG_INPUT_INVALID = "Error: Invalid input. Please enter a valid number.\n\n";
 
-// --- Enum para opciones del menú ---
+#define SQRT_ITERATIONS 20
+#define EXIT_OPTION 8
+#define FALSE 0
+#define TRUE 1
+
 typedef enum {
-  OPC_SALIR = 0, // Usamos 0 internamente para facilitar inicialización
-  OPC_SUMA = 1,
-  OPC_RESTA,
-  OPC_MULT,
-  OPC_DIV,
-  OPC_POT,
-  OPC_RAIZ,
-  OPC_FACT
-} OpcionMenu;
+  OP_ADDITION = 1,
+  OP_SUBTRACTION,
+  OP_MULTIPLICATION,
+  OP_DIVISION,
+  OP_POWER,
+  OP_SQUARE_ROOT,
+  OP_FACTORIAL,
+  OP_EXIT
+} MenuOption;
 
-// --- Prototipos ---
-double add(double num1, double num2);
-double sub(double num1, double num2);
-double mult(double num1, double num2);
-double div(double num1, double num2);
-double power(double base, int exp);
-double sqrt_custom(double num);
-double fact(double num);
-void mostrar_menu();
-void menu_interactivo();
+typedef enum {
+  STATUS_SUCCESS = 0,
+  STATUS_ERROR_DIV_ZERO,
+  STATUS_ERROR_SQRT_NEGATIVE,
+  STATUS_ERROR_FACT_NEGATIVE,
+  STATUS_ERROR_FACT_NON_INTEGER
+} OperationStatus;
 
-int main() {
-  // Pruebas iniciales
-  printf("Prueba sqrt(10): %.6f\n", sqrt_custom(10));
-  printf("Prueba 2^3: %.6f\n", power(2, 3));
-  printf("Prueba 6!: %.0f\n", fact(6));
+typedef struct {
+  double value;
+  OperationStatus status;
+} OperationResult;
 
-  menu_interactivo();
+void clear_input_buffer(void);
+int is_integer(double num);
+int read_double(double *value);
+int read_integer(int *value);
+OperationResult add(double a, double b);
+OperationResult subtract(double a, double b);
+OperationResult multiply(double a, double b);
+OperationResult divide(double a, double b);
+OperationResult power(double base, int exponent);
+OperationResult sqroot(double num);
+OperationResult factorial(double num);
+void display_menu(void);
+void display_operation_header(const char *operation_name);
+void display_result(OperationResult result, int as_integer);
+void display_error(OperationStatus status);
+void handle_addition(void);
+void handle_subtraction(void);
+void handle_multiplication(void);
+void handle_division(void);
+void handle_power(void);
+void handle_square_root(void);
+void handle_factorial(void);
+void run_interactive_menu(void);
+
+int main(void) {
+  run_interactive_menu();
   return 0;
 }
 
-// --- Operaciones básicas ---
-double add(double num1, double num2) { return num1 + num2; }
-double sub(double num1, double num2) { return num1 - num2; }
-double mult(double num1, double num2) { return num1 * num2; }
-
-double div(double num1, double num2) {
-  if (num2 == 0) {
-    printf("%s", ERROR_DIV_ZERO);
-    return 0; // Valor dummy, ya se mostró error
-  }
-  return num1 / num2;
+void clear_input_buffer(void) {
+  while (getchar() != '\n')
+    ;
 }
 
-double power(double base, int exp) {
+int is_integer(double num) { return num == (int)num; }
+
+int read_double(double *value) {
+  if (scanf("%lf", value) != 1) {
+    printf("%s", ERR_MSG_INPUT_INVALID);
+    clear_input_buffer();
+    return FALSE;
+  }
+  return TRUE;
+}
+
+int read_integer(int *value) {
+  if (scanf("%d", value) != 1) {
+    printf("%s", ERR_MSG_INPUT_INVALID);
+    clear_input_buffer();
+    return FALSE;
+  }
+  return TRUE;
+}
+
+OperationResult add(double a, double b) {
+  OperationResult result;
+  result.value = a + b;
+  result.status = STATUS_SUCCESS;
+  return result;
+}
+
+OperationResult subtract(double a, double b) {
+  OperationResult result;
+  result.value = a - b;
+  result.status = STATUS_SUCCESS;
+  return result;
+}
+
+OperationResult multiply(double a, double b) {
+  OperationResult result;
+  result.value = a * b;
+  result.status = STATUS_SUCCESS;
+  return result;
+}
+
+OperationResult divide(double a, double b) {
+  OperationResult result;
+
+  if (b == 0.0) {
+    result.value = 0.0;
+    result.status = STATUS_ERROR_DIV_ZERO;
+    return result;
+  }
+
+  result.value = a / b;
+  result.status = STATUS_SUCCESS;
+  return result;
+}
+
+OperationResult power(double base, int exponent) {
+  OperationResult result;
+  result.status = STATUS_SUCCESS;
+
   double res = 1.0;
+  int exp = exponent;
+  double b = base;
+
   if (exp < 0) {
-    base = 1.0 / base;
+    b = 1.0 / b;
     exp = -exp;
   }
+
   for (int i = 0; i < exp; i++) {
-    res *= base;
+    res *= b;
   }
-  return res;
+
+  result.value = res;
+  return result;
 }
 
-double sqrt_custom(double num) {
-  if (num < 0) {
-    printf("%s", ERROR_SQRT_NEG);
-    return 0; // Valor dummy
+OperationResult sqroot(double num) {
+  OperationResult result;
+
+  if (num < 0.0) {
+    result.value = 0.0;
+    result.status = STATUS_ERROR_SQRT_NEGATIVE;
+    return result;
   }
-  if (num == 0)
-    return 0;
+
+  if (num == 0.0) {
+    result.value = 0.0;
+    result.status = STATUS_SUCCESS;
+    return result;
+  }
 
   double res = num;
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < SQRT_ITERATIONS; i++) {
     res = 0.5 * (res + num / res);
   }
-  return res;
+
+  result.value = res;
+  result.status = STATUS_SUCCESS;
+  return result;
 }
 
-double fact(double num) {
-  // Validar que sea entero no negativo
-  if (num < 0) {
-    printf("%s", ERROR_FACT_NEG);
-    return 0;
-  }
-  int n = (int)num;
-  if (n != num) {
-    printf("%s", ERROR_FACT_NON_INT);
-    return 0;
+OperationResult factorial(double num) {
+  OperationResult result;
+
+  if (num < 0.0) {
+    result.value = 0.0;
+    result.status = STATUS_ERROR_FACT_NEGATIVE;
+    return result;
   }
 
+  if (!is_integer(num)) {
+    result.value = 0.0;
+    result.status = STATUS_ERROR_FACT_NON_INTEGER;
+    return result;
+  }
+
+  int n = (int)num;
   double res = 1.0;
+
   for (int i = 2; i <= n; i++) {
     res *= i;
   }
-  return res;
+
+  result.value = res;
+  result.status = STATUS_SUCCESS;
+  return result;
 }
 
-// --- Interfaz ---
-void mostrar_menu() {
-  printf("%s", MENU_TITLE);
-  printf("%s", MENU_OPTIONS);
+void display_menu(void) {
+  printf("%s", MSG_MENU_TITLE);
+  printf("%s", MSG_MENU_OPTIONS);
 }
 
-void menu_interactivo() {
-  OpcionMenu opcion = OPC_SUMA; // Valor inicial cualquiera, el bucle lo manejará
-  double num1, num2, resultado;
-  int exp;
+void display_operation_header(const char *operation_name) {
+  printf(FMT_OPERATION_HEADER, operation_name);
+}
 
-  while (true) {
-    mostrar_menu();
-    printf("%s", PROMPT_OPTION);
+void display_result(OperationResult result, int as_integer) {
+  if (result.status == STATUS_SUCCESS) {
+    const char *format = as_integer ? FMT_RESULT_INT : FMT_RESULT_FLOAT;
+    printf(format, result.value);
+  }
+}
 
-    if (scanf("%u", (unsigned int *)&opcion) != 1) {
-      printf("%s", ERROR_INVALID_OPTION);
-      while (getchar() != '\n')
-        ; // Limpiar buffer
+void display_error(OperationStatus status) {
+  switch (status) {
+  case STATUS_ERROR_DIV_ZERO:
+    printf("%s", ERR_MSG_DIV_ZERO);
+    break;
+  case STATUS_ERROR_SQRT_NEGATIVE:
+    printf("%s", ERR_MSG_SQRT_NEGATIVE);
+    break;
+  case STATUS_ERROR_FACT_NEGATIVE:
+    printf("%s", ERR_MSG_FACT_NEGATIVE);
+    break;
+  case STATUS_ERROR_FACT_NON_INTEGER:
+    printf("%s", ERR_MSG_FACT_NON_INTEGER);
+    break;
+  default:
+    break;
+  }
+}
+
+void handle_addition(void) {
+  double num1, num2;
+
+  display_operation_header(MSG_MENU_ADDITION);
+  printf("%s", INPUT_FIRST_NUMBER);
+  if (!read_double(&num1))
+    return;
+
+  printf("%s", INPUT_SECOND_NUMBER);
+  if (!read_double(&num2))
+    return;
+
+  OperationResult result = add(num1, num2);
+  display_result(result, FALSE);
+}
+
+void handle_subtraction(void) {
+  double num1, num2;
+
+  display_operation_header(MSG_MENU_SUBTRACTION);
+  printf("%s", INPUT_FIRST_NUMBER);
+  if (!read_double(&num1))
+    return;
+
+  printf("%s", INPUT_SECOND_NUMBER);
+  if (!read_double(&num2))
+    return;
+
+  OperationResult result = subtract(num1, num2);
+  display_result(result, FALSE);
+}
+
+void handle_multiplication(void) {
+  double num1, num2;
+
+  display_operation_header(MSG_MENU_MULTIPLICATION);
+  printf("%s", INPUT_FIRST_NUMBER);
+  if (!read_double(&num1))
+    return;
+
+  printf("%s", INPUT_SECOND_NUMBER);
+  if (!read_double(&num2))
+    return;
+
+  OperationResult result = multiply(num1, num2);
+  display_result(result, FALSE);
+}
+
+void handle_division(void) {
+  double num1, num2;
+
+  display_operation_header(MSG_MENU_DIVISION);
+  printf("%s", INPUT_FIRST_NUMBER);
+  if (!read_double(&num1))
+    return;
+
+  printf("%s", INPUT_SECOND_NUMBER);
+  if (!read_double(&num2))
+    return;
+
+  OperationResult result = divide(num1, num2);
+
+  if (result.status != STATUS_SUCCESS) {
+    display_error(result.status);
+  } else {
+    display_result(result, FALSE);
+  }
+}
+
+void handle_power(void) {
+  double base;
+  int exponent;
+
+  display_operation_header(MSG_MENU_POWER);
+  printf("%s", INPUT_BASE);
+  if (!read_double(&base))
+    return;
+
+  printf("%s", INPUT_EXPONENT);
+  if (!read_integer(&exponent))
+    return;
+
+  OperationResult result = power(base, exponent);
+  display_result(result, FALSE);
+}
+
+void handle_square_root(void) {
+  double num;
+
+  display_operation_header(MSG_MENU_SQRT);
+  printf("%s", INPUT_NUMBER);
+  if (!read_double(&num))
+    return;
+
+  OperationResult result = sqroot(num);
+
+  if (result.status != STATUS_SUCCESS) {
+    display_error(result.status);
+  } else {
+    display_result(result, FALSE);
+  }
+}
+
+void handle_factorial(void) {
+  double num;
+
+  display_operation_header(MSG_MENU_FACTORIAL);
+  printf("%s", INPUT_NUMBER);
+  if (!read_double(&num))
+    return;
+
+  OperationResult result = factorial(num);
+
+  if (result.status != STATUS_SUCCESS) {
+    display_error(result.status);
+  } else {
+    display_result(result, TRUE);
+  }
+}
+
+void run_interactive_menu(void) {
+  unsigned int option;
+
+  while (TRUE) {
+    display_menu();
+    printf("%s", INPUT_OPTION);
+
+    if (scanf("%u", &option) != 1) {
+      printf("%s", ERR_MSG_INVALID_OPTION);
+      clear_input_buffer();
       continue;
     }
 
-    // Si se ingresa 8, salir
-    if (opcion == 8) {
-      printf("¡Gracias por usar la calculadora!\n");
+    if (option == EXIT_OPTION) {
+      printf("%s", MSG_GOODBYE);
       break;
     }
 
-    switch (opcion) {
-    case OPC_SUMA:
-      printf("\n  === SUMA === \n\n");
-      printf("%s", PROMPT_FIRST_NUM);
-      scanf("%lf", &num1);
-      printf("%s", PROMPT_SECOND_NUM);
-      scanf("%lf", &num2);
-      resultado = add(num1, num2);
-      printf(RESULT_FORMAT, resultado);
+    switch (option) {
+    case OP_ADDITION:
+      handle_addition();
       break;
-
-    case OPC_RESTA:
-      printf("\n  === RESTA === \n\n");
-      printf("%s", PROMPT_FIRST_NUM);
-      scanf("%lf", &num1);
-      printf("%s", PROMPT_SECOND_NUM);
-      scanf("%lf", &num2);
-      resultado = sub(num1, num2);
-      printf(RESULT_FORMAT, resultado);
+    case OP_SUBTRACTION:
+      handle_subtraction();
       break;
-
-    case OPC_MULT:
-      printf("\n  === MULTIPLICACIÓN === \n\n");
-      printf("%s", PROMPT_FIRST_NUM);
-      scanf("%lf", &num1);
-      printf("%s", PROMPT_SECOND_NUM);
-      scanf("%lf", &num2);
-      resultado = mult(num1, num2);
-      printf(RESULT_FORMAT, resultado);
+    case OP_MULTIPLICATION:
+      handle_multiplication();
       break;
-
-    case OPC_DIV:
-      printf("\n  === DIVISIÓN === \n\n");
-      printf("%s", PROMPT_FIRST_NUM);
-      scanf("%lf", &num1);
-      printf("%s", PROMPT_SECOND_NUM);
-      scanf("%lf", &num2);
-      resultado = div(num1, num2);
-      if (num2 != 0) { // Solo mostrar resultado si no hubo error
-        printf(RESULT_FORMAT, resultado);
-      }
+    case OP_DIVISION:
+      handle_division();
       break;
-
-    case OPC_POT:
-      printf("\n  === POTENCIA === \n\n");
-      printf("%s", PROMPT_BASE);
-      scanf("%lf", &num1);
-      printf("%s", PROMPT_EXPONENT);
-      scanf("%d", &exp);
-      resultado = power(num1, exp);
-      printf(RESULT_FORMAT, resultado);
+    case OP_POWER:
+      handle_power();
       break;
-
-    case OPC_RAIZ:
-      printf("\n  === RAÍZ CUADRADA === \n\n");
-      printf("%s", PROMPT_NUMBER);
-      scanf("%lf", &num1);
-      resultado = sqrt_custom(num1);
-      if (num1 >= 0) { // Solo mostrar si no hubo error
-        printf(RESULT_FORMAT, resultado);
-      }
+    case OP_SQUARE_ROOT:
+      handle_square_root();
       break;
-
-    case OPC_FACT:
-      printf("\n  === FACTORIAL === \n\n");
-      printf("%s", PROMPT_NUMBER);
-      scanf("%lf", &num1);
-      resultado = fact(num1);
-      if (num1 >= 0 && num1 == (int)num1) { // Solo mostrar si válido
-        printf(RESULT_INT_FORMAT, resultado);
-      }
+    case OP_FACTORIAL:
+      handle_factorial();
       break;
-
     default:
-      printf("%s", ERROR_INVALID_OPTION);
+      printf("%s", ERR_MSG_INVALID_OPTION);
       break;
     }
   }
