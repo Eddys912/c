@@ -9,37 +9,23 @@
 
 ## 🌟 Description
 
-This repository contains programming exercises in **C**, covering fundamentals, low-level data structures, and operating system concepts. Practical examples include:
+This repository contains **44 progressive programming exercises in C**, designed to develop an understanding of systems programming from scratch. It begins with the fundamentals of the language and progresses through data structures, algorithms, and file handling, culminating in C's strengths: low-level systems programming, concurrency, and networking. Practical examples include:
 
-- Pointers, memory allocation (`malloc`, `free`), and pointer arithmetic.
-- File I/O (text and binary).
-- Data Structures implemented manually with pointers (Linked Lists, Stacks, Queues, Trees).
-- Inter-Process Communication (IPC), Threads, and Sockets.
+- Control flow, functions, recursion, and basic algorithmic problem-solving.
+- Manual implementation of data structures with pointers (linked lists, stacks, queues, trees, hash tables, graphs).
+- Search and sorting algorithms, graph traversal (`DFS/BFS`), and dynamic programming.
+- File I/O operations (text, binary, CSV parsing).
+- System programming: `fork`, `pipe`, `signal`, threads, and TCP sockets.
 
-## 📂 Exercises
+## 📂 Exercise Categories
 
-| #   | Exercise                | Level | Description                                           |
-| --- | ----------------------- | ----- | ----------------------------------------------------- |
-| 1   | **Pointers Basics**     | 🟢    | Memory introspection and data representation.         |
-| 2   | **Pointer Arithmetic**  | 🟢    | Raw buffer parsing and manual offset navigation.      |
-| 3   | **Dynamic Memory**      | 🟢    | Heap lifecycle management.                            |
-| 4   | **Array Pointers**      | 🟢    | Multi-level dynamic structures and heap hierarchy.    |
-| 5   | **Function Pointers**   | 🟡    | Callback implementation and decoupled execution flow. |
-| 6   | **Void Pointers**       | 🟡    | Abstract data handling and generic programming.       |
-| 7   | **String Manipulation** | 🟡    | Custom processing of character sequences in memory.   |
-| 8   | **File Reading**        | 🟡    | Extracting formatted information from external files. |
-| 9   | **File Writing**        | 🟡    | Persisting information into permanent text storage.   |
-| 10  | **Binary Files**        | 🔴    | Direct machine-level data storage and retrieval.      |
-| 11  | **Linked List**         | 🔴    | Dynamic and non-contiguous data organization.         |
-| 12  | **Stack Array**         | 🔴    | LIFO (Last-In, First-Out) data flow management.       |
-| 13  | **Queue Array**         | 🔴    | FIFO (First-In, First-Out) data buffer management.    |
-| 14  | **Binary Tree**         | 🔴    | Hierarchical data sorting and optimized searching.    |
-| 15  | **Fork Process**        | 🔴    | Task duplication and parallel execution control.      |
-| 16  | **Pipe IPC**            | 🔴    | Unidirectional data flow between related processes.   |
-| 17  | **Signal Handling**     | 🔴    | Interception of asynchronous system events.           |
-| 18  | **Pthread Create**      | 🔴    | Concurrent execution within a single process.         |
-| 19  | **Mutex Lock**          | 🔴    | Resource protection and race condition prevention.    |
-| 20  | **TCP Socket**          | 🔴    | Bi-directional communication over a network.          |
+| Category            | Exercises | Level | Description                                                                                                                                                                                   |
+| ------------------- | --------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Fundamentals**    | 8         | 🟢    | Core C syntax, control structures, functions, recursion, and basic algorithmic thinking. Build a solid foundation with calculators, converters, pattern generators, and text analysis tools.  |
+| **Data Structures** | 12        | 🟡    | Data structures using pointers and dynamic memory allocation. Includes arrays, strings, matrices, linked lists (singly/doubly), stacks, queues, binary search trees, hash tables, and graphs. |
+| **Algorithms**      | 10        | 🟡    | Classic algorithms for searching, sorting, graph traversal (DFS/BFS), dynamic programming, and optimization. Compare performance, visualize execution, and analyze computational complexity.  |
+| **File Handling**   | 4         | 🟡    | Reading, writing, and processing text files, binary data, CSV analysis, and log file analysis for real-world data manipulation.                                                               |
+| **Specialization**  | 10        | 🔴    | Programming showcasing C power: memory management, process control (fork), inter-process communication (pipes, signals), multi-threading (pthreads), and network programming (TCP sockets).   |
 
 ## 📋 Installation Requirements
 

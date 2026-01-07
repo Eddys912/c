@@ -18,7 +18,7 @@ NC      = \033[0m
 ERROR   = $(RED)[ ERROR ]$(NC)
 INFO    = $(YELLOW)[ INFO  ]$(NC)
 SUCCESS = $(GREEN)[SUCCESS]$(NC)
-EXEC = $(CYAN)[ EXEC  ]$(NC)
+EXEC    = $(CYAN)[ EXEC  ]$(NC)
 
 .PHONY: run help
 

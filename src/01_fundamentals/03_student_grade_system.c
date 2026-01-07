@@ -8,6 +8,7 @@
 #define NUM_GRADES 5
 #define MIN_PASS_GRADE 60.0
 #define EXCELLENT_GRADE 90.0
+#define MAX_STATUS_LENGTH 20
 
 static const char *MSG_TITLE = "=== Student Grade System ===\n\n";
 static const char *MSG_STUDENTS_TITLE = "\n=== Students ===\n\n";
@@ -29,8 +30,8 @@ static const char *FMT_STATS_WORST = "Worst student: %s (%.2f)\n";
 static const char *FMT_STATS_PASS_RATE = "Pass rate: %.2f%% (%d/%d)\n";
 static const char *FMT_PASS_LIST = "%d. %s - %.2f\n";
 
-static const char *ERR_INVALID = "Error: Invalid input. Try again.\n\n";
-static const char *ERR_LIMIT = "Error: Max students is %d\n\n";
+static const char *ERR_MSG_INVALID = "Error: Invalid input. Try again.\n\n";
+static const char *ERR_MSG_LIMIT = "Error: Max students is %d\n\n";
 
 static const char *STATUS_EXCELLENT = "EXCELLENT";
 static const char *STATUS_PASS = "PASS";
@@ -39,9 +40,11 @@ static const char *STATUS_FAIL = "FAIL";
 void clear_input_buffer(void);
 int read_integer(int *value);
 int read_double(double *value);
-void get_status_string(double avg, char status_out[]);
+void get_status_string(double avg, char status_out[MAX_STATUS_LENGTH]);
+void show_students(int num, char names[][MAX_NAME_LENGTH], double grades[][NUM_GRADES],
+                   double avgs[]);
 void process_statistics(int num, char names[][MAX_NAME_LENGTH], double avgs[]);
-void sort_indices_by_grade(double avgs[], int indices[], int count);
+void sort_indices_by_grade_desc(double avgs[], int indices[], int count);
 
 int main(void) {
   char names[MAX_STUDENTS][MAX_NAME_LENGTH];
@@ -53,21 +56,23 @@ int main(void) {
   printf("%s", INPUT_NUM_STUDENTS);
 
   if (!read_integer(&num_students) || num_students > MAX_STUDENTS || num_students <= 0) {
-    printf(ERR_LIMIT, MAX_STUDENTS);
+    printf(ERR_MSG_LIMIT, MAX_STUDENTS);
     return 1;
   }
 
   for (int i = 0; i < num_students; i++) {
-    printf(INPUT_NAME, i + 1);
-    fgets(names[i], MAX_NAME_LENGTH, stdin);
-    names[i][strcspn(names[i], "\n")] = 0;
+    do {
+      printf(INPUT_NAME, i + 1);
+      fgets(names[i], MAX_NAME_LENGTH, stdin);
+      names[i][strcspn(names[i], "\n")] = 0;
+    } while (strlen(names[i]) == 0);
 
     double sum = 0;
     for (int j = 0; j < NUM_GRADES; j++) {
       printf(INPUT_GRADE, j + 1);
       double grade;
       if (!read_double(&grade) || grade < 0 || grade > 100) {
-        printf("%s", ERR_INVALID);
+        printf("%s", ERR_MSG_INVALID);
         j--;
         continue;
       }
@@ -77,21 +82,7 @@ int main(void) {
     averages[i] = sum / NUM_GRADES;
   }
 
-  printf(MSG_STUDENTS_TITLE);
-  for (int i = 0; i < num_students; i++) {
-    char status[20];
-    get_status_string(averages[i], status);
-
-    printf(LABEL_STUDENT_HEADER, i + 1);
-    printf(LABEL_NAME, names[i]);
-    printf("%s", LABEL_GRADES);
-    for (int j = 0; j < NUM_GRADES; j++) {
-      printf("%.0f ", all_grades[i][j]);
-    }
-    printf("\n");
-    printf(LABEL_RESULT, averages[i], status);
-  }
-
+  show_students(num_students, names, all_grades, averages);
   process_statistics(num_students, names, averages);
 
   return 0;
@@ -121,13 +112,35 @@ int read_double(double *value) {
   return TRUE;
 }
 
-void get_status_string(double avg, char status_out[]) {
+void get_status_string(double avg, char status_out[MAX_STATUS_LENGTH]) {
   if (avg >= EXCELLENT_GRADE) {
     strcpy(status_out, STATUS_EXCELLENT);
   } else if (avg >= MIN_PASS_GRADE) {
     strcpy(status_out, STATUS_PASS);
   } else {
     strcpy(status_out, STATUS_FAIL);
+  }
+}
+
+void show_students(int num, char names[][MAX_NAME_LENGTH], double grades[][NUM_GRADES],
+                   double avgs[]) {
+  char status[20];
+
+  printf("\n%s", MSG_STUDENTS_TITLE);
+
+  for (int i = 0; i < num; i++) {
+    get_status_string(avgs[i], status);
+
+    printf(LABEL_STUDENT_HEADER, i + 1);
+    printf(LABEL_NAME, names[i]);
+    printf("%s", LABEL_GRADES);
+
+    for (int j = 0; j < NUM_GRADES; j++) {
+      printf("%.0f ", grades[i][j]);
+    }
+
+    printf("\n");
+    printf(LABEL_RESULT, avgs[i], status);
   }
 }
 
@@ -156,7 +169,7 @@ void process_statistics(int num, char names[][MAX_NAME_LENGTH], double avgs[]) {
 
   if (pass_count > 0) {
     printf("%s", MSG_PASSED_TITLE);
-    sort_indices_by_grade(avgs, passed_indices, pass_count);
+    sort_indices_by_grade_desc(avgs, passed_indices, pass_count);
 
     for (int i = 0; i < pass_count; i++) {
       int idx = passed_indices[i];
@@ -165,7 +178,7 @@ void process_statistics(int num, char names[][MAX_NAME_LENGTH], double avgs[]) {
   }
 }
 
-void sort_indices_by_grade(double avgs[], int indices[], int count) {
+void sort_indices_by_grade_desc(double avgs[], int indices[], int count) {
   for (int i = 0; i < count - 1; i++) {
     for (int j = 0; j < count - i - 1; j++) {
       if (avgs[indices[j]] < avgs[indices[j + 1]]) {

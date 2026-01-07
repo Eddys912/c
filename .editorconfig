@@ -12,12 +12,8 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-# C source files
+# C
 [*.c]
-max_line_length = 100
-
-# C header files
-[*.h]
 max_line_length = 100
 
 # Makefile
@@ -25,7 +21,7 @@ max_line_length = 100
 indent_size = 2
 indent_style = tab
 
-# Markdown files
+# Markdown
 [*.md]
 max_line_length = off
 trim_trailing_whitespace = false
