@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#define TRUE 1
+#define FALSE 0
 #define MAX_STUDENTS 50
 #define MAX_NAME_LENGTH 100
 #define NUM_GRADES 5
 #define MIN_PASS_GRADE 60.0
 #define EXCELLENT_GRADE 90.0
-#define FALSE 0
-#define TRUE 1
 
 static const char *MSG_TITLE = "=== Student Grade System ===\n\n";
 static const char *MSG_STUDENTS_TITLE = "\n=== Students ===\n\n";
