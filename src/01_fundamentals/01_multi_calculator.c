@@ -1,32 +1,32 @@
 #include <stdio.h>
 
+#define TRUE 1
+#define FALSE 0
+#define EXIT_OPTION 8
 #define SQRT_ITERATIONS 20
 #define MAX_FACTORIAL 170
-#define EXIT_OPTION 8
-#define FALSE 0
-#define TRUE 1
 
-static const char *MSG_MENU_TITLE = "=== Scientific Calculator ===\n";
+static const char *MSG_MENU_TITLE = "=== Scientific Calculator ===\n\n";
 static const char *MSG_MENU_OPTIONS = "1. Addition\n2. Subtract\n3. Multiply\n4. Divide\n5. Power\n"
                                       "6. Square Root\n7. Factorial\n8. Exit\n";
-static const char *MSG_GOODBYE = "Thank you for using the calculator!\n";
+static const char *MSG_GOODBYE = "\nThank you for using the calculator!\n";
 
 static const char *INPUT_OPTION = "Select an option: ";
-static const char *INPUT_FIRST_NUMBER = "Enter first number: ";
+static const char *INPUT_FIRST_NUMBER = "\nEnter first number: ";
 static const char *INPUT_SECOND_NUMBER = "Enter second number: ";
-static const char *INPUT_NUMBER = "Enter number: ";
-static const char *INPUT_BASE = "Enter base: ";
+static const char *INPUT_NUMBER = "\nEnter number: ";
+static const char *INPUT_BASE = "\nEnter base: ";
 static const char *INPUT_EXPONENT = "Enter exponent (integer): ";
 
-static const char *FMT_RESULT_FLOAT = "Result: %.2f\n";
-static const char *FMT_RESULT_PRECISION = "Result: %.4f\n";
-static const char *FMT_RESULT_INT = "Result: %.0f\n";
+static const char *FMT_RESULT_FLOAT = "\n  - Result: %.2f\n\n";
+static const char *FMT_RESULT_PRECISION = "\n  - Result: %.4f\n\n";
+static const char *FMT_RESULT_INT = "\n  - Result: %.0f\n\n";
 
-static const char *ERR_MSG_INVALID_NUMBER = "Error: That is not a valid number. Try again.\n";
-static const char *ERR_MSG_DIV_ZERO = "Error: Cannot divide by zero.\n";
-static const char *ERR_MSG_NEGATIVE = "Error: Negative numbers not allowed for this operation.\n";
-static const char *ERR_MSG_INVALID_OPTION = "Error: Invalid option. Please select 1-8.\n";
-static const char *ERR_MSG_FACTORIAL_LIMIT = "Error: Number too large for factorial (max 170).\n";
+static const char *ERR_MSG_INVALID_NUMBER = "Error: That is not a valid number. Try again.\n\n";
+static const char *ERR_MSG_DIV_ZERO = "Error: Cannot divide by zero.\n\n";
+static const char *ERR_MSG_NEGATIVE = "Error: Negative numbers not allowed for this operation.\n\n";
+static const char *ERR_MSG_INVALID_OPTION = "Error: Invalid option. Please select 1-8.\n\n";
+static const char *ERR_MSG_FACTORIAL_LIMIT = "Error: Number too large for factorial (max 170).\n\n";
 
 void clear_input_buffer(void);
 int read_double(double *value);
@@ -40,12 +40,22 @@ double factorial(int num);
 int main(void) {
   int option = 0;
 
-  while (option != EXIT_OPTION) {
+  while (TRUE) {
     printf("%s", MSG_MENU_TITLE);
     printf("%s", MSG_MENU_OPTIONS);
     printf("%s", INPUT_OPTION);
 
     if (!read_integer(&option)) {
+      printf("%s", ERR_MSG_INVALID_OPTION);
+      continue;
+    }
+
+    if (option == EXIT_OPTION) {
+      printf("%s", MSG_GOODBYE);
+      break;
+    }
+
+    if (option < 1 || option > 8) {
       printf("%s", ERR_MSG_INVALID_OPTION);
       continue;
     }
@@ -98,13 +108,6 @@ int main(void) {
       } else {
         printf(FMT_RESULT_INT, factorial((int)num1));
       }
-      break;
-    case 8:
-      printf("%s", MSG_GOODBYE);
-      break;
-
-    default:
-      printf("%s", ERR_MSG_INVALID_OPTION);
       break;
     }
   }
