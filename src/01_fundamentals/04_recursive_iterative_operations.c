@@ -1,3 +1,20 @@
+/*
+ ===============================================================================
+ File: 04_recursive_iterative_operations.c
+ Description: Performance comparison between recursive and iterative methods
+ Platform: GNU/Linux (Arch/WSL) on x86_64
+ ===============================================================================
+ Features:
+ - Factorial calculation (recursive vs iterative)
+ - Fibonacci sequence generation (recursive vs iterative)
+ - Sum of natural numbers (recursive vs iterative)
+ - Power computation (recursive vs iterative)
+ - Execution time measurement
+ - Call/iteration counting
+ - Performance recommendations based on results
+ ===============================================================================
+*/
+
 #include <stdio.h>
 #include <time.h>
 
@@ -17,21 +34,22 @@ static const char *INPUT_BASE = "Enter base: ";
 static const char *INPUT_EXPONENT = "Enter exponent: ";
 
 static const char *LABEL_RECURSIVE = "\nRecursive method:\n";
-static const char *LABEL_ITERATIVE = "Iterative method:\n";
+static const char *LABEL_ITERATIVE = "\nIterative method:\n";
 static const char *LABEL_COMPARISON = "\nComparison:\n";
 
 static const char *FMT_RESULT_REC =
-    "Result(%d) = %.0f\nTime: %.8f seconds\nRecursive calls: %ld\n\n";
-static const char *FMT_RESULT_ITE = "Result(%d) = %.0f\nTime: %.8f seconds\nIterations: %ld\n";
-static const char *FMT_COMP_SPEED_ITE = "- Iterative method was %.2fx faster\n";
-static const char *FMT_COMP_SPEED_REC = "- Recursive method was %.2fx faster\n";
-static const char *FMT_COMP_CALLS = "- Recursive method made %ld calls\n";
-static const char *FMT_RECOMMEND = "- Recommendation: %s\n\n";
+    "  - Result(%d) = %.0f\n  - Time: %.8f seconds\n  - Recursive calls: %ld\n";
+static const char *FMT_RESULT_ITE =
+    "  - Result(%d) = %.0f\n  - Time: %.8f seconds\n  - Iterations: %ld\n";
+static const char *FMT_COMP_SPEED_ITE = "  - Iterative method was %.2fx faster\n";
+static const char *FMT_COMP_SPEED_REC = "  - Recursive method was %.2fx faster\n";
+static const char *FMT_COMP_CALLS = "  - Recursive method made %ld calls\n";
+static const char *FMT_RECOMMEND = "  - Recommendation: %s\n\n";
 
 static const char *RECOMMEND_ITERATIVE = "Use iterative method for large values";
 static const char *RECOMMEND_NEGLIGIBLE = "Negligible difference";
 
-static const char *ERR_MSG_INVALID = "Error: Invalid input.\n";
+static const char *ERR_MSG_INVALID = "Error: Invalid input.\n\n";
 
 long call_count = 0;
 
@@ -125,7 +143,7 @@ void run_comparison(int option) {
   if (option == 1)
     res_rec = factorial_rec(n);
   else if (option == 2)
-    res_rec = fibonacci_rec(n);
+    res_rec = fibonacci_rec(n - 1);
   else if (option == 3)
     res_rec = sum_natural_rec(n);
   else
@@ -138,7 +156,7 @@ void run_comparison(int option) {
   if (option == 1)
     res_ite = factorial_ite(n, &iters);
   else if (option == 2)
-    res_ite = fibonacci_ite(n, &iters);
+    res_ite = fibonacci_ite(n - 1, &iters);
   else if (option == 3)
     res_ite = sum_natural_ite(n, &iters);
   else
