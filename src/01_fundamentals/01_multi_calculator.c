@@ -1,3 +1,20 @@
+/*
+ ===============================================================================
+ File: 01_multi_calculator.c
+ Description: Scientific calculator with interactive menu
+ Platform: GNU/Linux (Arch/WSL) on x86_64
+ ===============================================================================
+ Features:
+ - Basic arithmetic operations (add, subtract, multiply, divide)
+ - Advanced operations (power, square root, factorial)
+ - Input validation and error handling
+ - Division by zero detection
+ - Negative number validation for sqrt and factorial
+ - Factorial limit checking (max 170)
+ - Uses Newton-Raphson method for square root approximation
+ ===============================================================================
+*/
+
 #include <stdio.h>
 
 #define TRUE 1
@@ -7,8 +24,8 @@
 #define MAX_FACTORIAL 170
 
 static const char *MSG_MENU_TITLE = "=== Scientific Calculator ===\n\n";
-static const char *MSG_MENU_OPTIONS = "1. Addition\n2. Subtract\n3. Multiply\n4. Divide\n5. Power\n"
-                                      "6. Square Root\n7. Factorial\n8. Exit\n";
+static const char *MSG_MENU_OPTIONS = "1. Addition\n2. Subtract\n3. Multiply\n4. Divide\n"
+                                      "5. Power\n6. Square Root\n7. Factorial\n8. Exit\n";
 static const char *MSG_GOODBYE = "\nThank you for using the calculator!\n";
 
 static const char *INPUT_OPTION = "Select an option: ";

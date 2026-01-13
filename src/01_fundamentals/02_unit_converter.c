@@ -1,3 +1,19 @@
+/*
+ ===============================================================================
+ File: 02_unit_converter.c
+ Description: Unit converter with interactive menu
+ Platform: GNU/Linux (Arch/WSL) on x86_64
+ ===============================================================================
+ Features:
+ - Temperature conversion (Celsius, Fahrenheit, Kelvin)
+ - Length conversion (meters, kilometers, miles, feet)
+ - Weight conversion (kilograms, pounds, ounces)
+ - Time conversion (seconds, minutes, hours)
+ - Input validation and error handling
+ - Case-insensitive unit input
+ ===============================================================================
+*/
+
 #include <stdio.h>
 
 #define TRUE 1

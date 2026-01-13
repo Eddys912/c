@@ -1,3 +1,19 @@
+/*
+ ===============================================================================
+ File: 03_student_grade_system.c
+ Description: Student grade management system with statistics
+ Platform: GNU/Linux (Arch/WSL) on x86_64
+ ===============================================================================
+ Features:
+ - Manages up to 50 students with 5 grades each
+ - Calculates individual and group averages
+ - Determines pass/fail status (minimum 60, excellent 90+)
+ - Identifies best and worst performing students
+ - Computes pass rate percentage
+ - Displays sorted list of passing students
+ ===============================================================================
+*/
+
 #include <stdio.h>
 #include <string.h>
 
@@ -16,19 +32,19 @@ static const char *MSG_STATS_TITLE = "\n=== General Statistics ===\n\n";
 static const char *MSG_PASSED_TITLE = "\nStudents who passed:\n";
 
 static const char *INPUT_NUM_STUDENTS = "Number of students (max 50): ";
-static const char *INPUT_NAME = "Enter student %d name: ";
-static const char *INPUT_GRADE = "  Enter grade %d: ";
+static const char *INPUT_NAME = "Enter student name %d: ";
+static const char *INPUT_GRADE = "  Enter grade (0-100) %d: ";
 
 static const char *LABEL_STUDENT_HEADER = "Student %d:\n";
-static const char *LABEL_NAME = "Name: %s\n";
-static const char *LABEL_GRADES = "Grades (5): ";
-static const char *LABEL_RESULT = "Average: %.2f - %s\n\n";
+static const char *LABEL_NAME = "  - Name: %s\n";
+static const char *LABEL_GRADES = "  - Grades (5): ";
+static const char *LABEL_RESULT = "\n  - Average: %.2f - %s\n\n";
 
 static const char *FMT_STATS_GROUP = "Group average: %.2f\n";
 static const char *FMT_STATS_BEST = "Best student: %s (%.2f)\n";
 static const char *FMT_STATS_WORST = "Worst student: %s (%.2f)\n";
 static const char *FMT_STATS_PASS_RATE = "Pass rate: %.2f%% (%d/%d)\n";
-static const char *FMT_PASS_LIST = "%d. %s - %.2f\n";
+static const char *FMT_PASS_LIST = "  %d. %s - %.2f\n";
 
 static const char *ERR_MSG_INVALID = "Error: Invalid input. Try again.\n\n";
 static const char *ERR_MSG_LIMIT = "Error: Max students is %d\n\n";
@@ -126,7 +142,7 @@ void show_students(int num, char names[][MAX_NAME_LENGTH], double grades[][NUM_G
                    double avgs[]) {
   char status[20];
 
-  printf("\n%s", MSG_STUDENTS_TITLE);
+  printf("%s", MSG_STUDENTS_TITLE);
 
   for (int i = 0; i < num; i++) {
     get_status_string(avgs[i], status);
@@ -139,7 +155,6 @@ void show_students(int num, char names[][MAX_NAME_LENGTH], double grades[][NUM_G
       printf("%.0f ", grades[i][j]);
     }
 
-    printf("\n");
     printf(LABEL_RESULT, avgs[i], status);
   }
 }
