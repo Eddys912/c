@@ -34,11 +34,7 @@ static const double KG_PER_OUNCE = 0.0283495;
 static const double SECONDS_PER_MINUTE = 60.0;
 static const double SECONDS_PER_HOUR = 3600.0;
 
-typedef enum {
-  SUCCESS,
-  ERR_INVALID_UNIT,
-  ERR_INVALID_OPTION
-} Status;
+typedef enum { SUCCESS, ERR_INVALID_UNIT, ERR_INVALID_OPTION } Status;
 
 void show_menu(void);
 void clear_input_buffer(void);
