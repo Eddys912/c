@@ -1,6 +1,6 @@
 /*
  ===============================================================================
- File: 01_multi_calculator.c
+ Exercise: 01_multi_calculator.c
  Description: Scientific calculator with interactive menu
  Platform: GNU/Linux (Arch/WSL) on x86_64
  ===============================================================================

@@ -1,6 +1,6 @@
 /*
  ===============================================================================
- File: 02_unit_converter.c
+ Exercise: 02_unit_converter.c
  Description: Unit converter with interactive menu
  Platform: GNU/Linux (Arch/WSL) on x86_64
  ===============================================================================
