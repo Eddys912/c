@@ -188,7 +188,7 @@ void run_power_operation(void) {
 
   printf("Enter exponent (integer): ");
   Status input_i = read_integer(&exponent);
-  if (input_d != SUCCESS) {
+  if (input_i != SUCCESS) {
     handle_error(input_i);
     return;
   }
