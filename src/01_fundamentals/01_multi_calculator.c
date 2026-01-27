@@ -23,14 +23,24 @@
 #define SQRT_ITERATIONS 20
 #define MAX_FACTORIAL 170
 
+typedef enum {
+  SUCCESS,
+  ERR_DIV_ZERO,
+  ERR_NEGATIVE_SQRT,
+  ERR_NEGATIVE_FACTORIAL,
+  ERR_FACTORIAL_LIMIT,
+  ERR_INVALID_OPTION
+} Status;
+
 void clear_input_buffer(void);
-int read_double(double *value);
 int read_integer(int *value);
+int read_double(double *value);
 int read_two_numbers(double *num1, double *num2);
-double basic_operation(int option, double num1, double num2);
-double power(double base, int exponent);
-double sqroot(double num);
-double factorial(int num);
+void handle_error(Status status);
+Status basic_operation(int option, double num1, double num2, double *result);
+Status power(double base, int exponent, double *result);
+Status sqroot(double num, double *result);
+Status factorial(int num, double *result);
 
 int main(void) {
   int option = 0;
@@ -56,53 +66,68 @@ int main(void) {
       continue;
     }
 
-    double num1, num2;
+    double num1, num2, result;
+    Status status;
 
     switch (option) {
     case 1:
     case 2:
     case 3:
-      if (!read_two_numbers(&num1, &num2))
-        break;
-      printf("\n  - Result: %.2f\n\n", basic_operation(option, num1, num2));
-      break;
     case 4:
-      if (!read_two_numbers(&num1, &num2))
+      if (!read_two_numbers(&num1, &num2)) {
+        printf("Error: Invalid input. Please enter valid numbers.\n\n");
         break;
-      if (num2 != 0.0)
-        printf("\n  - Result: %.2f\n\n", num1 / num2);
-      else
-        printf("Error: Cannot divide by zero.\n\n");
+      }
+      status = basic_operation(option, num1, num2, &result);
+      if (status == SUCCESS) {
+        printf("\n  - Result: %.2f\n\n", result);
+      } else {
+        handle_error(status);
+      }
       break;
     case 5:
       printf("\nEnter base: ");
-      if (!read_double(&num1))
+      if (!read_double(&num1)){
+        printf("Error: Invalid input. Please enter valid numbers.\n\n");
         break;
+      }
       printf("Enter exponent (integer): ");
       int exponent;
-      if (!read_integer(&exponent))
+      if (!read_integer(&exponent)){
+        printf("Error: Invalid input. Please enter valid numbers.\n\n");
         break;
-      printf("\n  - Result: %.2f\n\n", power(num1, exponent));
+      }
+      status = power(num1, exponent, &result);
+      if (status == SUCCESS) {
+        printf("\n  - Result: %.2f\n\n", result);
+      } else {
+        handle_error(status);
+      }
       break;
     case 6:
       printf("\nEnter number: ");
-      if (!read_double(&num1))
+      if (!read_double(&num1)){
+        printf("Error: Invalid input. Please enter valid numbers.\n\n");
         break;
-      if (num1 >= 0.0)
-        printf("\n  - Result: %.4f\n\n", sqroot(num1));
-      else
-        printf("Error: Negative numbers not allowed for this operation.\n\n");
+      }
+      status = sqroot(num1, &result);
+      if (status == SUCCESS) {
+        printf("\n  - Result: %.4f\n\n", result);
+      } else {
+        handle_error(status);
+      }
       break;
     case 7:
       printf("\nEnter number: ");
-      if (!read_double(&num1))
+      if (!read_double(&num1)){
+        printf("Error: Invalid input. Please enter valid numbers.\n\n");
         break;
-      if (num1 < 0.0) {
-        printf("Error: Negative numbers not allowed for this operation.\n\n");
-      } else if (num1 > MAX_FACTORIAL) {
-        printf("Error: Number too large for factorial (max 170).\n\n");
+      }
+      status = factorial((int)num1, &result);
+      if (status == SUCCESS) {
+        printf("\n  - Result: %.0f\n\n", result);
       } else {
-        printf("\n  - Result: %.0f\n\n", factorial((int)num1));
+        handle_error(status);
       }
       break;
     }
@@ -116,18 +141,16 @@ void clear_input_buffer(void) {
     ;
 }
 
-int read_double(double *value) {
-  if (scanf("%lf", value) != 1) {
-    printf("Error: That is not a valid number. Try again.\n\n");
+int read_integer(int *value) {
+  if (scanf("%d", value) != 1) {
     clear_input_buffer();
     return FALSE;
   }
   clear_input_buffer();
   return TRUE;
 }
-
-int read_integer(int *value) {
-  if (scanf("%d", value) != 1) {
+int read_double(double *value) {
+  if (scanf("%lf", value) != 1) {
     clear_input_buffer();
     return FALSE;
   }
@@ -145,42 +168,86 @@ int read_two_numbers(double *num1, double *num2) {
   return TRUE;
 }
 
-double basic_operation(int option, double num1, double num2) {
-  if (option == 1)
-    return num1 + num2;
-  else if (option == 2)
-    return num1 - num2;
-  else
-    return num1 * num2;
+void handle_error(Status status) {
+  switch (status) {
+  case ERR_DIV_ZERO:
+    printf("Error: Cannot divide by zero.\n\n");
+    break;
+  case ERR_NEGATIVE_SQRT:
+    printf("Error: Negative numbers not allowed for this operation.\n\n");
+    break;
+  case ERR_NEGATIVE_FACTORIAL:
+    printf("Error: Negative numbers not allowed for this operation.\n\n");
+    break;
+  case ERR_FACTORIAL_LIMIT:
+    printf("Error: Number too large for factorial (max 170).\n\n");
+    break;
+  case ERR_INVALID_OPTION:
+    printf("Error: Invalid operation.\n\n");
+    break;
+  case SUCCESS:
+    break;
+  }
 }
 
-double power(double base, int exponent) {
-  double result = 1.0;
+Status basic_operation(int option, double num1, double num2, double *result) {
+  if (option == 1) {
+    *result = num1 + num2;
+    return SUCCESS;
+  } else if (option == 2) {
+    *result = num1 - num2;
+    return SUCCESS;
+  } else if (option == 3) {
+    *result = num1 * num2;
+    return SUCCESS;
+  } else if (option == 4) {
+    if (num2 == 0.0)
+      return ERR_DIV_ZERO;
+    *result = num1 / num2;
+    return SUCCESS;
+  }
+  return ERR_INVALID_OPTION;
+}
+
+Status power(double base, int exponent, double *result) {
+  double res = 1.0;
   int positive_exp = (exponent < 0) ? -exponent : exponent;
 
   for (int i = 0; i < positive_exp; i++) {
-    result *= base;
+    res *= base;
   }
 
-  return (exponent < 0) ? 1.0 / result : result;
+  *result = (exponent < 0) ? 1.0 / res : res;
+  return SUCCESS;
 }
 
-double sqroot(double num) {
-  if (num == 0.0)
-    return 0.0;
+Status sqroot(double num, double *result) {
+  if (num < 0.0)
+    return ERR_NEGATIVE_SQRT;
+  if (num == 0.0) {
+    *result = 0.0;
+    return SUCCESS;
+  }
 
-  double result = num;
+  double res = num;
   for (int i = 0; i < SQRT_ITERATIONS; i++) {
-    result = 0.5 * (result + num / result);
+    res = 0.5 * (res + num / res);
   }
 
-  return result;
+  *result = res;
+  return SUCCESS;
 }
 
-double factorial(int num) {
-  double result = 1.0;
+Status factorial(int num, double *result) {
+  if (num < 0)
+    return ERR_NEGATIVE_FACTORIAL;
+  if (num > MAX_FACTORIAL)
+    return ERR_FACTORIAL_LIMIT;
+
+  double res = 1.0;
   for (int i = 2; i <= num; i++) {
-    result *= i;
+    res *= i;
   }
-  return result;
+  *result = res;
+  return SUCCESS;
 }
