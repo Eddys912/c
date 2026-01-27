@@ -17,7 +17,6 @@
 #include <stdio.h>
 
 #define TRUE 1
-#define FALSE 0
 #define EXIT_OPTION 5
 
 static const double KELVIN_OFFSET = 273.15;
@@ -34,14 +33,14 @@ static const double KG_PER_OUNCE = 0.0283495;
 static const double SECONDS_PER_MINUTE = 60.0;
 static const double SECONDS_PER_HOUR = 3600.0;
 
-typedef enum { SUCCESS, ERR_INVALID_UNIT, ERR_INVALID_OPTION } Status;
+typedef enum { SUCCESS, ERR_INVALID_UNIT, ERR_INVALID_OPTION, ERR_INVALID_INPUT } Status;
 
 void show_menu(void);
 void clear_input_buffer(void);
-int read_integer(int *value);
-int read_double(double *value);
-int read_char(char *value);
-int read_conversion_input(double *value, char *from, char *to);
+Status read_integer(int *value);
+Status read_double(double *value);
+Status read_char(char *value);
+Status read_conversion_input(double *value, char *from, char *to);
 void show_unit_options(int option);
 void handle_error(Status status);
 
@@ -61,7 +60,7 @@ int main(void) {
   while (TRUE) {
     show_menu();
 
-    if (!read_integer(&option)) {
+    if (read_integer(&option) != SUCCESS) {
       printf("Error: Invalid option. Please select 1-5.\n\n");
       continue;
     }
@@ -108,50 +107,47 @@ void clear_input_buffer(void) {
     ;
 }
 
-int read_integer(int *value) {
+Status read_integer(int *value) {
   if (scanf("%d", value) != 1) {
-    printf("Error: Invalid option. Please select 1-5.\n\n");
     clear_input_buffer();
-    return FALSE;
+    return ERR_INVALID_INPUT;
   }
   clear_input_buffer();
-  return TRUE;
+  return SUCCESS;
 }
 
-int read_double(double *value) {
+Status read_double(double *value) {
   if (scanf("%lf", value) != 1) {
-    printf("Error: That is not a valid number. Try again.\n\n");
     clear_input_buffer();
-    return FALSE;
+    return ERR_INVALID_INPUT;
   }
   clear_input_buffer();
-  return TRUE;
+  return SUCCESS;
 }
 
-int read_char(char *value) {
+Status read_char(char *value) {
   if (scanf(" %c", value) != 1) {
-    printf("Error: That is not a valid unit. Try again.\n\n");
     clear_input_buffer();
-    return FALSE;
+    return ERR_INVALID_INPUT;
   }
   clear_input_buffer();
-  return TRUE;
+  return SUCCESS;
 }
 
-int read_conversion_input(double *value, char *from, char *to) {
+Status read_conversion_input(double *value, char *from, char *to) {
   printf("Enter value: ");
-  if (!read_double(value))
-    return FALSE;
+  if (read_double(value) != SUCCESS)
+    return ERR_INVALID_INPUT;
 
   printf("Enter source unit: ");
-  if (!read_char(from))
-    return FALSE;
+  if (read_char(from) != SUCCESS)
+    return ERR_INVALID_INPUT;
 
   printf("Enter target unit: ");
-  if (!read_char(to))
-    return FALSE;
+  if (read_char(to) != SUCCESS)
+    return ERR_INVALID_INPUT;
 
-  return TRUE;
+  return SUCCESS;
 }
 
 void show_unit_options(int option) {
@@ -179,6 +175,9 @@ void handle_error(Status status) {
   case ERR_INVALID_OPTION:
     printf("Error: Invalid option.\n\n");
     break;
+  case ERR_INVALID_INPUT:
+    printf("Error: Invalid input.\n\n");
+    break;
   case SUCCESS:
     break;
   }
@@ -187,11 +186,15 @@ void handle_error(Status status) {
 void run_temperature_conversion(void) {
   double value, result;
   char from, to;
+  Status status;
 
-  if (!read_conversion_input(&value, &from, &to))
+  status = read_conversion_input(&value, &from, &to);
+  if (status != SUCCESS){
+    handle_error(status);
     return;
+  }
 
-  Status status = convert_temperature(value, from, to, &result);
+  status = convert_temperature(value, from, to, &result);
   if (status == SUCCESS) {
     printf("\n  - Result: %.2f %c\n\n", result, to);
   } else {
@@ -202,11 +205,15 @@ void run_temperature_conversion(void) {
 void run_length_conversion(void) {
   double value, result;
   char from, to;
+  Status status;
 
-  if (!read_conversion_input(&value, &from, &to))
+  status = read_conversion_input(&value, &from, &to);
+  if (status != SUCCESS){
+    handle_error(status);
     return;
+  }
 
-  Status status = convert_length(value, from, to, &result);
+  status = convert_length(value, from, to, &result);
   if (status == SUCCESS) {
     printf("\n  - Result: %.2f %c\n\n", result, to);
   } else {
@@ -217,11 +224,15 @@ void run_length_conversion(void) {
 void run_weight_conversion(void) {
   double value, result;
   char from, to;
+  Status status;
 
-  if (!read_conversion_input(&value, &from, &to))
+  status = read_conversion_input(&value, &from, &to);
+  if (status != SUCCESS){
+    handle_error(status);
     return;
+  }
 
-  Status status = convert_weight(value, from, to, &result);
+  status = convert_weight(value, from, to, &result);
   if (status == SUCCESS) {
     printf("\n  - Result: %.2f %c\n\n", result, to);
   } else {
@@ -232,11 +243,15 @@ void run_weight_conversion(void) {
 void run_time_conversion(void) {
   double value, result;
   char from, to;
+  Status status;
 
-  if (!read_conversion_input(&value, &from, &to))
+  status = read_conversion_input(&value, &from, &to);
+  if (status != SUCCESS){
+    handle_error(status);
     return;
+  }
 
-  Status status = convert_time(value, from, to, &result);
+  status = convert_time(value, from, to, &result);
   if (status == SUCCESS) {
     printf("\n  - Result: %.2f %c\n\n", result, to);
   } else {

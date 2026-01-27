@@ -18,7 +18,6 @@
 #include <stdio.h>
 
 #define TRUE 1
-#define FALSE 0
 #define EXIT_OPTION 8
 #define SQRT_ITERATIONS 20
 #define MAX_FACTORIAL 170
@@ -160,14 +159,14 @@ void handle_error(Status status) {
 
 void run_basic_operation(int option) {
   double num1, num2, result;
-
-  Status input = read_two_numbers(&num1, &num2);
-  if (input != SUCCESS) {
-    handle_error(input);
+  Status status;
+  status = read_two_numbers(&num1, &num2);
+  if (status != SUCCESS) {
+    handle_error(status);
     return;
   }
 
-  Status status = basic_operation(option, num1, num2, &result);
+  status = basic_operation(option, num1, num2, &result);
   if (status == SUCCESS) {
     printf("\n  - Result: %.2f\n\n", result);
   } else {
@@ -178,22 +177,23 @@ void run_basic_operation(int option) {
 void run_power_operation(void) {
   double base, result;
   int exponent;
+  Status status;
 
   printf("\nEnter base: ");
-  Status input_d = read_double(&base);
-  if (input_d != SUCCESS) {
-    handle_error(input_d);
+  status = read_double(&base);
+  if (status != SUCCESS) {
+    handle_error(status);
     return;
   }
 
   printf("Enter exponent (integer): ");
-  Status input_i = read_integer(&exponent);
-  if (input_i != SUCCESS) {
-    handle_error(input_i);
+  status = read_integer(&exponent);
+  if (status != SUCCESS) {
+    handle_error(status);
     return;
   }
 
-  Status status = power(base, exponent, &result);
+  status = power(base, exponent, &result);
   if (status == SUCCESS) {
     printf("\n  - Result: %.2f\n\n", result);
   } else {
@@ -203,15 +203,16 @@ void run_power_operation(void) {
 
 void run_sqrt_operation(void) {
   double num, result;
+  Status status;
 
   printf("\nEnter number: ");
-  Status input_d = read_double(&num);
-  if (input_d != SUCCESS) {
-    handle_error(input_d);
+  status = read_double(&num);
+  if (status != SUCCESS) {
+    handle_error(status);
     return;
   }
 
-  Status status = sqroot(num, &result);
+  status = sqroot(num, &result);
   if (status == SUCCESS) {
     printf("\n  - Result: %.4f\n\n", result);
   } else {
@@ -221,15 +222,16 @@ void run_sqrt_operation(void) {
 
 void run_factorial_operation(void) {
   double num, result;
+  Status status;
 
   printf("\nEnter number: ");
-  Status input_d = read_double(&num);
-  if (input_d != SUCCESS) {
-    handle_error(input_d);
+  status = read_double(&num);
+  if (status != SUCCESS) {
+    handle_error(status);
     return;
   }
 
-  Status status = factorial((int)num, &result);
+  status = factorial((int)num, &result);
   if (status == SUCCESS) {
     printf("\n  - Result: %.0f\n\n", result);
   } else {
