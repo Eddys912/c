@@ -32,24 +32,28 @@ typedef enum {
   ERR_INVALID_OPTION
 } Status;
 
+void show_menu(void);
 void clear_input_buffer(void);
+void handle_error(Status status);
 int read_integer(int *value);
 int read_double(double *value);
 int read_two_numbers(double *num1, double *num2);
-void handle_error(Status status);
+
 Status basic_operation(int option, double num1, double num2, double *result);
 Status power(double base, int exponent, double *result);
 Status sqroot(double num, double *result);
 Status factorial(int num, double *result);
 
+void run_basic_operation(int option);
+void run_power_operation(void);
+void run_sqrt_operation(void);
+void run_factorial_operation(void);
+
 int main(void) {
   int option = 0;
 
   while (TRUE) {
-    printf("=== Scientific Calculator ===\n\n");
-    printf("1. Addition\n2. Subtract\n3. Multiply\n4. Divide\n"
-           "5. Power\n6. Square Root\n7. Factorial\n8. Exit\n");
-    printf("Select an option: ");
+    show_menu();
 
     if (!read_integer(&option)) {
       printf("Error: Invalid option. Please select 1-8.\n\n");
@@ -66,74 +70,33 @@ int main(void) {
       continue;
     }
 
-    double num1, num2, result;
-    Status status;
-
     switch (option) {
     case 1:
     case 2:
     case 3:
     case 4:
-      if (!read_two_numbers(&num1, &num2)) {
-        printf("Error: Invalid input. Please enter valid numbers.\n\n");
-        break;
-      }
-      status = basic_operation(option, num1, num2, &result);
-      if (status == SUCCESS) {
-        printf("\n  - Result: %.2f\n\n", result);
-      } else {
-        handle_error(status);
-      }
+      run_basic_operation(option);
       break;
     case 5:
-      printf("\nEnter base: ");
-      if (!read_double(&num1)){
-        printf("Error: Invalid input. Please enter valid numbers.\n\n");
-        break;
-      }
-      printf("Enter exponent (integer): ");
-      int exponent;
-      if (!read_integer(&exponent)){
-        printf("Error: Invalid input. Please enter valid numbers.\n\n");
-        break;
-      }
-      status = power(num1, exponent, &result);
-      if (status == SUCCESS) {
-        printf("\n  - Result: %.2f\n\n", result);
-      } else {
-        handle_error(status);
-      }
+      run_power_operation();
       break;
     case 6:
-      printf("\nEnter number: ");
-      if (!read_double(&num1)){
-        printf("Error: Invalid input. Please enter valid numbers.\n\n");
-        break;
-      }
-      status = sqroot(num1, &result);
-      if (status == SUCCESS) {
-        printf("\n  - Result: %.4f\n\n", result);
-      } else {
-        handle_error(status);
-      }
+      run_sqrt_operation();
       break;
     case 7:
-      printf("\nEnter number: ");
-      if (!read_double(&num1)){
-        printf("Error: Invalid input. Please enter valid numbers.\n\n");
-        break;
-      }
-      status = factorial((int)num1, &result);
-      if (status == SUCCESS) {
-        printf("\n  - Result: %.0f\n\n", result);
-      } else {
-        handle_error(status);
-      }
+      run_factorial_operation();
       break;
     }
   }
 
   return 0;
+}
+
+void show_menu(void) {
+  printf("=== Scientific Calculator ===\n\n");
+  printf("1. Addition\n2. Subtract\n3. Multiply\n4. Divide\n"
+         "5. Power\n6. Square Root\n7. Factorial\n8. Exit\n");
+  printf("Select an option: ");
 }
 
 void clear_input_buffer(void) {
@@ -143,14 +106,17 @@ void clear_input_buffer(void) {
 
 int read_integer(int *value) {
   if (scanf("%d", value) != 1) {
+    printf("Error: Invalid input. Please enter valid numbers.\n\n");
     clear_input_buffer();
     return FALSE;
   }
   clear_input_buffer();
   return TRUE;
 }
+
 int read_double(double *value) {
   if (scanf("%lf", value) != 1) {
+    printf("Error: Invalid input. Please enter valid numbers.\n\n");
     clear_input_buffer();
     return FALSE;
   }
@@ -187,6 +153,69 @@ void handle_error(Status status) {
     break;
   case SUCCESS:
     break;
+  }
+}
+
+void run_basic_operation(int option) {
+  double num1, num2, result;
+  if (!read_two_numbers(&num1, &num2))
+    return;
+
+  Status status = basic_operation(option, num1, num2, &result);
+  if (status == SUCCESS) {
+    printf("\n  - Result: %.2f\n\n", result);
+  } else {
+    handle_error(status);
+  }
+}
+
+void run_power_operation(void) {
+  double base, result;
+  int exponent;
+
+  printf("\nEnter base: ");
+  if (!read_double(&base))
+    return;
+
+  printf("Enter exponent (integer): ");
+  if (!read_integer(&exponent))
+    return;
+
+  Status status = power(base, exponent, &result);
+  if (status == SUCCESS) {
+    printf("\n  - Result: %.2f\n\n", result);
+  } else {
+    handle_error(status);
+  }
+}
+
+void run_sqrt_operation(void) {
+  double num, result;
+
+  printf("\nEnter number: ");
+  if (!read_double(&num))
+    return;
+
+  Status status = sqroot(num, &result);
+  if (status == SUCCESS) {
+    printf("\n  - Result: %.4f\n\n", result);
+  } else {
+    handle_error(status);
+  }
+}
+
+void run_factorial_operation(void) {
+  double num, result;
+
+  printf("\nEnter number: ");
+  if (!read_double(&num))
+    return;
+
+  Status status = factorial((int)num, &result);
+  if (status == SUCCESS) {
+    printf("\n  - Result: %.0f\n\n", result);
+  } else {
+    handle_error(status);
   }
 }
 
