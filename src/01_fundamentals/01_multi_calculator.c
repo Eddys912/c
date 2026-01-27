@@ -29,14 +29,15 @@ typedef enum {
   ERR_NEGATIVE_SQRT,
   ERR_NEGATIVE_FACTORIAL,
   ERR_FACTORIAL_LIMIT,
-  ERR_INVALID_OPTION
+  ERR_INVALID_OPTION,
+  ERR_INVALID_INPUT
 } Status;
 
 void show_menu(void);
 void clear_input_buffer(void);
-int read_integer(int *value);
-int read_double(double *value);
-int read_two_numbers(double *num1, double *num2);
+Status read_integer(int *value);
+Status read_double(double *value);
+Status read_two_numbers(double *num1, double *num2);
 void handle_error(Status status);
 
 Status basic_operation(int option, double num1, double num2, double *result);
@@ -55,7 +56,7 @@ int main(void) {
   while (TRUE) {
     show_menu();
 
-    if (!read_integer(&option)) {
+    if (read_integer(&option) != SUCCESS) {
       printf("Error: Invalid option. Please select 1-8.\n\n");
       continue;
     }
@@ -104,34 +105,32 @@ void clear_input_buffer(void) {
     ;
 }
 
-int read_integer(int *value) {
+Status read_integer(int *value) {
   if (scanf("%d", value) != 1) {
-    printf("Error: Invalid input. Please enter valid numbers.\n\n");
     clear_input_buffer();
-    return FALSE;
+    return ERR_INVALID_INPUT;
   }
   clear_input_buffer();
-  return TRUE;
+  return SUCCESS;
 }
 
-int read_double(double *value) {
+Status read_double(double *value) {
   if (scanf("%lf", value) != 1) {
-    printf("Error: Invalid input. Please enter valid numbers.\n\n");
     clear_input_buffer();
-    return FALSE;
+    return ERR_INVALID_INPUT;
   }
   clear_input_buffer();
-  return TRUE;
+  return SUCCESS;
 }
 
-int read_two_numbers(double *num1, double *num2) {
+Status read_two_numbers(double *num1, double *num2) {
   printf("\nEnter first number: ");
-  if (!read_double(num1))
-    return FALSE;
+  if (read_double(num1) != SUCCESS)
+    return ERR_INVALID_INPUT;
   printf("Enter second number: ");
-  if (!read_double(num2))
-    return FALSE;
-  return TRUE;
+  if (read_double(num2) != SUCCESS)
+    return ERR_INVALID_INPUT;
+  return SUCCESS;
 }
 
 void handle_error(Status status) {
@@ -151,6 +150,9 @@ void handle_error(Status status) {
   case ERR_INVALID_OPTION:
     printf("Error: Invalid operation.\n\n");
     break;
+  case ERR_INVALID_INPUT:
+    printf("Error: Invalid input. Please enter valid numbers.\n\n");
+    break;
   case SUCCESS:
     break;
   }
@@ -158,8 +160,12 @@ void handle_error(Status status) {
 
 void run_basic_operation(int option) {
   double num1, num2, result;
-  if (!read_two_numbers(&num1, &num2))
+
+  Status input = read_two_numbers(&num1, &num2);
+  if (input != SUCCESS) {
+    handle_error(input);
     return;
+  }
 
   Status status = basic_operation(option, num1, num2, &result);
   if (status == SUCCESS) {
@@ -174,12 +180,18 @@ void run_power_operation(void) {
   int exponent;
 
   printf("\nEnter base: ");
-  if (!read_double(&base))
+  Status input_d = read_double(&base);
+  if (input_d != SUCCESS) {
+    handle_error(input_d);
     return;
+  }
 
   printf("Enter exponent (integer): ");
-  if (!read_integer(&exponent))
+  Status input_i = read_integer(&exponent);
+  if (input_d != SUCCESS) {
+    handle_error(input_i);
     return;
+  }
 
   Status status = power(base, exponent, &result);
   if (status == SUCCESS) {
@@ -193,8 +205,11 @@ void run_sqrt_operation(void) {
   double num, result;
 
   printf("\nEnter number: ");
-  if (!read_double(&num))
+  Status input_d = read_double(&num);
+  if (input_d != SUCCESS) {
+    handle_error(input_d);
     return;
+  }
 
   Status status = sqroot(num, &result);
   if (status == SUCCESS) {
@@ -208,8 +223,11 @@ void run_factorial_operation(void) {
   double num, result;
 
   printf("\nEnter number: ");
-  if (!read_double(&num))
+  Status input_d = read_double(&num);
+  if (input_d != SUCCESS) {
+    handle_error(input_d);
     return;
+  }
 
   Status status = factorial((int)num, &result);
   if (status == SUCCESS) {
