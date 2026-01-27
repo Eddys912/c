@@ -34,23 +34,36 @@ static const double KG_PER_OUNCE = 0.0283495;
 static const double SECONDS_PER_MINUTE = 60.0;
 static const double SECONDS_PER_HOUR = 3600.0;
 
+typedef enum {
+  SUCCESS,
+  ERR_INVALID_UNIT,
+  ERR_INVALID_OPTION
+} Status;
+
+void show_menu(void);
 void clear_input_buffer(void);
-int read_double(double *value);
 int read_integer(int *value);
+int read_double(double *value);
 int read_char(char *value);
+int read_conversion_input(double *value, char *from, char *to);
 void show_unit_options(int option);
-double convert_temperature(double value, char from, char to, int *error);
-double convert_length(double value, char from, char to, int *error);
-double convert_weight(double value, char from, char to, int *error);
-double convert_time(double value, char from, char to, int *error);
+void handle_error(Status status);
+
+Status convert_temperature(double value, char from, char to, double *result);
+Status convert_length(double value, char from, char to, double *result);
+Status convert_weight(double value, char from, char to, double *result);
+Status convert_time(double value, char from, char to, double *result);
+
+void run_temperature_conversion(void);
+void run_length_conversion(void);
+void run_weight_conversion(void);
+void run_time_conversion(void);
 
 int main(void) {
   int option = 0;
 
   while (TRUE) {
-    printf("=== Unit Converter ===\n\n");
-    printf("1. Temperature\n2. Length\n3. Weight\n4. Time\n5. Exit\n");
-    printf("Select an option: ");
+    show_menu();
 
     if (!read_integer(&option)) {
       printf("Error: Invalid option. Please select 1-5.\n\n");
@@ -69,52 +82,44 @@ int main(void) {
 
     show_unit_options(option);
 
-    printf("Enter value: ");
-    double value;
-    if (!read_double(&value))
-      continue;
-
-    printf("Enter source unit: ");
-    char from;
-    if (!read_char(&from))
-      continue;
-
-    printf("Enter target unit: ");
-    char to;
-    if (!read_char(&to))
-      continue;
-
-    int error = FALSE;
-    double result = 0.0;
-
     switch (option) {
     case 1:
-      result = convert_temperature(value, from, to, &error);
+      run_temperature_conversion();
       break;
     case 2:
-      result = convert_length(value, from, to, &error);
+      run_length_conversion();
       break;
     case 3:
-      result = convert_weight(value, from, to, &error);
+      run_weight_conversion();
       break;
     case 4:
-      result = convert_time(value, from, to, &error);
+      run_time_conversion();
       break;
-    }
-
-    if (!error) {
-      printf("\n  - Result: %.2f %c\n\n", result, to);
-    } else {
-      printf("Error: Invalid unit selected.\n\n");
     }
   }
 
   return 0;
 }
 
+void show_menu(void) {
+  printf("=== Unit Converter ===\n\n");
+  printf("1. Temperature\n2. Length\n3. Weight\n4. Time\n5. Exit\n");
+  printf("Select an option: ");
+}
+
 void clear_input_buffer(void) {
   while (getchar() != '\n')
     ;
+}
+
+int read_integer(int *value) {
+  if (scanf("%d", value) != 1) {
+    printf("Error: Invalid option. Please select 1-5.\n\n");
+    clear_input_buffer();
+    return FALSE;
+  }
+  clear_input_buffer();
+  return TRUE;
 }
 
 int read_double(double *value) {
@@ -127,8 +132,9 @@ int read_double(double *value) {
   return TRUE;
 }
 
-int read_integer(int *value) {
-  if (scanf("%d", value) != 1) {
+int read_char(char *value) {
+  if (scanf(" %c", value) != 1) {
+    printf("Error: That is not a valid unit. Try again.\n\n");
     clear_input_buffer();
     return FALSE;
   }
@@ -136,12 +142,19 @@ int read_integer(int *value) {
   return TRUE;
 }
 
-int read_char(char *value) {
-  if (scanf(" %c", value) != 1) {
-    clear_input_buffer();
+int read_conversion_input(double *value, char *from, char *to) {
+  printf("Enter value: ");
+  if (!read_double(value))
     return FALSE;
-  }
-  clear_input_buffer();
+
+  printf("Enter source unit: ");
+  if (!read_char(from))
+    return FALSE;
+
+  printf("Enter target unit: ");
+  if (!read_char(to))
+    return FALSE;
+
   return TRUE;
 }
 
@@ -162,7 +175,80 @@ void show_unit_options(int option) {
   }
 }
 
-double convert_temperature(double value, char from, char to, int *error) {
+void handle_error(Status status) {
+  switch (status) {
+  case ERR_INVALID_UNIT:
+    printf("Error: Invalid unit selected.\n\n");
+    break;
+  case ERR_INVALID_OPTION:
+    printf("Error: Invalid option.\n\n");
+    break;
+  case SUCCESS:
+    break;
+  }
+}
+
+void run_temperature_conversion(void) {
+  double value, result;
+  char from, to;
+
+  if (!read_conversion_input(&value, &from, &to))
+    return;
+
+  Status status = convert_temperature(value, from, to, &result);
+  if (status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", result, to);
+  } else {
+    handle_error(status);
+  }
+}
+
+void run_length_conversion(void) {
+  double value, result;
+  char from, to;
+
+  if (!read_conversion_input(&value, &from, &to))
+    return;
+
+  Status status = convert_length(value, from, to, &result);
+  if (status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", result, to);
+  } else {
+    handle_error(status);
+  }
+}
+
+void run_weight_conversion(void) {
+  double value, result;
+  char from, to;
+
+  if (!read_conversion_input(&value, &from, &to))
+    return;
+
+  Status status = convert_weight(value, from, to, &result);
+  if (status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", result, to);
+  } else {
+    handle_error(status);
+  }
+}
+
+void run_time_conversion(void) {
+  double value, result;
+  char from, to;
+
+  if (!read_conversion_input(&value, &from, &to))
+    return;
+
+  Status status = convert_time(value, from, to, &result);
+  if (status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", result, to);
+  } else {
+    handle_error(status);
+  }
+}
+
+Status convert_temperature(double value, char from, char to, double *result) {
   double celsius;
 
   if (from == 'C' || from == 'c')
@@ -171,23 +257,26 @@ double convert_temperature(double value, char from, char to, int *error) {
     celsius = (value - FAHRENHEIT_OFFSET) / FAHRENHEIT_RATIO;
   else if (from == 'K' || from == 'k')
     celsius = value - KELVIN_OFFSET;
-  else {
-    *error = TRUE;
-    return 0.0;
+  else
+    return ERR_INVALID_UNIT;
+
+  if (to == 'C' || to == 'c') {
+    *result = celsius;
+    return SUCCESS;
+  }
+  if (to == 'F' || to == 'f') {
+    *result = celsius * FAHRENHEIT_RATIO + FAHRENHEIT_OFFSET;
+    return SUCCESS;
+  }
+  if (to == 'K' || to == 'k') {
+    *result = celsius + KELVIN_OFFSET;
+    return SUCCESS;
   }
 
-  if (to == 'C' || to == 'c')
-    return celsius;
-  if (to == 'F' || to == 'f')
-    return celsius * FAHRENHEIT_RATIO + FAHRENHEIT_OFFSET;
-  if (to == 'K' || to == 'k')
-    return celsius + KELVIN_OFFSET;
-
-  *error = TRUE;
-  return 0.0;
+  return ERR_INVALID_UNIT;
 }
 
-double convert_length(double value, char from, char to, int *error) {
+Status convert_length(double value, char from, char to, double *result) {
   double meters;
 
   if (from == 'M' || from == 'm')
@@ -198,25 +287,30 @@ double convert_length(double value, char from, char to, int *error) {
     meters = value * METERS_PER_MILE;
   else if (from == 'F' || from == 'f')
     meters = value * METERS_PER_FOOT;
-  else {
-    *error = TRUE;
-    return 0.0;
+  else
+    return ERR_INVALID_UNIT;
+
+  if (to == 'M' || to == 'm') {
+    *result = meters;
+    return SUCCESS;
+  }
+  if (to == 'K' || to == 'k') {
+    *result = meters / METERS_PER_KM;
+    return SUCCESS;
+  }
+  if (to == 'I' || to == 'i') {
+    *result = meters / METERS_PER_MILE;
+    return SUCCESS;
+  }
+  if (to == 'F' || to == 'f') {
+    *result = meters / METERS_PER_FOOT;
+    return SUCCESS;
   }
 
-  if (to == 'M' || to == 'm')
-    return meters;
-  if (to == 'K' || to == 'k')
-    return meters / METERS_PER_KM;
-  if (to == 'I' || to == 'i')
-    return meters / METERS_PER_MILE;
-  if (to == 'F' || to == 'f')
-    return meters / METERS_PER_FOOT;
-
-  *error = TRUE;
-  return 0.0;
+  return ERR_INVALID_UNIT;
 }
 
-double convert_weight(double value, char from, char to, int *error) {
+Status convert_weight(double value, char from, char to, double *result) {
   double kg;
 
   if (from == 'K' || from == 'k')
@@ -225,23 +319,26 @@ double convert_weight(double value, char from, char to, int *error) {
     kg = value * KG_PER_POUND;
   else if (from == 'O' || from == 'o')
     kg = value * KG_PER_OUNCE;
-  else {
-    *error = TRUE;
-    return 0.0;
+  else
+    return ERR_INVALID_UNIT;
+
+  if (to == 'K' || to == 'k') {
+    *result = kg;
+    return SUCCESS;
+  }
+  if (to == 'P' || to == 'p') {
+    *result = kg / KG_PER_POUND;
+    return SUCCESS;
+  }
+  if (to == 'O' || to == 'o') {
+    *result = kg / KG_PER_OUNCE;
+    return SUCCESS;
   }
 
-  if (to == 'K' || to == 'k')
-    return kg;
-  if (to == 'P' || to == 'p')
-    return kg / KG_PER_POUND;
-  if (to == 'O' || to == 'o')
-    return kg / KG_PER_OUNCE;
-
-  *error = TRUE;
-  return 0.0;
+  return ERR_INVALID_UNIT;
 }
 
-double convert_time(double value, char from, char to, int *error) {
+Status convert_time(double value, char from, char to, double *result) {
   double seconds;
 
   if (from == 'S' || from == 's')
@@ -250,18 +347,21 @@ double convert_time(double value, char from, char to, int *error) {
     seconds = value * SECONDS_PER_MINUTE;
   else if (from == 'H' || from == 'h')
     seconds = value * SECONDS_PER_HOUR;
-  else {
-    *error = TRUE;
-    return 0.0;
+  else
+    return ERR_INVALID_UNIT;
+
+  if (to == 'S' || to == 's') {
+    *result = seconds;
+    return SUCCESS;
+  }
+  if (to == 'M' || to == 'm') {
+    *result = seconds / SECONDS_PER_MINUTE;
+    return SUCCESS;
+  }
+  if (to == 'H' || to == 'h') {
+    *result = seconds / SECONDS_PER_HOUR;
+    return SUCCESS;
   }
 
-  if (to == 'S' || to == 's')
-    return seconds;
-  if (to == 'M' || to == 'm')
-    return seconds / SECONDS_PER_MINUTE;
-  if (to == 'H' || to == 'h')
-    return seconds / SECONDS_PER_HOUR;
-
-  *error = TRUE;
-  return 0.0;
+  return ERR_INVALID_UNIT;
 }

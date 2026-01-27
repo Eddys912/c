@@ -34,10 +34,10 @@ typedef enum {
 
 void show_menu(void);
 void clear_input_buffer(void);
-void handle_error(Status status);
 int read_integer(int *value);
 int read_double(double *value);
 int read_two_numbers(double *num1, double *num2);
+void handle_error(Status status);
 
 Status basic_operation(int option, double num1, double num2, double *result);
 Status power(double base, int exponent, double *result);
