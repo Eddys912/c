@@ -32,6 +32,11 @@ typedef enum {
   ERR_INVALID_INPUT
 } Status;
 
+typedef struct {
+  Status status;
+  double value;
+} Result;
+
 void show_menu(void);
 void clear_input_buffer(void);
 Status read_integer(int *value);
@@ -39,10 +44,10 @@ Status read_double(double *value);
 Status read_two_numbers(double *num1, double *num2);
 void handle_error(Status status);
 
-Status basic_operation(int option, double num1, double num2, double *result);
-Status power(double base, int exponent, double *result);
-Status sqroot(double num, double *result);
-Status factorial(int num, double *result);
+Result basic_operation(int option, double num1, double num2);
+Result power(double base, int exponent);
+Result sqroot(double num);
+Result factorial(int num);
 
 void run_basic_operation(int option);
 void run_power_operation(void);
@@ -158,7 +163,7 @@ void handle_error(Status status) {
 }
 
 void run_basic_operation(int option) {
-  double num1, num2, result;
+  double num1, num2;
   Status status;
   status = read_two_numbers(&num1, &num2);
   if (status != SUCCESS) {
@@ -166,16 +171,16 @@ void run_basic_operation(int option) {
     return;
   }
 
-  status = basic_operation(option, num1, num2, &result);
-  if (status == SUCCESS) {
-    printf("\n  - Result: %.2f\n\n", result);
+  Result res = basic_operation(option, num1, num2);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f\n\n", res.value);
   } else {
-    handle_error(status);
+    handle_error(res.status);
   }
 }
 
 void run_power_operation(void) {
-  double base, result;
+  double base;
   int exponent;
   Status status;
 
@@ -193,16 +198,16 @@ void run_power_operation(void) {
     return;
   }
 
-  status = power(base, exponent, &result);
-  if (status == SUCCESS) {
-    printf("\n  - Result: %.2f\n\n", result);
+  Result res = power(base, exponent);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f\n\n", res.value);
   } else {
-    handle_error(status);
+    handle_error(res.status);
   }
 }
 
 void run_sqrt_operation(void) {
-  double num, result;
+  double num;
   Status status;
 
   printf("\nEnter number: ");
@@ -212,16 +217,16 @@ void run_sqrt_operation(void) {
     return;
   }
 
-  status = sqroot(num, &result);
-  if (status == SUCCESS) {
-    printf("\n  - Result: %.4f\n\n", result);
+  Result res = sqroot(num);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.4f\n\n", res.value);
   } else {
-    handle_error(status);
+    handle_error(res.status);
   }
 }
 
 void run_factorial_operation(void) {
-  double num, result;
+  double num;
   Status status;
 
   printf("\nEnter number: ");
@@ -231,72 +236,81 @@ void run_factorial_operation(void) {
     return;
   }
 
-  status = factorial((int)num, &result);
-  if (status == SUCCESS) {
-    printf("\n  - Result: %.0f\n\n", result);
+  Result res = factorial((int)num);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.0f\n\n", res.value);
   } else {
-    handle_error(status);
+    handle_error(res.status);
   }
 }
 
-Status basic_operation(int option, double num1, double num2, double *result) {
+Result basic_operation(int option, double num1, double num2) {
+  Result res = {SUCCESS, 0.0};
   if (option == 1) {
-    *result = num1 + num2;
-    return SUCCESS;
+    res.value = num1 + num2;
   } else if (option == 2) {
-    *result = num1 - num2;
-    return SUCCESS;
+    res.value = num1 - num2;
   } else if (option == 3) {
-    *result = num1 * num2;
-    return SUCCESS;
+    res.value = num1 * num2;
   } else if (option == 4) {
-    if (num2 == 0.0)
-      return ERR_DIV_ZERO;
-    *result = num1 / num2;
-    return SUCCESS;
+    if (num2 == 0.0) {
+      res.status = ERR_DIV_ZERO;
+    } else {
+      res.value = num1 / num2;
+    }
+  } else {
+    res.status = ERR_INVALID_OPTION;
   }
-  return ERR_INVALID_OPTION;
+  return res;
 }
 
-Status power(double base, int exponent, double *result) {
-  double res = 1.0;
+Result power(double base, int exponent) {
+  Result res = {SUCCESS, 0.0};
+  double val = 1.0;
   int positive_exp = (exponent < 0) ? -exponent : exponent;
 
   for (int i = 0; i < positive_exp; i++) {
-    res *= base;
+    val *= base;
   }
 
-  *result = (exponent < 0) ? 1.0 / res : res;
-  return SUCCESS;
+  res.value = (exponent < 0) ? 1.0 / val : val;
+  return res;
 }
 
-Status sqroot(double num, double *result) {
-  if (num < 0.0)
-    return ERR_NEGATIVE_SQRT;
+Result sqroot(double num) {
+  Result res = {SUCCESS, 0.0};
+  if (num < 0.0) {
+    res.status = ERR_NEGATIVE_SQRT;
+    return res;
+  }
   if (num == 0.0) {
-    *result = 0.0;
-    return SUCCESS;
+    return res;
   }
 
-  double res = num;
+  double val = num;
   for (int i = 0; i < SQRT_ITERATIONS; i++) {
-    res = 0.5 * (res + num / res);
+    val = 0.5 * (val + num / val);
   }
 
-  *result = res;
-  return SUCCESS;
+  res.value = val;
+  return res;
 }
 
-Status factorial(int num, double *result) {
-  if (num < 0)
-    return ERR_NEGATIVE_FACTORIAL;
-  if (num > MAX_FACTORIAL)
-    return ERR_FACTORIAL_LIMIT;
-
-  double res = 1.0;
-  for (int i = 2; i <= num; i++) {
-    res *= i;
+Result factorial(int num) {
+  Result res = {SUCCESS, 0.0};
+  if (num < 0) {
+    res.status = ERR_NEGATIVE_FACTORIAL;
+    return res;
   }
-  *result = res;
-  return SUCCESS;
+  if (num > MAX_FACTORIAL) {
+    res.status = ERR_FACTORIAL_LIMIT;
+    return res;
+  }
+
+  double val = 1.0;
+  for (int i = 2; i <= num; i++) {
+    val *= i;
+  }
+  res.value = val;
+  return res;
 }

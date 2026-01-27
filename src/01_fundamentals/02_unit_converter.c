@@ -35,6 +35,11 @@ static const double SECONDS_PER_HOUR = 3600.0;
 
 typedef enum { SUCCESS, ERR_INVALID_UNIT, ERR_INVALID_OPTION, ERR_INVALID_INPUT } Status;
 
+typedef struct {
+  Status status;
+  double value;
+} Result;
+
 void show_menu(void);
 void clear_input_buffer(void);
 Status read_integer(int *value);
@@ -44,10 +49,10 @@ Status read_conversion_input(double *value, char *from, char *to);
 void show_unit_options(int option);
 void handle_error(Status status);
 
-Status convert_temperature(double value, char from, char to, double *result);
-Status convert_length(double value, char from, char to, double *result);
-Status convert_weight(double value, char from, char to, double *result);
-Status convert_time(double value, char from, char to, double *result);
+Result convert_temperature(double value, char from, char to);
+Result convert_length(double value, char from, char to);
+Result convert_weight(double value, char from, char to);
+Result convert_time(double value, char from, char to);
 
 void run_temperature_conversion(void);
 void run_length_conversion(void);
@@ -184,82 +189,83 @@ void handle_error(Status status) {
 }
 
 void run_temperature_conversion(void) {
-  double value, result;
+  double value;
   char from, to;
   Status status;
 
   status = read_conversion_input(&value, &from, &to);
-  if (status != SUCCESS){
+  if (status != SUCCESS) {
     handle_error(status);
     return;
   }
 
-  status = convert_temperature(value, from, to, &result);
-  if (status == SUCCESS) {
-    printf("\n  - Result: %.2f %c\n\n", result, to);
+  Result res = convert_temperature(value, from, to);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", res.value, to);
   } else {
-    handle_error(status);
+    handle_error(res.status);
   }
 }
 
 void run_length_conversion(void) {
-  double value, result;
+  double value;
   char from, to;
   Status status;
 
   status = read_conversion_input(&value, &from, &to);
-  if (status != SUCCESS){
+  if (status != SUCCESS) {
     handle_error(status);
     return;
   }
 
-  status = convert_length(value, from, to, &result);
-  if (status == SUCCESS) {
-    printf("\n  - Result: %.2f %c\n\n", result, to);
+  Result res = convert_length(value, from, to);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", res.value, to);
   } else {
-    handle_error(status);
+    handle_error(res.status);
   }
 }
 
 void run_weight_conversion(void) {
-  double value, result;
+  double value;
   char from, to;
   Status status;
 
   status = read_conversion_input(&value, &from, &to);
-  if (status != SUCCESS){
+  if (status != SUCCESS) {
     handle_error(status);
     return;
   }
 
-  status = convert_weight(value, from, to, &result);
-  if (status == SUCCESS) {
-    printf("\n  - Result: %.2f %c\n\n", result, to);
+  Result res = convert_weight(value, from, to);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", res.value, to);
   } else {
-    handle_error(status);
+    handle_error(res.status);
   }
 }
 
 void run_time_conversion(void) {
-  double value, result;
+  double value;
   char from, to;
   Status status;
 
   status = read_conversion_input(&value, &from, &to);
-  if (status != SUCCESS){
+  if (status != SUCCESS) {
     handle_error(status);
     return;
   }
 
-  status = convert_time(value, from, to, &result);
-  if (status == SUCCESS) {
-    printf("\n  - Result: %.2f %c\n\n", result, to);
+  Result res = convert_time(value, from, to);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", res.value, to);
   } else {
-    handle_error(status);
+    handle_error(res.status);
   }
 }
 
-Status convert_temperature(double value, char from, char to, double *result) {
+Result convert_temperature(double value, char from, char to) {
+  Result res = {SUCCESS, 0.0};
   double celsius;
 
   if (from == 'C' || from == 'c')
@@ -268,26 +274,26 @@ Status convert_temperature(double value, char from, char to, double *result) {
     celsius = (value - FAHRENHEIT_OFFSET) / FAHRENHEIT_RATIO;
   else if (from == 'K' || from == 'k')
     celsius = value - KELVIN_OFFSET;
-  else
-    return ERR_INVALID_UNIT;
+  else {
+    res.status = ERR_INVALID_UNIT;
+    return res;
+  }
 
   if (to == 'C' || to == 'c') {
-    *result = celsius;
-    return SUCCESS;
-  }
-  if (to == 'F' || to == 'f') {
-    *result = celsius * FAHRENHEIT_RATIO + FAHRENHEIT_OFFSET;
-    return SUCCESS;
-  }
-  if (to == 'K' || to == 'k') {
-    *result = celsius + KELVIN_OFFSET;
-    return SUCCESS;
+    res.value = celsius;
+  } else if (to == 'F' || to == 'f') {
+    res.value = celsius * FAHRENHEIT_RATIO + FAHRENHEIT_OFFSET;
+  } else if (to == 'K' || to == 'k') {
+    res.value = celsius + KELVIN_OFFSET;
+  } else {
+    res.status = ERR_INVALID_UNIT;
   }
 
-  return ERR_INVALID_UNIT;
+  return res;
 }
 
-Status convert_length(double value, char from, char to, double *result) {
+Result convert_length(double value, char from, char to) {
+  Result res = {SUCCESS, 0.0};
   double meters;
 
   if (from == 'M' || from == 'm')
@@ -298,30 +304,28 @@ Status convert_length(double value, char from, char to, double *result) {
     meters = value * METERS_PER_MILE;
   else if (from == 'F' || from == 'f')
     meters = value * METERS_PER_FOOT;
-  else
-    return ERR_INVALID_UNIT;
+  else {
+    res.status = ERR_INVALID_UNIT;
+    return res;
+  }
 
   if (to == 'M' || to == 'm') {
-    *result = meters;
-    return SUCCESS;
-  }
-  if (to == 'K' || to == 'k') {
-    *result = meters / METERS_PER_KM;
-    return SUCCESS;
-  }
-  if (to == 'I' || to == 'i') {
-    *result = meters / METERS_PER_MILE;
-    return SUCCESS;
-  }
-  if (to == 'F' || to == 'f') {
-    *result = meters / METERS_PER_FOOT;
-    return SUCCESS;
+    res.value = meters;
+  } else if (to == 'K' || to == 'k') {
+    res.value = meters / METERS_PER_KM;
+  } else if (to == 'I' || to == 'i') {
+    res.value = meters / METERS_PER_MILE;
+  } else if (to == 'F' || to == 'f') {
+    res.value = meters / METERS_PER_FOOT;
+  } else {
+    res.status = ERR_INVALID_UNIT;
   }
 
-  return ERR_INVALID_UNIT;
+  return res;
 }
 
-Status convert_weight(double value, char from, char to, double *result) {
+Result convert_weight(double value, char from, char to) {
+  Result res = {SUCCESS, 0.0};
   double kg;
 
   if (from == 'K' || from == 'k')
@@ -330,26 +334,26 @@ Status convert_weight(double value, char from, char to, double *result) {
     kg = value * KG_PER_POUND;
   else if (from == 'O' || from == 'o')
     kg = value * KG_PER_OUNCE;
-  else
-    return ERR_INVALID_UNIT;
+  else {
+    res.status = ERR_INVALID_UNIT;
+    return res;
+  }
 
   if (to == 'K' || to == 'k') {
-    *result = kg;
-    return SUCCESS;
-  }
-  if (to == 'P' || to == 'p') {
-    *result = kg / KG_PER_POUND;
-    return SUCCESS;
-  }
-  if (to == 'O' || to == 'o') {
-    *result = kg / KG_PER_OUNCE;
-    return SUCCESS;
+    res.value = kg;
+  } else if (to == 'P' || to == 'p') {
+    res.value = kg / KG_PER_POUND;
+  } else if (to == 'O' || to == 'o') {
+    res.value = kg / KG_PER_OUNCE;
+  } else {
+    res.status = ERR_INVALID_UNIT;
   }
 
-  return ERR_INVALID_UNIT;
+  return res;
 }
 
-Status convert_time(double value, char from, char to, double *result) {
+Result convert_time(double value, char from, char to) {
+  Result res = {SUCCESS, 0.0};
   double seconds;
 
   if (from == 'S' || from == 's')
@@ -358,21 +362,20 @@ Status convert_time(double value, char from, char to, double *result) {
     seconds = value * SECONDS_PER_MINUTE;
   else if (from == 'H' || from == 'h')
     seconds = value * SECONDS_PER_HOUR;
-  else
-    return ERR_INVALID_UNIT;
+  else {
+    res.status = ERR_INVALID_UNIT;
+    return res;
+  }
 
   if (to == 'S' || to == 's') {
-    *result = seconds;
-    return SUCCESS;
-  }
-  if (to == 'M' || to == 'm') {
-    *result = seconds / SECONDS_PER_MINUTE;
-    return SUCCESS;
-  }
-  if (to == 'H' || to == 'h') {
-    *result = seconds / SECONDS_PER_HOUR;
-    return SUCCESS;
+    res.value = seconds;
+  } else if (to == 'M' || to == 'm') {
+    res.value = seconds / SECONDS_PER_MINUTE;
+  } else if (to == 'H' || to == 'h') {
+    res.value = seconds / SECONDS_PER_HOUR;
+  } else {
+    res.status = ERR_INVALID_UNIT;
   }
 
-  return ERR_INVALID_UNIT;
+  return res;
 }
