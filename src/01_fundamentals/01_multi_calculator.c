@@ -164,8 +164,8 @@ void handle_error(Status status) {
 
 void run_basic_operation(int option) {
   double num1, num2;
-  Status status;
-  status = read_two_numbers(&num1, &num2);
+
+  Status status = read_two_numbers(&num1, &num2);
   if (status != SUCCESS) {
     handle_error(status);
     return;
@@ -208,10 +208,9 @@ void run_power_operation(void) {
 
 void run_sqrt_operation(void) {
   double num;
-  Status status;
 
   printf("\nEnter number: ");
-  status = read_double(&num);
+  Status status = read_double(&num);
   if (status != SUCCESS) {
     handle_error(status);
     return;
@@ -227,10 +226,9 @@ void run_sqrt_operation(void) {
 
 void run_factorial_operation(void) {
   double num;
-  Status status;
 
   printf("\nEnter number: ");
-  status = read_double(&num);
+  Status status = read_double(&num);
   if (status != SUCCESS) {
     handle_error(status);
     return;

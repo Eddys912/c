@@ -191,9 +191,7 @@ void handle_error(Status status) {
 void run_temperature_conversion(void) {
   double value;
   char from, to;
-  Status status;
-
-  status = read_conversion_input(&value, &from, &to);
+  Status status = read_conversion_input(&value, &from, &to);
   if (status != SUCCESS) {
     handle_error(status);
     return;
@@ -210,9 +208,7 @@ void run_temperature_conversion(void) {
 void run_length_conversion(void) {
   double value;
   char from, to;
-  Status status;
-
-  status = read_conversion_input(&value, &from, &to);
+  Status status = read_conversion_input(&value, &from, &to);
   if (status != SUCCESS) {
     handle_error(status);
     return;
@@ -229,9 +225,7 @@ void run_length_conversion(void) {
 void run_weight_conversion(void) {
   double value;
   char from, to;
-  Status status;
-
-  status = read_conversion_input(&value, &from, &to);
+  Status status = read_conversion_input(&value, &from, &to);
   if (status != SUCCESS) {
     handle_error(status);
     return;
@@ -248,9 +242,7 @@ void run_weight_conversion(void) {
 void run_time_conversion(void) {
   double value;
   char from, to;
-  Status status;
-
-  status = read_conversion_input(&value, &from, &to);
+  Status status = read_conversion_input(&value, &from, &to);
   if (status != SUCCESS) {
     handle_error(status);
     return;
