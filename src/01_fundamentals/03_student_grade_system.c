@@ -217,21 +217,22 @@ void handle_error(Status status) {
 Result calculate_student_average(double grades[]) {
   Result res = {SUCCESS, 0.0};
   double sum = 0.0;
+
   for (int i = 0; i < NUM_GRADES; i++) {
     sum += grades[i];
   }
+
   res.value = sum / NUM_GRADES;
   return res;
 }
 
 void determine_status(double average, char status_out[]) {
-  if (average >= EXCELLENT_GRADE) {
+  if (average >= EXCELLENT_GRADE)
     strcpy(status_out, "EXCELLENT");
-  } else if (average >= MIN_PASS_GRADE) {
+  else if (average >= MIN_PASS_GRADE)
     strcpy(status_out, "PASS");
-  } else {
+  else
     strcpy(status_out, "FAIL");
-  }
 }
 
 GroupStatistics calculate_group_statistics(int num_students, double avgs[]) {
