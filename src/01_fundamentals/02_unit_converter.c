@@ -40,6 +40,11 @@ typedef struct {
   double value;
 } Result;
 
+void run_temperature_conversion(void);
+void run_length_conversion(void);
+void run_weight_conversion(void);
+void run_time_conversion(void);
+
 void show_menu(void);
 void clear_input_buffer(void);
 Status read_integer(int *value);
@@ -53,11 +58,6 @@ Result convert_temperature(double value, char from, char to);
 Result convert_length(double value, char from, char to);
 Result convert_weight(double value, char from, char to);
 Result convert_time(double value, char from, char to);
-
-void run_temperature_conversion(void);
-void run_length_conversion(void);
-void run_weight_conversion(void);
-void run_time_conversion(void);
 
 int main(void) {
   int option = 0;
@@ -99,6 +99,74 @@ int main(void) {
   }
 
   return 0;
+}
+
+void run_temperature_conversion(void) {
+  double value;
+  char from, to;
+  Status status = read_conversion_input(&value, &from, &to);
+  if (status != SUCCESS) {
+    handle_error(status);
+    return;
+  }
+
+  Result res = convert_temperature(value, from, to);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", res.value, to);
+  } else {
+    handle_error(res.status);
+  }
+}
+
+void run_length_conversion(void) {
+  double value;
+  char from, to;
+  Status status = read_conversion_input(&value, &from, &to);
+  if (status != SUCCESS) {
+    handle_error(status);
+    return;
+  }
+
+  Result res = convert_length(value, from, to);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", res.value, to);
+  } else {
+    handle_error(res.status);
+  }
+}
+
+void run_weight_conversion(void) {
+  double value;
+  char from, to;
+  Status status = read_conversion_input(&value, &from, &to);
+  if (status != SUCCESS) {
+    handle_error(status);
+    return;
+  }
+
+  Result res = convert_weight(value, from, to);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", res.value, to);
+  } else {
+    handle_error(res.status);
+  }
+}
+
+void run_time_conversion(void) {
+  double value;
+  char from, to;
+  Status status = read_conversion_input(&value, &from, &to);
+  if (status != SUCCESS) {
+    handle_error(status);
+    return;
+  }
+
+  Result res = convert_time(value, from, to);
+  if (res.status == SUCCESS) {
+    printf("\n  - Result: %.2f %c\n\n", res.value, to);
+  } else {
+    handle_error(res.status);
+  }
 }
 
 void show_menu(void) {
@@ -185,74 +253,6 @@ void handle_error(Status status) {
     break;
   case SUCCESS:
     break;
-  }
-}
-
-void run_temperature_conversion(void) {
-  double value;
-  char from, to;
-  Status status = read_conversion_input(&value, &from, &to);
-  if (status != SUCCESS) {
-    handle_error(status);
-    return;
-  }
-
-  Result res = convert_temperature(value, from, to);
-  if (res.status == SUCCESS) {
-    printf("\n  - Result: %.2f %c\n\n", res.value, to);
-  } else {
-    handle_error(res.status);
-  }
-}
-
-void run_length_conversion(void) {
-  double value;
-  char from, to;
-  Status status = read_conversion_input(&value, &from, &to);
-  if (status != SUCCESS) {
-    handle_error(status);
-    return;
-  }
-
-  Result res = convert_length(value, from, to);
-  if (res.status == SUCCESS) {
-    printf("\n  - Result: %.2f %c\n\n", res.value, to);
-  } else {
-    handle_error(res.status);
-  }
-}
-
-void run_weight_conversion(void) {
-  double value;
-  char from, to;
-  Status status = read_conversion_input(&value, &from, &to);
-  if (status != SUCCESS) {
-    handle_error(status);
-    return;
-  }
-
-  Result res = convert_weight(value, from, to);
-  if (res.status == SUCCESS) {
-    printf("\n  - Result: %.2f %c\n\n", res.value, to);
-  } else {
-    handle_error(res.status);
-  }
-}
-
-void run_time_conversion(void) {
-  double value;
-  char from, to;
-  Status status = read_conversion_input(&value, &from, &to);
-  if (status != SUCCESS) {
-    handle_error(status);
-    return;
-  }
-
-  Result res = convert_time(value, from, to);
-  if (res.status == SUCCESS) {
-    printf("\n  - Result: %.2f %c\n\n", res.value, to);
-  } else {
-    handle_error(res.status);
   }
 }
 

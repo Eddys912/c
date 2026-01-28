@@ -37,6 +37,11 @@ typedef struct {
   double value;
 } Result;
 
+void run_basic_operation(int option);
+void run_power_operation(void);
+void run_sqrt_operation(void);
+void run_factorial_operation(void);
+
 void show_menu(void);
 void clear_input_buffer(void);
 Status read_integer(int *value);
@@ -48,11 +53,6 @@ Result basic_operation(int option, double num1, double num2);
 Result power(double base, int exponent);
 Result sqroot(double num);
 Result factorial(int num);
-
-void run_basic_operation(int option);
-void run_power_operation(void);
-void run_sqrt_operation(void);
-void run_factorial_operation(void);
 
 int main(void) {
   int option = 0;
@@ -95,71 +95,6 @@ int main(void) {
   }
 
   return 0;
-}
-
-void show_menu(void) {
-  printf("=== Scientific Calculator ===\n\n");
-  printf("1. Addition\n2. Subtract\n3. Multiply\n4. Divide\n"
-         "5. Power\n6. Square Root\n7. Factorial\n8. Exit\n");
-  printf("Select an option: ");
-}
-
-void clear_input_buffer(void) {
-  while (getchar() != '\n')
-    ;
-}
-
-Status read_integer(int *value) {
-  if (scanf("%d", value) != 1) {
-    clear_input_buffer();
-    return ERR_INVALID_INPUT;
-  }
-  clear_input_buffer();
-  return SUCCESS;
-}
-
-Status read_double(double *value) {
-  if (scanf("%lf", value) != 1) {
-    clear_input_buffer();
-    return ERR_INVALID_INPUT;
-  }
-  clear_input_buffer();
-  return SUCCESS;
-}
-
-Status read_two_numbers(double *num1, double *num2) {
-  printf("\nEnter first number: ");
-  if (read_double(num1) != SUCCESS)
-    return ERR_INVALID_INPUT;
-  printf("Enter second number: ");
-  if (read_double(num2) != SUCCESS)
-    return ERR_INVALID_INPUT;
-  return SUCCESS;
-}
-
-void handle_error(Status status) {
-  switch (status) {
-  case ERR_DIV_ZERO:
-    printf("Error: Cannot divide by zero.\n\n");
-    break;
-  case ERR_NEGATIVE_SQRT:
-    printf("Error: Negative numbers not allowed for this operation.\n\n");
-    break;
-  case ERR_NEGATIVE_FACTORIAL:
-    printf("Error: Negative numbers not allowed for this operation.\n\n");
-    break;
-  case ERR_FACTORIAL_LIMIT:
-    printf("Error: Number too large for factorial (max 170).\n\n");
-    break;
-  case ERR_INVALID_OPTION:
-    printf("Error: Invalid operation.\n\n");
-    break;
-  case ERR_INVALID_INPUT:
-    printf("Error: Invalid input. Please enter valid numbers.\n\n");
-    break;
-  case SUCCESS:
-    break;
-  }
 }
 
 void run_basic_operation(int option) {
@@ -239,6 +174,71 @@ void run_factorial_operation(void) {
     printf("\n  - Result: %.0f\n\n", res.value);
   } else {
     handle_error(res.status);
+  }
+}
+
+void show_menu(void) {
+  printf("=== Scientific Calculator ===\n\n");
+  printf("1. Addition\n2. Subtract\n3. Multiply\n4. Divide\n"
+         "5. Power\n6. Square Root\n7. Factorial\n8. Exit\n");
+  printf("Select an option: ");
+}
+
+void clear_input_buffer(void) {
+  while (getchar() != '\n')
+    ;
+}
+
+Status read_integer(int *value) {
+  if (scanf("%d", value) != 1) {
+    clear_input_buffer();
+    return ERR_INVALID_INPUT;
+  }
+  clear_input_buffer();
+  return SUCCESS;
+}
+
+Status read_double(double *value) {
+  if (scanf("%lf", value) != 1) {
+    clear_input_buffer();
+    return ERR_INVALID_INPUT;
+  }
+  clear_input_buffer();
+  return SUCCESS;
+}
+
+Status read_two_numbers(double *num1, double *num2) {
+  printf("\nEnter first number: ");
+  if (read_double(num1) != SUCCESS)
+    return ERR_INVALID_INPUT;
+  printf("Enter second number: ");
+  if (read_double(num2) != SUCCESS)
+    return ERR_INVALID_INPUT;
+  return SUCCESS;
+}
+
+void handle_error(Status status) {
+  switch (status) {
+  case ERR_DIV_ZERO:
+    printf("Error: Cannot divide by zero.\n\n");
+    break;
+  case ERR_NEGATIVE_SQRT:
+    printf("Error: Negative numbers not allowed for this operation.\n\n");
+    break;
+  case ERR_NEGATIVE_FACTORIAL:
+    printf("Error: Negative numbers not allowed for this operation.\n\n");
+    break;
+  case ERR_FACTORIAL_LIMIT:
+    printf("Error: Number too large for factorial (max 170).\n\n");
+    break;
+  case ERR_INVALID_OPTION:
+    printf("Error: Invalid operation.\n\n");
+    break;
+  case ERR_INVALID_INPUT:
+    printf("Error: Invalid input. Please enter valid numbers.\n\n");
+    break;
+  case SUCCESS:
+    break;
   }
 }
 
