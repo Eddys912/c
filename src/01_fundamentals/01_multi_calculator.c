@@ -18,7 +18,8 @@
 #include <stdio.h>
 
 #define TRUE 1
-#define EXIT_OPTION 8
+#define MIN_OPTION 1
+#define MAX_OPTION 8
 #define SQRT_ITERATIONS 20
 #define MAX_FACTORIAL 170
 
@@ -29,7 +30,8 @@ typedef enum {
   ERR_NEGATIVE_FACTORIAL,
   ERR_FACTORIAL_LIMIT,
   ERR_INVALID_OPTION,
-  ERR_INVALID_INPUT
+  ERR_INVALID_INPUT,
+  ERR_UNDEFINED
 } Status;
 
 typedef struct {
@@ -61,17 +63,17 @@ int main(void) {
     show_menu();
 
     if (read_integer(&option) != SUCCESS) {
-      printf("Error: Invalid option. Please select 1-8.\n\n");
+      handle_error(ERR_INVALID_INPUT);
       continue;
     }
 
-    if (option == EXIT_OPTION) {
+    if (option == MAX_OPTION) {
       printf("\nThank you for using the calculator!\n");
       break;
     }
 
-    if (option < 1 || option > 8) {
-      printf("Error: Invalid option. Please select 1-8.\n\n");
+    if (option < MIN_OPTION || option > MAX_OPTION) {
+      handle_error(ERR_INVALID_OPTION);
       continue;
     }
 
@@ -107,10 +109,11 @@ void run_basic_operation(int option) {
   }
 
   Result res = basic_operation(option, num1, num2);
-  if (res.status == SUCCESS)
+  if (res.status == SUCCESS) {
     printf("\n  - Result: %.2f\n\n", res.value);
-  else
+  } else {
     handle_error(res.status);
+  }
 }
 
 void run_power_operation(void) {
@@ -133,10 +136,11 @@ void run_power_operation(void) {
   }
 
   Result res = power(base, exponent);
-  if (res.status == SUCCESS)
+  if (res.status == SUCCESS) {
     printf("\n  - Result: %.2f\n\n", res.value);
-  else
+  } else {
     handle_error(res.status);
+  }
 }
 
 void run_sqrt_operation(void) {
@@ -150,10 +154,11 @@ void run_sqrt_operation(void) {
   }
 
   Result res = sqroot(num);
-  if (res.status == SUCCESS)
+  if (res.status == SUCCESS) {
     printf("\n  - Result: %.4f\n\n", res.value);
-  else
+  } else {
     handle_error(res.status);
+  }
 }
 
 void run_factorial_operation(void) {
@@ -167,10 +172,11 @@ void run_factorial_operation(void) {
   }
 
   Result res = factorial((int)num);
-  if (res.status == SUCCESS)
+  if (res.status == SUCCESS) {
     printf("\n  - Result: %.0f\n\n", res.value);
-  else
+  } else {
     handle_error(res.status);
+  }
 }
 
 void show_menu(void) {
@@ -181,8 +187,9 @@ void show_menu(void) {
 }
 
 void clear_input_buffer(void) {
-  while (getchar() != '\n')
+  while (getchar() != '\n') {
     ;
+  }
 }
 
 Status read_integer(int *value) {
@@ -205,12 +212,14 @@ Status read_double(double *value) {
 
 Status read_two_numbers(double *num1, double *num2) {
   printf("\nEnter first number: ");
-  if (read_double(num1) != SUCCESS)
+  if (read_double(num1) != SUCCESS) {
     return ERR_INVALID_INPUT;
+  }
 
   printf("Enter second number: ");
-  if (read_double(num2) != SUCCESS)
+  if (read_double(num2) != SUCCESS) {
     return ERR_INVALID_INPUT;
+  }
 
   return SUCCESS;
 }
@@ -235,6 +244,9 @@ void handle_error(Status status) {
   case ERR_INVALID_INPUT:
     printf("Error: Invalid input. Please enter valid numbers.\n\n");
     break;
+  case ERR_UNDEFINED:
+    printf("Error: Mathematical operation is undefined (0^0).\n\n");
+    break;
   case SUCCESS:
     break;
   }
@@ -243,25 +255,33 @@ void handle_error(Status status) {
 Result basic_operation(int option, double num1, double num2) {
   Result res = {SUCCESS, 0.0};
 
-  if (option == 1)
+  if (option == 1) {
     res.value = num1 + num2;
-  else if (option == 2)
+  } else if (option == 2) {
     res.value = num1 - num2;
-  else if (option == 3)
+  } else if (option == 3) {
     res.value = num1 * num2;
-  else if (option == 4) {
-    if (num2 == 0.0)
+  } else if (option == 4) {
+    if (num2 == 0.0) {
       res.status = ERR_DIV_ZERO;
-    else
+    } else {
       res.value = num1 / num2;
-  } else
+    }
+  } else {
     res.status = ERR_INVALID_OPTION;
+  }
 
   return res;
 }
 
 Result power(double base, int exponent) {
   Result res = {SUCCESS, 0.0};
+
+  if (base == 0.0 && exponent == 0) {
+    res.status = ERR_UNDEFINED;
+    return res;
+  }
+
   double val = 1.0;
   int positive_exp = (exponent < 0) ? -exponent : exponent;
 
@@ -270,6 +290,7 @@ Result power(double base, int exponent) {
   }
 
   res.value = (exponent < 0) ? 1.0 / val : val;
+
   return res;
 }
 
@@ -281,8 +302,9 @@ Result sqroot(double num) {
     return res;
   }
 
-  if (num == 0.0)
+  if (num == 0.0) {
     return res;
+  }
 
   double val = num;
   for (int i = 0; i < SQRT_ITERATIONS; i++) {
@@ -290,6 +312,7 @@ Result sqroot(double num) {
   }
 
   res.value = val;
+
   return res;
 }
 
@@ -312,5 +335,6 @@ Result factorial(int num) {
   }
 
   res.value = val;
+
   return res;
 }

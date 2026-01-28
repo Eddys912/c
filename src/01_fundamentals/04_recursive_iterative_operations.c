@@ -19,18 +19,26 @@
 #include <time.h>
 
 #define TRUE 1
-#define EXIT_OPTION 5
+#define MIN_OPTION 1
+#define MAX_OPTION 5
 #define MIN_SPEED_DIFF 1.5
+#define MIN_MEASURABLE_TIME 0.000001
+#define MAX_FIBONACCI_TERM 20
 
-typedef enum { SUCCESS, ERR_INVALID_INPUT, ERR_NEGATIVE_VAL, ERR_INVALID_OPTION } Status;
+typedef enum {
+  SUCCESS,
+  ERR_INVALID_INPUT,
+  ERR_NEGATIVE_VAL,
+  ERR_FIBONACCI_LIMIT,
+  ERR_FIBONACCI_INVALID,
+  ERR_UNDEFINED
+} Status;
 
 typedef struct {
   Status status;
   double value;
   long count;
 } Result;
-
-long g_call_count = 0;
 
 void run_comparison(int option);
 
@@ -39,11 +47,6 @@ void clear_input_buffer(void);
 Status read_integer(int *value);
 Status read_double(double *value);
 void handle_error(Status status);
-
-double factorial_rec_logic(int n);
-double fibonacci_rec_logic(int n);
-double sum_natural_rec_logic(int n);
-double power_rec_logic(double base, int exp);
 
 Result factorial_rec(int n);
 Result factorial_ite(int n);
@@ -61,17 +64,17 @@ int main(void) {
     show_menu();
 
     if (read_integer(&option) != SUCCESS) {
-      printf("Error: Invalid option. Please select 1-5.\n\n");
+      handle_error(ERR_INVALID_INPUT);
       continue;
     }
 
-    if (option == EXIT_OPTION) {
+    if (option == MAX_OPTION) {
       printf("\nThank you for using the comparison tool!\n");
       break;
     }
 
-    if (option < 1 || option > 5) {
-      printf("Error: Invalid input.\n\n");
+    if (option < MIN_OPTION || option > MAX_OPTION) {
+      handle_error(ERR_INVALID_INPUT);
       continue;
     }
 
@@ -94,14 +97,22 @@ void run_comparison(int option) {
       handle_error(ERR_INVALID_INPUT);
       return;
     }
+
     printf("Enter exponent: ");
     if (read_integer(&exp) != SUCCESS) {
       handle_error(ERR_INVALID_INPUT);
       return;
     }
+
     n = exp;
+
   } else {
-    printf("Enter term (n): ");
+    if (option == 2) {
+      printf("Enter term (n, max %d): ", MAX_FIBONACCI_TERM);
+    } else {
+      printf("Enter term (n): ");
+    }
+
     if (read_integer(&n) != SUCCESS) {
       handle_error(ERR_INVALID_INPUT);
       return;
@@ -125,6 +136,7 @@ void run_comparison(int option) {
   default:
     return;
   }
+
   end = clock();
   time_rec = (double)(end - start) / CLOCKS_PER_SEC;
 
@@ -134,6 +146,7 @@ void run_comparison(int option) {
   }
 
   start = clock();
+
   switch (option) {
   case 1:
     res_ite = factorial_ite(n);
@@ -150,29 +163,40 @@ void run_comparison(int option) {
   default:
     return;
   }
+
   end = clock();
   time_ite = (double)(end - start) / CLOCKS_PER_SEC;
 
   printf("\nRecursive method:\n");
-  printf("  - Result = %.0f\n  - Time: %.8f seconds\n  - Recursive calls: %ld\n", res_rec.value,
+  printf("  - Result = %.2f\n  - Time: %.8f seconds\n  - Recursive calls: %ld\n", res_rec.value,
          time_rec, res_rec.count);
 
   printf("\nIterative method:\n");
-  printf("  - Result = %.0f\n  - Time: %.8f seconds\n  - Iterations: %ld\n", res_ite.value,
+  printf("  - Result = %.2f\n  - Time: %.8f seconds\n  - Iterations: %ld\n", res_ite.value,
          time_ite, res_ite.count);
 
   printf("\nComparison:\n");
-  double speed_factor = 0.0;
-  if (time_rec > time_ite && time_ite > 0)
-    speed_factor = time_rec / time_ite;
-  else if (time_ite > time_rec && time_rec > 0)
-    speed_factor = time_ite / time_rec;
 
-  if (speed_factor >= MIN_SPEED_DIFF)
+  if (time_rec < MIN_MEASURABLE_TIME && time_ite < MIN_MEASURABLE_TIME) {
+    printf("  - Both methods executed too fast to measure accurately\n");
+    printf("  - Recommendation: Either method is suitable for this input size\n\n");
+    return;
+  }
+
+  double speed_factor = 0.0;
+
+  if (time_rec > time_ite && time_ite >= MIN_MEASURABLE_TIME) {
+    speed_factor = time_rec / time_ite;
+  } else if (time_ite > time_rec && time_rec >= MIN_MEASURABLE_TIME) {
+    speed_factor = time_ite / time_rec;
+  }
+
+  if (speed_factor >= MIN_SPEED_DIFF) {
     printf("  - %s method was %.2fx faster\n", (time_ite < time_rec) ? "Iterative" : "Recursive",
            speed_factor);
-  else
+  } else {
     printf("  - Negligible speed difference\n");
+  }
 
   printf("  - Recommendation: %s\n\n", (time_ite < time_rec)
                                            ? "Use iterative method for efficiency"
@@ -187,8 +211,9 @@ void show_menu(void) {
 
 void clear_input_buffer(void) {
   int c;
-  while ((c = getchar()) != '\n' && c != EOF)
+  while ((c = getchar()) != '\n' && c != EOF) {
     ;
+  }
 }
 
 Status read_integer(int *value) {
@@ -212,58 +237,42 @@ Status read_double(double *value) {
 void handle_error(Status status) {
   switch (status) {
   case ERR_INVALID_INPUT:
-    printf("Error: Invalid input. Please enter valid numbers.\n\n");
+    printf("Error: Invalid input.\n\n");
     break;
   case ERR_NEGATIVE_VAL:
     printf("Error: Operation not defined for negative values.\n\n");
     break;
-  case ERR_INVALID_OPTION:
-    printf("Error: Invalid option. Please select 1-5.\n\n");
+  case ERR_FIBONACCI_INVALID:
+    printf("Error: Fibonacci sequence starts at term 1.\n\n");
+    break;
+  case ERR_FIBONACCI_LIMIT:
+    printf("Error: Fibonacci term exceeds maximum (%d) for recursive method.\n\n",
+           MAX_FIBONACCI_TERM);
+    break;
+  case ERR_UNDEFINED:
+    printf("Error: Mathematical operation is undefined (0^0).\n\n");
     break;
   case SUCCESS:
     break;
   }
 }
 
-double factorial_rec_logic(int n) {
-  g_call_count++;
-  if (n <= 1)
-    return 1.0;
-  return (double)n * factorial_rec_logic(n - 1);
-}
-
-double fibonacci_rec_logic(int n) {
-  g_call_count++;
-  if (n <= 1)
-    return (double)n;
-  return fibonacci_rec_logic(n - 1) + fibonacci_rec_logic(n - 2);
-}
-
-double sum_natural_rec_logic(int n) {
-  g_call_count++;
-  if (n <= 0)
-    return 0.0;
-  return (double)n + sum_natural_rec_logic(n - 1);
-}
-
-double power_rec_logic(double base, int exp) {
-  g_call_count++;
-  if (exp == 0)
-    return 1.0;
-  return base * power_rec_logic(base, exp - 1);
-}
-
 Result factorial_rec(int n) {
-  Result res = {SUCCESS, 0.0, 0};
+  Result res = {SUCCESS, 1.0, 1};
 
   if (n < 0) {
     res.status = ERR_NEGATIVE_VAL;
+    res.count = 0;
     return res;
   }
 
-  g_call_count = 0;
-  res.value = factorial_rec_logic(n);
-  res.count = g_call_count;
+  if (n <= 1) {
+    return res;
+  }
+
+  Result prev = factorial_rec(n - 1);
+  res.value = n * prev.value;
+  res.count = prev.count + 1;
 
   return res;
 }
@@ -284,17 +293,49 @@ Result factorial_ite(int n) {
   return res;
 }
 
+/*
+ * Fibonacci Recursive Implementation
+ *
+ * Note: This implementation uses recursion without memoization.
+ * The time complexity is O(2^n) due to redundant calculations.
+ *
+ * For example, fib(5) calls:
+ *   fib(4) + fib(3)
+ *   fib(4) calls fib(3) + fib(2)
+ *   fib(3) is calculated twice, fib(2) multiple times, etc.
+ *
+ * This leads to exponential growth in function calls. n is limited to
+ * MAX_FIBONACCI_TERM to avoid stack overflow and excessive computation time.
+ */
 Result fibonacci_rec(int n) {
-  Result res = {SUCCESS, 0.0, 0};
+  Result res = {SUCCESS, 0.0, 1};
 
   if (n < 1) {
+    res.status = ERR_FIBONACCI_INVALID;
+    res.count = 0;
+    return res;
+  }
+
+  if (n > MAX_FIBONACCI_TERM) {
+    res.status = ERR_FIBONACCI_LIMIT;
+    res.count = 0;
+    return res;
+  }
+
+  if (n == 1) {
     res.value = 0;
     return res;
   }
 
-  g_call_count = 0;
-  res.value = fibonacci_rec_logic(n - 1);
-  res.count = g_call_count;
+  if (n == 2) {
+    res.value = 1;
+    return res;
+  }
+
+  Result fib1 = fibonacci_rec(n - 1);
+  Result fib2 = fibonacci_rec(n - 2);
+  res.value = fib1.value + fib2.value;
+  res.count = fib1.count + fib2.count + 1;
 
   return res;
 }
@@ -302,8 +343,10 @@ Result fibonacci_rec(int n) {
 Result fibonacci_ite(int n) {
   Result res = {SUCCESS, 0.0, 0};
 
-  if (n < 1)
+  if (n < 1) {
+    res.status = ERR_FIBONACCI_INVALID;
     return res;
+  }
 
   if (n == 1) {
     res.value = 0;
@@ -326,16 +369,21 @@ Result fibonacci_ite(int n) {
 }
 
 Result sum_natural_rec(int n) {
-  Result res = {SUCCESS, 0.0, 0};
+  Result res = {SUCCESS, 0.0, 1};
 
   if (n < 0) {
     res.status = ERR_NEGATIVE_VAL;
+    res.count = 0;
     return res;
   }
 
-  g_call_count = 0;
-  res.value = sum_natural_rec_logic(n);
-  res.count = g_call_count;
+  if (n == 0) {
+    return res;
+  }
+
+  Result prev = sum_natural_rec(n - 1);
+  res.value = n + prev.value;
+  res.count = prev.count + 1;
 
   return res;
 }
@@ -357,16 +405,31 @@ Result sum_natural_ite(int n) {
 }
 
 Result power_rec(double base, int exp) {
-  Result res = {SUCCESS, 0.0, 0};
+  Result res = {SUCCESS, 1.0, 1};
 
-  if (exp < 0) {
-    res.status = ERR_NEGATIVE_VAL;
+  if (base == 0.0 && exp == 0) {
+    res.status = ERR_UNDEFINED;
+    res.count = 0;
     return res;
   }
 
-  g_call_count = 0;
-  res.value = power_rec_logic(base, exp);
-  res.count = g_call_count;
+  if (exp == 0) {
+    return res;
+  }
+
+  if (exp < 0) {
+    Result pos_result = power_rec(base, -exp);
+    if (pos_result.status != SUCCESS) {
+      return pos_result;
+    }
+    res.value = 1.0 / pos_result.value;
+    res.count = pos_result.count;
+    return res;
+  }
+
+  Result prev = power_rec(base, exp - 1);
+  res.value = base * prev.value;
+  res.count = prev.count + 1;
 
   return res;
 }
@@ -374,14 +437,20 @@ Result power_rec(double base, int exp) {
 Result power_ite(double base, int exp) {
   Result res = {SUCCESS, 1.0, 0};
 
-  if (exp < 0) {
-    res.status = ERR_NEGATIVE_VAL;
+  if (base == 0.0 && exp == 0) {
+    res.status = ERR_UNDEFINED;
     return res;
   }
 
-  for (int i = 0; i < exp; i++) {
+  int positive_exp = (exp < 0) ? -exp : exp;
+
+  for (int i = 0; i < positive_exp; i++) {
     res.value *= base;
     res.count++;
+  }
+
+  if (exp < 0) {
+    res.value = 1.0 / res.value;
   }
 
   return res;

@@ -85,6 +85,7 @@ void run_student_entry(int *num_students, char names[][MAX_NAME_LENGTH],
     *num_students = 0;
     return;
   }
+
   if (*num_students <= 0 || *num_students > MAX_STUDENTS) {
     handle_error(ERR_INVALID_COUNT);
     *num_students = 0;
@@ -99,6 +100,7 @@ void run_student_entry(int *num_students, char names[][MAX_NAME_LENGTH],
 
     for (int j = 0; j < NUM_GRADES; j++) {
       double grade;
+
       do {
         printf("  Enter grade (0-100) %d: ", j + 1);
         if (read_double(&grade) != SUCCESS) {
@@ -171,8 +173,9 @@ void show_group_statistics(int num_students, char names[][MAX_NAME_LENGTH], doub
 
 void clear_input_buffer(void) {
   int c;
-  while ((c = getchar()) != '\n' && c != EOF)
+  while ((c = getchar()) != '\n' && c != EOF) {
     ;
+  }
 }
 
 Status read_integer(int *value) {
@@ -223,16 +226,18 @@ Result calculate_student_average(double grades[]) {
   }
 
   res.value = sum / NUM_GRADES;
+
   return res;
 }
 
 void determine_status(double average, char status_out[]) {
-  if (average >= EXCELLENT_GRADE)
+  if (average >= EXCELLENT_GRADE) {
     strcpy(status_out, "EXCELLENT");
-  else if (average >= MIN_PASS_GRADE)
+  } else if (average >= MIN_PASS_GRADE) {
     strcpy(status_out, "PASS");
-  else
+  } else {
     strcpy(status_out, "FAIL");
+  }
 }
 
 GroupStatistics calculate_group_statistics(int num_students, double avgs[]) {
@@ -245,9 +250,11 @@ GroupStatistics calculate_group_statistics(int num_students, double avgs[]) {
     if (avgs[i] > avgs[stats.best_student_idx]) {
       stats.best_student_idx = i;
     }
+
     if (avgs[i] < avgs[stats.worst_student_idx]) {
       stats.worst_student_idx = i;
     }
+
     if (avgs[i] >= MIN_PASS_GRADE) {
       stats.pass_count++;
     }

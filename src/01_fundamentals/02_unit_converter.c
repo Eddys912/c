@@ -17,7 +17,8 @@
 #include <stdio.h>
 
 #define TRUE 1
-#define EXIT_OPTION 5
+#define MIN_OPTION 1
+#define MAX_OPTION 5
 
 static const double KELVIN_OFFSET = 273.15;
 static const double FAHRENHEIT_RATIO = 1.8;
@@ -66,17 +67,17 @@ int main(void) {
     show_menu();
 
     if (read_integer(&option) != SUCCESS) {
-      printf("Error: Invalid option. Please select 1-5.\n\n");
+      handle_error(ERR_INVALID_INPUT);
       continue;
     }
 
-    if (option == EXIT_OPTION) {
+    if (option == MAX_OPTION) {
       printf("\nThank you for using the converter!\n");
       break;
     }
 
-    if (option < 1 || option > 5) {
-      printf("Error: Invalid option. Please select 1-5.\n\n");
+    if (option < MIN_OPTION || option > MAX_OPTION) {
+      handle_error(ERR_INVALID_OPTION);
       continue;
     }
 
@@ -180,8 +181,9 @@ void show_menu(void) {
 }
 
 void clear_input_buffer(void) {
-  while (getchar() != '\n')
+  while (getchar() != '\n') {
     ;
+  }
 }
 
 Status read_integer(int *value) {
@@ -264,13 +266,13 @@ Result convert_temperature(double value, char from, char to) {
   Result res = {SUCCESS, 0.0};
   double celsius;
 
-  if (from == 'C' || from == 'c')
+  if (from == 'C' || from == 'c') {
     celsius = value;
-  else if (from == 'F' || from == 'f')
+  } else if (from == 'F' || from == 'f') {
     celsius = (value - FAHRENHEIT_OFFSET) / FAHRENHEIT_RATIO;
-  else if (from == 'K' || from == 'k')
+  } else if (from == 'K' || from == 'k') {
     celsius = value - KELVIN_OFFSET;
-  else {
+  } else {
     res.status = ERR_INVALID_UNIT;
     return res;
   }
@@ -292,15 +294,15 @@ Result convert_length(double value, char from, char to) {
   Result res = {SUCCESS, 0.0};
   double meters;
 
-  if (from == 'M' || from == 'm')
+  if (from == 'M' || from == 'm') {
     meters = value;
-  else if (from == 'K' || from == 'k')
+  } else if (from == 'K' || from == 'k') {
     meters = value * METERS_PER_KM;
-  else if (from == 'I' || from == 'i')
+  } else if (from == 'I' || from == 'i') {
     meters = value * METERS_PER_MILE;
-  else if (from == 'F' || from == 'f')
+  } else if (from == 'F' || from == 'f') {
     meters = value * METERS_PER_FOOT;
-  else {
+  } else {
     res.status = ERR_INVALID_UNIT;
     return res;
   }
@@ -324,13 +326,13 @@ Result convert_weight(double value, char from, char to) {
   Result res = {SUCCESS, 0.0};
   double kg;
 
-  if (from == 'K' || from == 'k')
+  if (from == 'K' || from == 'k') {
     kg = value;
-  else if (from == 'P' || from == 'p')
+  } else if (from == 'P' || from == 'p') {
     kg = value * KG_PER_POUND;
-  else if (from == 'O' || from == 'o')
+  } else if (from == 'O' || from == 'o') {
     kg = value * KG_PER_OUNCE;
-  else {
+  } else {
     res.status = ERR_INVALID_UNIT;
     return res;
   }
@@ -352,13 +354,13 @@ Result convert_time(double value, char from, char to) {
   Result res = {SUCCESS, 0.0};
   double seconds;
 
-  if (from == 'S' || from == 's')
+  if (from == 'S' || from == 's') {
     seconds = value;
-  else if (from == 'M' || from == 'm')
+  } else if (from == 'M' || from == 'm') {
     seconds = value * SECONDS_PER_MINUTE;
-  else if (from == 'H' || from == 'h')
+  } else if (from == 'H' || from == 'h') {
     seconds = value * SECONDS_PER_HOUR;
-  else {
+  } else {
     res.status = ERR_INVALID_UNIT;
     return res;
   }
