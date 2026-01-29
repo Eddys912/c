@@ -114,7 +114,7 @@ void show_analysis_results(const TextAnalysisResult *result) {
   printf("  - Unique letters used: %d/%d\n", result->alphabet.unique_letters, ALPHABET_SIZE);
   printf("  - Is pangram? ");
   if (result->alphabet.unique_letters == ALPHABET_SIZE) {
-    printf("YES ✓\n");
+    printf("YES\n");
     printf("  - (Contains all 26 letters of the alphabet)\n");
   } else {
     printf("NO\n");
@@ -165,7 +165,7 @@ Status read_text_input(char *buffer, int max_size) {
 }
 
 TextAnalysisResult analyze_text_logic(const char *text) {
-  TextAnalysisResult result = {SUCCESS, {0}, {0}, {"", "", 0.0}};
+  TextAnalysisResult result = {SUCCESS, {0}, {{0}, {0}, 0}, {"", "", 0.0}};
 
   result.chars.total_chars = strlen(text);
 
