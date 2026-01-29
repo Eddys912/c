@@ -26,11 +26,11 @@ typedef struct {
   Status status;
   int area;
   const char *symmetry;
-} PatternResult;
+} PatternDisplay;
 
 void show_menu(void);
 void handle_error(Status status);
-PatternResult calculate_pattern_stats(int option, int height);
+void show_pattern_stats(int option, int height, PatternDisplay *stats);
 void run_pattern_generation(int option);
 
 void clear_input_buffer(void);
@@ -93,36 +93,36 @@ void handle_error(Status status) {
   }
 }
 
-PatternResult calculate_pattern_stats(int option, int height) {
-  PatternResult res = {SUCCESS, 0, "None"};
+void show_pattern_stats(int option, int height, PatternDisplay *stats) {
+  stats->status = SUCCESS;
+  stats->area = 0;
+  stats->symmetry = "None";
 
   switch (option) {
   case 1:
-    res.area = height * height;
-    res.symmetry = "Vertical";
+    stats->area = height * height;
+    stats->symmetry = "Vertical";
     break;
   case 2:
-    res.area = (int)(height * height * 0.5);
-    res.symmetry = "Vertical";
+    stats->area = (int)(height * height * 0.5);
+    stats->symmetry = "Vertical";
     break;
   case 3:
-    res.area = (int)(height * height * 0.5);
-    res.symmetry = "Vertical, Horizontal";
+    stats->area = (int)(height * height * 0.5);
+    stats->symmetry = "Vertical, Horizontal";
     break;
   case 4:
-    res.area = height * (height + 1) / 2;
-    res.symmetry = "None";
+    stats->area = height * (height + 1) / 2;
+    stats->symmetry = "None";
     break;
   case 5:
-    res.area = height * height;
-    res.symmetry = "Vertical, Horizontal";
+    stats->area = height * height;
+    stats->symmetry = "Vertical, Horizontal";
     break;
   default:
-    res.status = ERR_INVALID_OPTION;
+    stats->status = ERR_INVALID_OPTION;
     break;
   }
-
-  return res;
 }
 
 void run_pattern_generation(int option) {
@@ -170,10 +170,11 @@ void run_pattern_generation(int option) {
     break;
   }
 
-  PatternResult res = calculate_pattern_stats(option, height);
-  if (res.status == SUCCESS) {
-    printf("\n  - Approximate area: %d characters\n", res.area);
-    printf("  - Symmetry lines: %s\n\n", res.symmetry);
+  PatternDisplay stats;
+  show_pattern_stats(option, height, &stats);
+  if (stats.status == SUCCESS) {
+    printf("\n  - Approximate area: %d characters\n", stats.area);
+    printf("  - Symmetry lines: %s\n\n", stats.symmetry);
   }
 }
 
