@@ -41,19 +41,19 @@ typedef struct {
   double value;
 } Result;
 
+void show_menu(void);
+void show_unit_options(int option);
+void handle_error(Status status);
 void run_temperature_conversion(void);
 void run_length_conversion(void);
 void run_weight_conversion(void);
 void run_time_conversion(void);
 
-void show_menu(void);
 void clear_input_buffer(void);
 Status read_integer(int *value);
 Status read_double(double *value);
 Status read_char(char *value);
 Status read_conversion_input(double *value, char *from, char *to);
-void show_unit_options(int option);
-void handle_error(Status status);
 
 Result convert_temperature(double value, char from, char to);
 Result convert_length(double value, char from, char to);
@@ -100,6 +100,45 @@ int main(void) {
   }
 
   return 0;
+}
+
+void show_menu(void) {
+  printf("=== Unit Converter ===\n\n");
+  printf("1. Temperature\n2. Length\n3. Weight\n4. Time\n5. Exit\n");
+  printf("Select an option: ");
+}
+
+void show_unit_options(int option) {
+  switch (option) {
+  case 1:
+    printf("\nUnits: C (Celsius), F (Fahrenheit), K (Kelvin)\n");
+    break;
+  case 2:
+    printf("\nUnits: M (meters), K (km), I (miles), F (feet)\n");
+    break;
+  case 3:
+    printf("\nUnits: K (kg), P (pounds), O (ounces)\n");
+    break;
+  case 4:
+    printf("\nUnits: S (seconds), M (minutes), H (hours)\n");
+    break;
+  }
+}
+
+void handle_error(Status status) {
+  switch (status) {
+  case ERR_INVALID_UNIT:
+    printf("Error: Invalid unit selected.\n\n");
+    break;
+  case ERR_INVALID_OPTION:
+    printf("Error: Invalid option.\n\n");
+    break;
+  case ERR_INVALID_INPUT:
+    printf("Error: Invalid input.\n\n");
+    break;
+  case SUCCESS:
+    break;
+  }
 }
 
 void run_temperature_conversion(void) {
@@ -174,12 +213,6 @@ void run_time_conversion(void) {
   }
 }
 
-void show_menu(void) {
-  printf("=== Unit Converter ===\n\n");
-  printf("1. Temperature\n2. Length\n3. Weight\n4. Time\n5. Exit\n");
-  printf("Select an option: ");
-}
-
 void clear_input_buffer(void) {
   while (getchar() != '\n') {
     ;
@@ -227,39 +260,6 @@ Status read_conversion_input(double *value, char *from, char *to) {
     return ERR_INVALID_INPUT;
 
   return SUCCESS;
-}
-
-void show_unit_options(int option) {
-  switch (option) {
-  case 1:
-    printf("\nUnits: C (Celsius), F (Fahrenheit), K (Kelvin)\n");
-    break;
-  case 2:
-    printf("\nUnits: M (meters), K (km), I (miles), F (feet)\n");
-    break;
-  case 3:
-    printf("\nUnits: K (kg), P (pounds), O (ounces)\n");
-    break;
-  case 4:
-    printf("\nUnits: S (seconds), M (minutes), H (hours)\n");
-    break;
-  }
-}
-
-void handle_error(Status status) {
-  switch (status) {
-  case ERR_INVALID_UNIT:
-    printf("Error: Invalid unit selected.\n\n");
-    break;
-  case ERR_INVALID_OPTION:
-    printf("Error: Invalid option.\n\n");
-    break;
-  case ERR_INVALID_INPUT:
-    printf("Error: Invalid input.\n\n");
-    break;
-  case SUCCESS:
-    break;
-  }
 }
 
 Result convert_temperature(double value, char from, char to) {

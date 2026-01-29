@@ -41,6 +41,7 @@ typedef struct {
   double pass_rate;
 } GroupStatistics;
 
+void handle_error(Status status);
 void run_student_entry(int *num_students, char names[][MAX_NAME_LENGTH],
                        double grades[][NUM_GRADES], double averages[]);
 void show_student_report(int num_students, char names[][MAX_NAME_LENGTH],
@@ -51,7 +52,6 @@ void clear_input_buffer(void);
 Status read_integer(int *value);
 Status read_double(double *value);
 void read_string(char *buffer, int max_length);
-void handle_error(Status status);
 
 Result calculate_student_average(double grades[]);
 void determine_status(double average, char status_out[]);
@@ -74,6 +74,22 @@ int main(void) {
   }
 
   return 0;
+}
+
+void handle_error(Status status) {
+  switch (status) {
+  case ERR_INVALID_COUNT:
+    printf("Error: Invalid number of students (1-%d).\n\n", MAX_STUDENTS);
+    break;
+  case ERR_INVALID_GRADE:
+    printf("Error: Grade must be between 0 and 100.\n\n");
+    break;
+  case ERR_INVALID_INPUT:
+    printf("Error: Invalid input. Try again.\n\n");
+    break;
+  case SUCCESS:
+    break;
+  }
 }
 
 void run_student_entry(int *num_students, char names[][MAX_NAME_LENGTH],
@@ -199,22 +215,6 @@ Status read_double(double *value) {
 void read_string(char *buffer, int max_length) {
   fgets(buffer, max_length, stdin);
   buffer[strcspn(buffer, "\n")] = 0;
-}
-
-void handle_error(Status status) {
-  switch (status) {
-  case ERR_INVALID_COUNT:
-    printf("Error: Invalid number of students (1-%d).\n\n", MAX_STUDENTS);
-    break;
-  case ERR_INVALID_GRADE:
-    printf("Error: Grade must be between 0 and 100.\n\n");
-    break;
-  case ERR_INVALID_INPUT:
-    printf("Error: Invalid input. Try again.\n\n");
-    break;
-  case SUCCESS:
-    break;
-  }
 }
 
 Result calculate_student_average(double grades[]) {
