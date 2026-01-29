@@ -20,134 +20,244 @@
 #define TRUE 1
 #define FALSE 0
 #define MAX_BUFFER 2048
+#define MAX_WORD_LENGTH 50
 #define ALPHABET_SIZE 26
+#define VOWEL_COUNT 5
 
-int is_vowel(char c);
-void analyze_text(const char *text);
+typedef enum { SUCCESS, ERR_INVALID_INPUT, ERR_BUFFER_OVERFLOW } Status;
+
+typedef struct {
+  int total_chars;
+  int chars_no_space;
+  int words;
+  int sentences;
+  int lines;
+  int letters;
+  int spaces;
+  int punctuation;
+} CharStats;
+
+typedef struct {
+  int vowel_counts[VOWEL_COUNT];
+  int alpha_present[ALPHABET_SIZE];
+  int unique_letters;
+} AlphabetStats;
+
+typedef struct {
+  char longest[MAX_WORD_LENGTH];
+  char shortest[MAX_WORD_LENGTH];
+  double average_length;
+} WordStats;
+
+typedef struct {
+  Status status;
+  CharStats chars;
+  AlphabetStats alphabet;
+  WordStats words;
+} TextAnalysisResult;
+
+void show_analysis_results(const TextAnalysisResult *result);
+void run_text_analysis(void);
+
+Status read_text_input(char *buffer, int max_size);
+
+TextAnalysisResult analyze_text_logic(const char *text);
+int is_vowel_logic(char c);
+int get_vowel_index(char c);
 
 int main(void) {
-  char buffer[MAX_BUFFER] = "";
-  char line[256];
-
   printf("=== Text Analyzer ===\n");
-  printf("Enter text (type END on a new line to finish):\n");
+  printf("Enter text (type END on a new line to finish):\n\n");
 
-  while (TRUE) {
-    if (!fgets(line, sizeof(line), stdin))
-      break;
-    if (strncmp(line, "END", 3) == 0 && (line[3] == '\n' || line[3] == '\r'))
-      break;
-    strcat(buffer, line);
-  }
-
-  analyze_text(buffer);
+  run_text_analysis();
 
   return 0;
 }
 
-int is_vowel(char c) {
-  c = tolower(c);
-  return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
+void show_analysis_results(const TextAnalysisResult *result) {
+  printf("\n=== Text Statistics ===\n\n");
+
+  printf("Character Counts:\n");
+  printf("  - Total characters: %d\n", result->chars.total_chars);
+  printf("  - Characters (no spaces): %d\n", result->chars.chars_no_space);
+  printf("  - Words: %d\n", result->chars.words);
+  printf("  - Sentences: %d\n", result->chars.sentences);
+  printf("  - Lines: %d\n", result->chars.lines);
+
+  if (result->chars.words > 0) {
+    printf("\nWord Analysis:\n");
+    printf("  - Average word length: %.2f characters\n", result->words.average_length);
+    printf("  - Longest word: \"%s\" (%d characters)\n", result->words.longest,
+           (int)strlen(result->words.longest));
+    printf("  - Shortest word: \"%s\" (%d characters)\n", result->words.shortest,
+           (int)strlen(result->words.shortest));
+  }
+
+  printf("\nCharacter Distribution:\n");
+  printf("  - Letters: %d (%.2f%%)\n", result->chars.letters,
+         (result->chars.letters * 100.0) / result->chars.total_chars);
+  printf("  - Spaces: %d (%.2f%%)\n", result->chars.spaces,
+         (result->chars.spaces * 100.0) / result->chars.total_chars);
+  printf("  - Punctuation: %d (%.2f%%)\n", result->chars.punctuation,
+         (result->chars.punctuation * 100.0) / result->chars.total_chars);
+
+  printf("\nVowel Frequency:\n  ");
+  const char vowels[] = "aeiou";
+  for (int i = 0; i < VOWEL_COUNT; i++) {
+    printf("%c: %d", vowels[i], result->alphabet.vowel_counts[i]);
+    if (i < VOWEL_COUNT - 1) {
+      printf(", ");
+    }
+  }
+
+  printf("\n\nPangram Detection:\n");
+  printf("  - Unique letters used: %d/%d\n", result->alphabet.unique_letters, ALPHABET_SIZE);
+  printf("  - Is pangram? ");
+  if (result->alphabet.unique_letters == ALPHABET_SIZE) {
+    printf("YES ✓\n");
+    printf("  - (Contains all 26 letters of the alphabet)\n");
+  } else {
+    printf("NO\n");
+    printf("  - (Missing %d letters)\n", ALPHABET_SIZE - result->alphabet.unique_letters);
+  }
 }
 
-void analyze_text(const char *text) {
-  int total_chars = strlen(text);
-  int chars_no_space = 0, words = 0, sentences = 0, lines = 0;
-  int letters = 0, spaces = 0, punct = 0;
-  int vowel_counts[5] = {0}; // a, e, i, o, u
-  int alpha_present[ALPHABET_SIZE] = {0};
+void run_text_analysis(void) {
+  char buffer[MAX_BUFFER] = "";
 
-  char longest_word[50] = "", shortest_word[50] = "";
-  char current_word[50];
+  Status status = read_text_input(buffer, MAX_BUFFER);
+
+  if (status != SUCCESS) {
+    printf("Error: Failed to read input.\n");
+    return;
+  }
+
+  TextAnalysisResult result = analyze_text_logic(buffer);
+
+  if (result.status == SUCCESS) {
+    show_analysis_results(&result);
+  }
+}
+
+Status read_text_input(char *buffer, int max_size) {
+  char line[256];
+  int current_length = 0;
+
+  while (TRUE) {
+    if (!fgets(line, sizeof(line), stdin)) {
+      break;
+    }
+
+    if (strncmp(line, "END", 3) == 0 && (line[3] == '\n' || line[3] == '\r')) {
+      break;
+    }
+
+    int line_len = strlen(line);
+    if (current_length + line_len >= max_size - 1) {
+      return ERR_BUFFER_OVERFLOW;
+    }
+
+    strcat(buffer, line);
+    current_length += line_len;
+  }
+
+  return SUCCESS;
+}
+
+TextAnalysisResult analyze_text_logic(const char *text) {
+  TextAnalysisResult result = {SUCCESS, {0}, {0}, {"", "", 0.0}};
+
+  result.chars.total_chars = strlen(text);
+
+  char current_word[MAX_WORD_LENGTH];
   int word_idx = 0;
   double total_word_len = 0;
 
-  for (int i = 0; i <= total_chars; i++) {
+  for (int i = 0; i <= result.chars.total_chars; i++) {
     char c = text[i];
 
-    if (c == '\n')
-      lines++;
-    if (c == '.' || c == '!' || c == '?')
-      sentences++;
+    if (c == '\n') {
+      result.chars.lines++;
+    }
+
+    if (c == '.' || c == '!' || c == '?') {
+      result.chars.sentences++;
+    }
 
     if (isalpha(c)) {
-      letters++;
-      chars_no_space++;
-      alpha_present[tolower(c) - 'a'] = TRUE;
-      if (is_vowel(c)) {
-        char lc = tolower(c);
-        if (lc == 'a')
-          vowel_counts[0]++;
-        else if (lc == 'e')
-          vowel_counts[1]++;
-        else if (lc == 'i')
-          vowel_counts[2]++;
-        else if (lc == 'o')
-          vowel_counts[3]++;
-        else if (lc == 'u')
-          vowel_counts[4]++;
+      result.chars.letters++;
+      result.chars.chars_no_space++;
+      result.alphabet.alpha_present[tolower(c) - 'a'] = TRUE;
+
+      if (is_vowel_logic(c)) {
+        int idx = get_vowel_index(tolower(c));
+        if (idx >= 0) {
+          result.alphabet.vowel_counts[idx]++;
+        }
       }
-      current_word[word_idx++] = c;
+
+      if (word_idx < MAX_WORD_LENGTH - 1) {
+        current_word[word_idx++] = c;
+      }
     } else {
       if (isspace(c)) {
-        if (c != '\n' && c != '\r')
-          spaces++;
+        if (c != '\n' && c != '\r') {
+          result.chars.spaces++;
+        }
       } else if (ispunct(c)) {
-        punct++;
-        chars_no_space++;
+        result.chars.punctuation++;
+        result.chars.chars_no_space++;
       }
 
       if (word_idx > 0) {
         current_word[word_idx] = '\0';
-        words++;
+        result.chars.words++;
         total_word_len += word_idx;
 
-        if (strlen(longest_word) == 0 || word_idx > (int)strlen(longest_word))
-          strcpy(longest_word, current_word);
-        if (strlen(shortest_word) == 0 || word_idx < (int)strlen(shortest_word))
-          strcpy(shortest_word, current_word);
+        if (strlen(result.words.longest) == 0 || word_idx > (int)strlen(result.words.longest)) {
+          strcpy(result.words.longest, current_word);
+        }
+
+        if (strlen(result.words.shortest) == 0 || word_idx < (int)strlen(result.words.shortest)) {
+          strcpy(result.words.shortest, current_word);
+        }
 
         word_idx = 0;
       }
     }
   }
 
-  printf("\n=== Text Statistics ===\n");
-  printf("Total characters: %d\n", total_chars);
-  printf("Characters without spaces: %d\n", chars_no_space);
-  printf("Words: %d\n", words);
-  printf("Sentences: %d\n", sentences);
-  printf("Lines: %d\n", lines);
-
-  if (words > 0) {
-    printf("\nAverage word length: %.2f characters\n", total_word_len / words);
-    printf("Longest word: \"%s\" (%d characters)\n", longest_word, (int)strlen(longest_word));
-    printf("Shortest word: \"%s\" (%d characters)\n", shortest_word, (int)strlen(shortest_word));
+  if (result.chars.words > 0) {
+    result.words.average_length = total_word_len / result.chars.words;
   }
 
-  printf("\nCharacter Distribution:\n");
-  printf("Letters: %d (%.2f%%)\n", letters, (letters * 100.0) / total_chars);
-  printf("Spaces: %d (%.2f%%)\n", spaces, (spaces * 100.0) / total_chars);
-  printf("Punctuation: %d (%.2f%%)\n", punct, (punct * 100.0) / total_chars);
-
-  printf("\nVowel Frequency:\n");
-  char vowels[] = "aeiou";
-  for (int i = 0; i < 5; i++) {
-    printf("%c: %d", vowels[i], vowel_counts[i]);
-    if (i < 4)
-      printf(", ");
+  for (int i = 0; i < ALPHABET_SIZE; i++) {
+    if (result.alphabet.alpha_present[i]) {
+      result.alphabet.unique_letters++;
+    }
   }
 
-  int unique_letters = 0;
-  for (int i = 0; i < ALPHABET_SIZE; i++)
-    if (alpha_present[i])
-      unique_letters++;
+  return result;
+}
 
-  printf("\n\nIs it a pangram? ");
-  if (unique_letters == ALPHABET_SIZE) {
-    printf("YES \342\234\223\n");
-    printf("(Contains all 26 letters of the alphabet)\n");
-  } else {
-    printf("NO\n");
+int is_vowel_logic(char c) {
+  c = tolower(c);
+  return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
+}
+
+int get_vowel_index(char c) {
+  switch (c) {
+  case 'a':
+    return 0;
+  case 'e':
+    return 1;
+  case 'i':
+    return 2;
+  case 'o':
+    return 3;
+  case 'u':
+    return 4;
+  default:
+    return -1;
   }
 }

@@ -40,13 +40,13 @@ typedef struct {
   long count;
 } Result;
 
+void show_menu(void);
+void handle_error(Status status);
 void run_comparison(int option);
 
-void show_menu(void);
 void clear_input_buffer(void);
 Status read_integer(int *value);
 Status read_double(double *value);
-void handle_error(Status status);
 
 Result factorial_rec(int n);
 Result factorial_ite(int n);
@@ -84,6 +84,35 @@ int main(void) {
   return 0;
 }
 
+void show_menu(void) {
+  printf("=== Recursive vs Iterative Operations ===\n");
+  printf("1. Factorial\n2. Fibonacci\n3. Sum of naturals\n4. Power\n5. Exit\n");
+  printf("Select operation: ");
+}
+
+void handle_error(Status status) {
+  switch (status) {
+  case ERR_INVALID_INPUT:
+    printf("Error: Invalid input.\n\n");
+    break;
+  case ERR_NEGATIVE_VAL:
+    printf("Error: Operation not defined for negative values.\n\n");
+    break;
+  case ERR_FIBONACCI_INVALID:
+    printf("Error: Fibonacci sequence starts at term 1.\n\n");
+    break;
+  case ERR_FIBONACCI_LIMIT:
+    printf("Error: Fibonacci term exceeds maximum (%d) for recursive method.\n\n",
+           MAX_FIBONACCI_TERM);
+    break;
+  case ERR_UNDEFINED:
+    printf("Error: Mathematical operation is undefined (0^0).\n\n");
+    break;
+  case SUCCESS:
+    break;
+  }
+}
+
 void run_comparison(int option) {
   int n = 0, exp = 0;
   double base = 0;
@@ -112,7 +141,6 @@ void run_comparison(int option) {
     } else {
       printf("Enter term (n): ");
     }
-
     if (read_integer(&n) != SUCCESS) {
       handle_error(ERR_INVALID_INPUT);
       return;
@@ -120,6 +148,7 @@ void run_comparison(int option) {
   }
 
   start = clock();
+
   switch (option) {
   case 1:
     res_rec = factorial_rec(n);
@@ -176,15 +205,14 @@ void run_comparison(int option) {
          time_ite, res_ite.count);
 
   printf("\nComparison:\n");
-
   if (time_rec < MIN_MEASURABLE_TIME && time_ite < MIN_MEASURABLE_TIME) {
     printf("  - Both methods executed too fast to measure accurately\n");
-    printf("  - Recommendation: Either method is suitable for this input size\n\n");
+    printf("  - Recommendation: Either method is suitable for this input "
+           "size\n\n");
     return;
   }
 
   double speed_factor = 0.0;
-
   if (time_rec > time_ite && time_ite >= MIN_MEASURABLE_TIME) {
     speed_factor = time_rec / time_ite;
   } else if (time_ite > time_rec && time_rec >= MIN_MEASURABLE_TIME) {
@@ -198,15 +226,8 @@ void run_comparison(int option) {
     printf("  - Negligible speed difference\n");
   }
 
-  printf("  - Recommendation: %s\n\n", (time_ite < time_rec)
-                                           ? "Use iterative method for efficiency"
-                                           : "Either method yields similar performance");
-}
-
-void show_menu(void) {
-  printf("=== Recursive vs Iterative Operations ===\n");
-  printf("1. Factorial\n2. Fibonacci\n3. Sum of naturals\n4. Power\n5. Exit\n");
-  printf("Select operation: ");
+  printf("  - Recommendation: %s\n\n",
+         (time_ite < time_rec) ? "Use iterative method" : "Both offer similar performance");
 }
 
 void clear_input_buffer(void) {
@@ -232,29 +253,6 @@ Status read_double(double *value) {
   }
   clear_input_buffer();
   return SUCCESS;
-}
-
-void handle_error(Status status) {
-  switch (status) {
-  case ERR_INVALID_INPUT:
-    printf("Error: Invalid input.\n\n");
-    break;
-  case ERR_NEGATIVE_VAL:
-    printf("Error: Operation not defined for negative values.\n\n");
-    break;
-  case ERR_FIBONACCI_INVALID:
-    printf("Error: Fibonacci sequence starts at term 1.\n\n");
-    break;
-  case ERR_FIBONACCI_LIMIT:
-    printf("Error: Fibonacci term exceeds maximum (%d) for recursive method.\n\n",
-           MAX_FIBONACCI_TERM);
-    break;
-  case ERR_UNDEFINED:
-    printf("Error: Mathematical operation is undefined (0^0).\n\n");
-    break;
-  case SUCCESS:
-    break;
-  }
 }
 
 Result factorial_rec(int n) {
@@ -443,7 +441,6 @@ Result power_ite(double base, int exp) {
   }
 
   int positive_exp = (exp < 0) ? -exp : exp;
-
   for (int i = 0; i < positive_exp; i++) {
     res.value *= base;
     res.count++;
