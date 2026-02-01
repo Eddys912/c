@@ -160,7 +160,6 @@ GameResult process_game_session(int secret_number) {
 
   for (int i = 1; i <= MAX_ATTEMPTS; i++) {
     printf("\nAttempt %d/%d (Range: %d-%d): ", i, MAX_ATTEMPTS, min, max);
-
     if (read_integer(&guess) != SUCCESS) {
       handle_error(ERR_INVALID_INPUT);
       i--;

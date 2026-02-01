@@ -209,7 +209,6 @@ void run_prime_factorization(void) {
 
   PrimeFactor factors[64];
   int count = get_prime_factors(num, factors);
-
   printf("\n  - Factorization: %d = ", num);
   for (int i = 0; i < count; i++) {
     if (i > 0) {
