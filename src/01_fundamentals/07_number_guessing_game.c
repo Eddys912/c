@@ -47,7 +47,7 @@ void run_game_session(SessionStats *stats);
 void clear_input_buffer(void);
 Status read_integer(int *value);
 
-GameResult play_game_logic(int secret_number);
+GameResult process_game_session(int secret_number);
 int generate_secret_number(int min, int max);
 
 int main(void) {
@@ -117,30 +117,23 @@ void handle_error(Status status) {
 void run_game_session(SessionStats *stats) {
   int secret = generate_secret_number(DEFAULT_MIN, DEFAULT_MAX);
 
-  printf("\n------ Configuration ------\n\n");
-  printf("  - Range: %d-%d\n", DEFAULT_MIN, DEFAULT_MAX);
-  printf("  - Max attempts: %d\n", MAX_ATTEMPTS);
-  printf("  - Secret number generated...\n\n");
+  printf("\nGame Started! Guess the number between %d and %d.\n", DEFAULT_MIN, DEFAULT_MAX);
+  printf("You have %d attempts.\n", MAX_ATTEMPTS);
 
-  GameResult result = play_game_logic(secret);
+  GameResult result = process_game_session(secret);
 
-  if (result.status == SUCCESS) {
-    stats->games_played++;
-    stats->total_attempts += result.attempts;
+  stats->games_played++;
+  stats->total_attempts += result.attempts;
 
-    if (result.won) {
-      stats->games_won++;
-      printf("\nCORRECT\n");
-      printf("  - Number found: %d\n", secret);
-      printf("  - Attempts used: %d/%d\n", result.attempts, MAX_ATTEMPTS);
-      printf("  - Efficiency: %.0f%%\n", result.efficiency);
-    } else {
-      printf("\nGAME OVER\n");
-      printf("  - The number was: %d\n", secret);
-    }
-
-    show_stats(stats);
+  if (result.won) {
+    stats->games_won++;
+    printf("\nCONGRATULATIONS! You won in %d attempts.\n", result.attempts);
+    printf("Efficiency Score: %.1f%%\n", result.efficiency);
+  } else {
+    printf("\nGAME OVER. The number was %d.\n", secret);
   }
+
+  show_stats(stats);
 }
 
 void clear_input_buffer(void) {
@@ -159,42 +152,41 @@ Status read_integer(int *value) {
   return SUCCESS;
 }
 
-GameResult play_game_logic(int secret_number) {
-  GameResult result = {SUCCESS, FALSE, 0, 0.0};
-  int current_min = DEFAULT_MIN;
-  int current_max = DEFAULT_MAX;
-  int guess = 0;
+GameResult process_game_session(int secret_number) {
+  GameResult res = {SUCCESS, FALSE, 0, 0.0};
+  int guess;
+  int min = DEFAULT_MIN;
+  int max = DEFAULT_MAX;
 
-  while (result.attempts < MAX_ATTEMPTS) {
-    result.attempts++;
-    printf("Attempt %d/%d: ", result.attempts, MAX_ATTEMPTS);
+  for (int i = 1; i <= MAX_ATTEMPTS; i++) {
+    printf("\nAttempt %d/%d (Range: %d-%d): ", i, MAX_ATTEMPTS, min, max);
 
     if (read_integer(&guess) != SUCCESS) {
-      printf("Error: Invalid input. Try again.\n");
-      result.attempts--;
+      handle_error(ERR_INVALID_INPUT);
+      i--;
       continue;
     }
 
+    res.attempts = i;
+
     if (guess == secret_number) {
-      result.won = TRUE;
-      result.efficiency = ((double)(MAX_ATTEMPTS - result.attempts + 1) / MAX_ATTEMPTS) * 100.0;
-      break;
-    } else if (guess < secret_number) {
-      printf("  - Hint: The number is HIGHER\n");
-      if (guess >= current_min) {
-        current_min = guess + 1;
-      }
-    } else {
-      printf("  - Hint: The number is LOWER\n");
-      if (guess <= current_max) {
-        current_max = guess - 1;
-      }
+      res.won = TRUE;
+      res.efficiency = 100.0 * (1.0 - ((double)(i - 1) / MAX_ATTEMPTS));
+      return res;
     }
 
-    printf("  - Updated range: %d-%d\n\n", current_min, current_max);
+    if (guess < secret_number) {
+      printf("  -> Too LOW! ");
+      if (guess > min)
+        min = guess + 1;
+    } else {
+      printf("  -> Too HIGH! ");
+      if (guess < max)
+        max = guess - 1;
+    }
   }
 
-  return result;
+  return res;
 }
 
-int generate_secret_number(int min, int max) { return (rand() % (max - min + 1)) + min; }
+int generate_secret_number(int min, int max) { return min + rand() % (max - min + 1); }

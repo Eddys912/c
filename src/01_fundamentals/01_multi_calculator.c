@@ -284,7 +284,6 @@ Result power(double base, int exponent) {
 
   double val = 1.0;
   int positive_exp = (exponent < 0) ? -exponent : exponent;
-
   for (int i = 0; i < positive_exp; i++) {
     val *= base;
   }

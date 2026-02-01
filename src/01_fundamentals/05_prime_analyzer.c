@@ -51,8 +51,8 @@ void run_twin_primes(void);
 void clear_input_buffer(void);
 Status read_integer(int *value);
 
-Result is_prime_logic(int num);
-Status sieve_logic(int **is_prime, int n);
+Result is_prime(int num);
+Status compute_sieve(int **array, int n);
 int get_prime_factors(int num, PrimeFactor factors[]);
 
 int main(void) {
@@ -111,7 +111,7 @@ void handle_error(Status status) {
     printf("Error: Value exceeds allowed limit.\n\n");
     break;
   case ERR_INVALID_RANGE:
-    printf("Error: Invalid range. Ensure 0 <= start <= end <= %d.\n\n", MAX_RANGE);
+    printf("Error: Invalid range. 0 <= start <= end <= %d.\n\n", MAX_RANGE);
     break;
   case ERR_MEMORY_FAILURE:
     printf("Error: Memory allocation failed.\n\n");
@@ -145,7 +145,7 @@ void run_list_primes(void) {
   }
 
   int *is_prime_map = NULL;
-  Status status = sieve_logic(&is_prime_map, end);
+  Status status = compute_sieve(&is_prime_map, end);
   if (status != SUCCESS) {
     handle_error(status);
     return;
@@ -185,7 +185,7 @@ void run_check_primality(void) {
     return;
   }
 
-  Result res = is_prime_logic(num);
+  Result res = is_prime(num);
   if (res.status == SUCCESS) {
     printf("\n  - Result: %s\n\n", (res.value > 0.5) ? "IS PRIME" : "NOT PRIME");
   } else {
@@ -241,7 +241,7 @@ void run_twin_primes(void) {
   }
 
   int *is_prime_map = NULL;
-  Status status = sieve_logic(&is_prime_map, end);
+  Status status = compute_sieve(&is_prime_map, end);
   if (status != SUCCESS) {
     handle_error(status);
     return;
@@ -283,7 +283,7 @@ Status read_integer(int *value) {
   return SUCCESS;
 }
 
-Result is_prime_logic(int num) {
+Result is_prime(int num) {
   Result res = {SUCCESS, 0.0};
 
   if (num < 2) {
@@ -303,22 +303,25 @@ Result is_prime_logic(int num) {
   return res;
 }
 
-Status sieve_logic(int **is_prime, int n) {
-  *is_prime = (int *)malloc((n + 1) * sizeof(int));
-  if (*is_prime == NULL) {
+Status compute_sieve(int **array, int n) {
+  if (n < 0)
+    return ERR_INVALID_RANGE;
+
+  *array = (int *)malloc((n + 1) * sizeof(int));
+  if (*array == NULL) {
     return ERR_MEMORY_FAILURE;
   }
 
   for (int i = 0; i <= n; i++) {
-    (*is_prime)[i] = TRUE;
+    (*array)[i] = TRUE;
   }
 
-  (*is_prime)[0] = (*is_prime)[1] = FALSE;
+  (*array)[0] = (*array)[1] = FALSE;
 
   for (int p = 2; p * p <= n; p++) {
-    if ((*is_prime)[p] == TRUE) {
+    if ((*array)[p] == TRUE) {
       for (int i = p * p; i <= n; i += p) {
-        (*is_prime)[i] = FALSE;
+        (*array)[i] = FALSE;
       }
     }
   }

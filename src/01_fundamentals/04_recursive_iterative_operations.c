@@ -102,8 +102,7 @@ void handle_error(Status status) {
     printf("Error: Fibonacci sequence starts at term 1.\n\n");
     break;
   case ERR_FIBONACCI_LIMIT:
-    printf("Error: Fibonacci term exceeds maximum (%d) for recursive method.\n\n",
-           MAX_FIBONACCI_TERM);
+    printf("Error: Exceeds the maximum (%d).\n\n", MAX_FIBONACCI_TERM);
     break;
   case ERR_UNDEFINED:
     printf("Error: Mathematical operation is undefined (0^0).\n\n");
