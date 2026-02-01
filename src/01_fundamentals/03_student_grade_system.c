@@ -64,7 +64,7 @@ int main(void) {
   double averages[MAX_STUDENTS];
   int num_students = 0;
 
-  printf("=== Student Grade System ===\n\n");
+  printf("===== Student Grade System =====\n\n");
 
   run_student_entry(&num_students, names, all_grades, averages);
 
@@ -110,7 +110,7 @@ void run_student_entry(int *num_students, char names[][MAX_NAME_LENGTH],
 
   for (int i = 0; i < *num_students; i++) {
     do {
-      printf("Enter student name %d: ", i + 1);
+      printf("\nEnter student name %d: ", i + 1);
       read_string(names[i], MAX_NAME_LENGTH);
     } while (strlen(names[i]) == 0);
 
@@ -139,12 +139,12 @@ void show_student_report(int num_students, char names[][MAX_NAME_LENGTH],
                          double grades[][NUM_GRADES], double averages[]) {
   char status[MAX_STATUS_LENGTH];
 
-  printf("\n=== Students ===\n\n");
+  printf("\n----- Students -----\n");
 
   for (int i = 0; i < num_students; i++) {
     determine_status(averages[i], status);
 
-    printf("Student %d:\n", i + 1);
+    printf("\nStudent %d:\n", i + 1);
     printf("  - Name: %s\n", names[i]);
     printf("  - Grades (%d): ", NUM_GRADES);
 
@@ -152,7 +152,7 @@ void show_student_report(int num_students, char names[][MAX_NAME_LENGTH],
       printf("%.0f ", grades[i][j]);
     }
 
-    printf("\n  - Average: %.2f - %s\n\n", averages[i], status);
+    printf("\n  - Average: %.2f - %s\n", averages[i], status);
   }
 }
 
@@ -162,7 +162,7 @@ void show_group_statistics(int num_students, char names[][MAX_NAME_LENGTH], doub
 
   GroupStatistics stats = calculate_group_statistics(num_students, averages);
 
-  printf("\n=== General Statistics ===\n\n");
+  printf("\n----- General Statistics -----\n\n");
   printf("Group average: %.2f\n", stats.group_average);
   printf("Best student: %s (%.2f)\n", names[stats.best_student_idx],
          averages[stats.best_student_idx]);

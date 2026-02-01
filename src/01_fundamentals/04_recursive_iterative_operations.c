@@ -85,7 +85,7 @@ int main(void) {
 }
 
 void show_menu(void) {
-  printf("=== Recursive vs Iterative Operations ===\n");
+  printf("===== Recursive vs Iterative Operations =====\n\n");
   printf("1. Factorial\n2. Fibonacci\n3. Sum of naturals\n4. Power\n5. Exit\n");
   printf("Select operation: ");
 }
@@ -121,7 +121,7 @@ void run_comparison(int option) {
   double time_rec, time_ite;
 
   if (option == 4) {
-    printf("Enter base: ");
+    printf("\nEnter base: ");
     if (read_double(&base) != SUCCESS) {
       handle_error(ERR_INVALID_INPUT);
       return;
@@ -137,9 +137,9 @@ void run_comparison(int option) {
 
   } else {
     if (option == 2) {
-      printf("Enter term (n, max %d): ", MAX_FIBONACCI_TERM);
+      printf("\nEnter term (n, max %d): ", MAX_FIBONACCI_TERM);
     } else {
-      printf("Enter term (n): ");
+      printf("\nEnter term (n): ");
     }
     if (read_integer(&n) != SUCCESS) {
       handle_error(ERR_INVALID_INPUT);
@@ -196,19 +196,22 @@ void run_comparison(int option) {
   end = clock();
   time_ite = (double)(end - start) / CLOCKS_PER_SEC;
 
-  printf("\nRecursive method:\n");
-  printf("  - Result = %.2f\n  - Time: %.8f seconds\n  - Recursive calls: %ld\n", res_rec.value,
-         time_rec, res_rec.count);
+  printf("\n----- Methods -----\n\n");
 
-  printf("\nIterative method:\n");
-  printf("  - Result = %.2f\n  - Time: %.8f seconds\n  - Iterations: %ld\n", res_ite.value,
-         time_ite, res_ite.count);
+  printf("Recursive:\n");
+  printf("  - Result: %.2f\n", res_rec.value);
+  printf("  - Time: %.8f seconds\n", time_rec);
+  printf("  - Calls: %ld\n", res_rec.count);
 
-  printf("\nComparison:\n");
+  printf("\nIterative:\n");
+  printf("  - Result: %.2f\n", res_ite.value);
+  printf("  - Time: %.8f seconds\n", time_ite);
+  printf("  - Iterations: %ld\n", res_ite.count);
+
+  printf("\n----- Comparison -----\n\n");
   if (time_rec < MIN_MEASURABLE_TIME && time_ite < MIN_MEASURABLE_TIME) {
     printf("  - Both methods executed too fast to measure accurately\n");
-    printf("  - Recommendation: Either method is suitable for this input "
-           "size\n\n");
+    printf("  - Recommendation: Either method is suitable for this input size\n\n");
     return;
   }
 

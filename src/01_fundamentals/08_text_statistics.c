@@ -66,7 +66,7 @@ int is_vowel_logic(char c);
 int get_vowel_index(char c);
 
 int main(void) {
-  printf("=== Text Analyzer ===\n");
+  printf("=== Text Analyzer ===\n\n");
   printf("Enter text (type END on a new line to finish):\n\n");
 
   run_text_analysis();
@@ -75,7 +75,7 @@ int main(void) {
 }
 
 void show_analysis_results(const TextAnalysisResult *result) {
-  printf("\n=== Text Statistics ===\n\n");
+  printf("\n----- Text Statistics -----\n\n");
 
   printf("Character Counts:\n");
   printf("  - Total characters: %d\n", result->chars.total_chars);

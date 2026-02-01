@@ -83,13 +83,13 @@ int main(void) {
 }
 
 void show_menu(void) {
-  printf("=== Smart Guessing Game ===\n");
+  printf("=== Smart Guessing Game ===\n\n");
   printf("1. Play New Game\n2. Exit\n");
   printf("Option: ");
 }
 
 void show_stats(const SessionStats *stats) {
-  printf("\nSession Statistics:\n");
+  printf("\n------ Session Statistics ------\n\n");
   printf("  - Games played: %d\n", stats->games_played);
   printf("  - Victories: %d\n", stats->games_won);
 
@@ -117,7 +117,7 @@ void handle_error(Status status) {
 void run_game_session(SessionStats *stats) {
   int secret = generate_secret_number(DEFAULT_MIN, DEFAULT_MAX);
 
-  printf("\nConfiguration:\n");
+  printf("\n------ Configuration ------\n\n");
   printf("  - Range: %d-%d\n", DEFAULT_MIN, DEFAULT_MAX);
   printf("  - Max attempts: %d\n", MAX_ATTEMPTS);
   printf("  - Secret number generated...\n\n");
@@ -130,12 +130,12 @@ void run_game_session(SessionStats *stats) {
 
     if (result.won) {
       stats->games_won++;
-      printf("\nCORRECT!\n");
+      printf("\nCORRECT\n");
       printf("  - Number found: %d\n", secret);
       printf("  - Attempts used: %d/%d\n", result.attempts, MAX_ATTEMPTS);
       printf("  - Efficiency: %.0f%%\n", result.efficiency);
     } else {
-      printf("\nGAME OVER!\n");
+      printf("\nGAME OVER\n");
       printf("  - The number was: %d\n", secret);
     }
 
@@ -180,18 +180,18 @@ GameResult play_game_logic(int secret_number) {
       result.efficiency = ((double)(MAX_ATTEMPTS - result.attempts + 1) / MAX_ATTEMPTS) * 100.0;
       break;
     } else if (guess < secret_number) {
-      printf("Hint: The number is HIGHER\n");
+      printf("  - Hint: The number is HIGHER\n");
       if (guess >= current_min) {
         current_min = guess + 1;
       }
     } else {
-      printf("Hint: The number is LOWER\n");
+      printf("  - Hint: The number is LOWER\n");
       if (guess <= current_max) {
         current_max = guess - 1;
       }
     }
 
-    printf("Updated range: %d-%d\n\n", current_min, current_max);
+    printf("  - Updated range: %d-%d\n\n", current_min, current_max);
   }
 
   return result;

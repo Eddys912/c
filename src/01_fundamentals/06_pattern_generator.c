@@ -71,7 +71,7 @@ int main(void) {
 }
 
 void show_menu(void) {
-  printf("=== Pattern Generator ===\n");
+  printf("=== Pattern Generator ===\n\n");
   printf("1. Triangle\n2. Inverted Triangle\n3. Diamond\n"
          "4. Right Triangle\n5. Square\n6. Exit\n");
   printf("Select pattern: ");
@@ -129,7 +129,7 @@ void run_pattern_generation(int option) {
   int height;
   char character;
 
-  printf("Enter height (%d-%d): ", MIN_HEIGHT, MAX_HEIGHT);
+  printf("\nEnter height (%d-%d): ", MIN_HEIGHT, MAX_HEIGHT);
   if (read_integer(&height) != SUCCESS) {
     handle_error(ERR_INVALID_INPUT);
     return;

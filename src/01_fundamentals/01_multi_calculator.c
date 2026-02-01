@@ -100,7 +100,7 @@ int main(void) {
 }
 
 void show_menu(void) {
-  printf("=== Scientific Calculator ===\n\n");
+  printf("===== Scientific Calculator =====\n\n");
   printf("1. Addition\n2. Subtract\n3. Multiply\n4. Divide\n"
          "5. Power\n6. Square Root\n7. Factorial\n8. Exit\n");
   printf("Select an option: ");

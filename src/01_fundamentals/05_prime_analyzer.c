@@ -127,7 +127,7 @@ void handle_error(Status status) {
 void run_list_primes(void) {
   int start, end;
 
-  printf("Enter start range: ");
+  printf("\nEnter start range: ");
   if (read_integer(&start) != SUCCESS) {
     handle_error(ERR_INVALID_INPUT);
     return;
@@ -179,7 +179,7 @@ void run_list_primes(void) {
 void run_check_primality(void) {
   int num;
 
-  printf("Enter number: ");
+  printf("\nEnter number: ");
   if (read_integer(&num) != SUCCESS) {
     handle_error(ERR_INVALID_INPUT);
     return;
@@ -196,7 +196,7 @@ void run_check_primality(void) {
 void run_prime_factorization(void) {
   int num;
 
-  printf("Enter number (min 2): ");
+  printf("\nEnter number (min 2): ");
   if (read_integer(&num) != SUCCESS) {
     handle_error(ERR_INVALID_INPUT);
     return;
@@ -223,7 +223,7 @@ void run_prime_factorization(void) {
 void run_twin_primes(void) {
   int start, end;
 
-  printf("Enter start range: ");
+  printf("\nEnter start range: ");
   if (read_integer(&start) != SUCCESS) {
     handle_error(ERR_INVALID_INPUT);
     return;

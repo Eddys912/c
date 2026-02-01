@@ -103,7 +103,7 @@ int main(void) {
 }
 
 void show_menu(void) {
-  printf("=== Unit Converter ===\n\n");
+  printf("===== Unit Converter =====\n\n");
   printf("1. Temperature\n2. Length\n3. Weight\n4. Time\n5. Exit\n");
   printf("Select an option: ");
 }
