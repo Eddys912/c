@@ -1,137 +1,192 @@
 # Justfile for c-systems-fundamentals
 # Documentation: https://just.systems/man/en/
 
-set shell := ["bash", "-uc"]
+# Use bash shell with strict error handling
+set shell := ["bash", "-euo", "pipefail", "-c"]
 
 # Compiler and Flags
-cc        := "gcc"
-cflags    := "-Wall -Wextra -std=c99 -pthread"
-target    := "exercise"
+CC        := "gcc"
+CFLAGS    := "-Wall -Wextra -std=c99 -pthread"
+TARGET    := "exercise"
 
-# Colors for the terminal
-red       := `tput setaf 1 2>/dev/null || echo ''`
-green     := `tput setaf 2 2>/dev/null || echo ''`
-yellow    := `tput setaf 3 2>/dev/null || echo ''`
-cyan      := `tput setaf 6 2>/dev/null || echo ''`
-gray      := `tput setaf 8 2>/dev/null || echo ''`
-reset     := `tput sgr0 2>/dev/null || echo ''`
+# Directories
+SRC_DIR   := "src"
+FILES_DIR := "files"
+
+# Colors using ANSI escape codes
+RED       := '\033[0;31m'
+GREEN     := '\033[0;32m'
+YELLOW    := '\033[0;33m'
+CYAN      := '\033[0;36m'
+GRAY      := '\033[0;90m'
+END     := '\033[0m'
 
 # Status Prefixes
-error     := red    + "ERROR  " + reset
-info      := yellow + "INFO   " + reset
-success   := green  + "SUCCESS" + reset
-exec      := cyan   + "EXEC   " + reset
+ERROR     := RED    + "ERROR  " + END
+INFO      := YELLOW + "INFO   " + END
+SUCCESS   := GREEN  + "SUCCESS" + END
+EXEC      := CYAN   + "EXEC   " + END
 
 default: commands
 
 [no-exit-message]
 run file_input="":
   #!/usr/bin/env bash
-  set -euo pipefail
-  trap 'exit 0' SIGINT
-
-  if [ -z "{{file_input}}" ]; then
-    echo "{{error}} No file specified"
-    echo "{{info}} Usage: just run <file>"
+  # Validate input parameter
+  if [[ -z "{{file_input}}" ]]; then
+    echo -e "{{ERROR}} No file specified"
+    echo -e "{{INFO}} Usage: just run <file>"
     exit 1
   fi
 
-  if [ ! -d "src" ]; then
-    echo "{{error}} Directory 'src/' does not exist"
+  # Validate src directory exists
+  if [[ ! -d "{{SRC_DIR}}" ]]; then
+    echo -e "{{ERROR}} Directory '{{SRC_DIR}}/' does not exist"
     exit 1
   fi
 
-  total_exercises=$(find src -mindepth 2 -maxdepth 2 -type f -name "*.c" | wc -l)
-  if [ "$total_exercises" -eq 0 ]; then
-    echo "{{error}} No exercises found inside 'src/'"
-    echo "{{info}} Expected structure: src/<module>/<exercise>.c"
-    exit 1
-  fi
-
+  # Determine full file path
   if [[ "{{file_input}}" == *"/"* ]]; then
     file_path="{{file_input}}"
   else
-    file_path=$(find src -type f -name "{{file_input}}" | head -n 1)
-    if [ -z "$file_path" ]; then
-      echo "{{error}} File '{{file_input}}' not found"
-      echo "{{info}} Run 'just list' to see available exercises"
+    file_path=$(find {{SRC_DIR}} -type f -name "{{file_input}}" -print -quit)
+    if [[ -z "$file_path" ]]; then
+      echo -e "{{ERROR}} File '{{file_input}}' not found"
+      echo -e "{{INFO}} Run 'just list' to see available exercises"
       exit 1
     fi
   fi
 
-  if [ ! -f "$file_path" ]; then
-    echo "{{error}} File '$file_path' does not exist"
-    exit 1
-  fi
+    # Validate file exists and has .c extension
+    if [[ ! -f "$file_path" ]]; then
+      echo -e "{{ERROR}} File '$file_path' does not exist"
+      exit 1
+    fi
 
-  if [[ "$file_path" != *.c ]]; then
-    echo "{{error}} File '$file_path' is not a .c file"
-    exit 1
-  fi
+    if [[ "$file_path" != *.c ]]; then
+      echo -e "{{ERROR}} File '$file_path' is not a .c file"
+      exit 1
+    fi
 
-  mkdir -p files
+    # Create output directory for file operations
+    mkdir -p {{FILES_DIR}}
 
-  if ! {{cc}} {{cflags}} "$file_path" -o {{target}} 2>&1; then
-    echo "{{error}} Compilation failed: '$file_path'"
-    exit 1
-  fi
+    # Compile the exercise
+    if ! {{CC}} {{CFLAGS}} "$file_path" -o {{TARGET}} 2>&1; then
+      echo -e "{{ERROR}} Compilation failed: '$file_path'"
+      exit 1
+    fi
 
-  echo "{{exec}} Executing '$file_path'"
-  ./{{target}} || true
+    # Execute the compiled program
+    echo -e "{{EXEC}} Executing '$file_path'"
+    ./{{TARGET}} || true
 
-  echo "{{success}} Execution finished"
+    echo -e "{{SUCCESS}} Execution finished"
 
-  rm -f {{target}} files/*.bin
+    # Clean up generated files
+    rm -f {{TARGET}} {{FILES_DIR}}/*.bin
 
 [no-exit-message]
 list:
   #!/usr/bin/env bash
-
-  if [ ! -d "src" ]; then
-    echo "{{error}} Directory 'src/' does not exist"
+  if [[ ! -d "{{SRC_DIR}}" ]]; then
+    echo -e "{{ERROR}} Directory '{{SRC_DIR}}/' does not exist"
     exit 1
   fi
 
-  modules=$(find src -mindepth 1 -maxdepth 1 -type d | sort)
-  if [ -z "$modules" ]; then
-    echo "{{error}} No modules found inside 'src/'"
-    echo "{{info}} Expected structure: src/<module>/<exercise>.c"
+  modules=$(find {{SRC_DIR}} -mindepth 1 -maxdepth 1 -type d | sort)
+  if [[ -z "$modules" ]]; then
+    echo -e "{{ERROR}} No modules found inside '{{SRC_DIR}}/' "
+    echo -e "{{INFO}} Expected structure: {{SRC_DIR}}/<module>/<exercise>.c"
     exit 1
   fi
 
-  echo "{{info}} Available exercises by module:"
+  echo -e "{{INFO}} Available exercises by module:\n"
 
   while IFS= read -r dir; do
-    echo "  {{cyan}}${dir}/{{reset}}"
+    module_name=$(basename "$dir")
+    echo -e "  {{CYAN}}${module_name}/{{END}}"
 
     exercises=$(find "$dir" -maxdepth 1 -type f -name "*.c" | sort)
 
-    if [ -z "$exercises" ]; then
-      echo "    {{gray}}(empty){{reset}}"
+    if [[ -z "$exercises" ]]; then
+      echo -e "    {{GRAY}}(empty){{END}}\n"
       continue
     fi
 
+    # Format exercises in 3 columns for better readability
     echo "$exercises" | while IFS= read -r file; do
       basename "$file"
-    done | awk '{printf "    %-40s", $0; if (NR%3==0) print ""}'
+    done | awk '{printf "    %-25s", $0; if (NR%4==0) print ""}'
 
+    # Add newline if last row is incomplete
     count=$(echo "$exercises" | wc -l)
-    if [ $((count % 3)) -ne 0 ]; then echo ""; fi
+    if [[ $((count % 4)) -ne 0 ]]; then echo ""; fi
 
+    echo ""
   done <<< "$modules"
 
-help:
-  @echo "{{info}} Usage:"
-  @echo "{{gray}}  just list {{reset}}"
-  @echo "{{gray}}  just run <file> {{reset}}"
-  @echo "{{info}} Examples:"
-  @echo "{{gray}}  just run 01_multi_calculator.c {{reset}}"
-  @echo "{{gray}}  just run src/01_fundamentals/01_multi_calculator.c {{reset}}"
-  @echo "{{info}} Tip:"
-  @echo "{{gray}}  use TAB for path autocompletion {{reset}}"
+[no-exit-message]
+check:
+  #!/usr/bin/env bash
+  if [[ ! -d "{{SRC_DIR}}" ]]; then
+    echo -e "{{ERROR}} Directory '{{SRC_DIR}}/' does not exist"
+    exit 1
+  fi
 
+  exercises=$(find {{SRC_DIR}} -type f -name "*.c")
+  total=$(echo "$exercises" | wc -l)
+
+  if [[ $total -eq 0 ]]; then
+    echo -e "{{ERROR}} No exercises found"
+    exit 1
+  fi
+
+  passed=0
+  failed=0
+  failed_files=()
+
+  echo -e "{{INFO}} Checking $total exercises ..."
+
+  # Check each exercise
+  while IFS= read -r file; do
+    if {{CC}} {{CFLAGS}} -fsyntax-only "$file" 2>/dev/null; then
+      ((passed++))
+    else
+      ((failed++))
+      failed_files+=("$file")
+    fi
+  done <<< "$exercises"
+
+  # Show results
+  if [[ $failed -eq 0 ]]; then
+    echo -e "{{SUCCESS}} All exercises compiled successfully!"
+    echo -e "{{INFO}} Results: " \
+            "{{GREEN}}$passed passed{{END}}, {{RED}}$failed failed{{END}}"
+  else
+    echo -e "{{ERROR}} Some exercises failed to compile:"
+    for file in "${failed_files[@]}"; do
+      echo -e "  {{RED}} -> {{END}} $file"
+    done
+    echo -e "{{INFO}} Results: " \
+            "{{GREEN}}$passed passed{{END}}, {{RED}}$failed failed{{END}}"
+    exit 1
+  fi
+
+[no-exit-message]
+help:
+  @echo -e "{{INFO}} Usage:"
+  @echo -e "{{GRAY}}  just run <file> {{END}}"
+  @echo -e "{{INFO}} Examples:"
+  @echo -e "{{GRAY}}  just run 01_multi_calculator.c {{END}}"
+  @echo -e "{{GRAY}}  just run src/01_fundamentals/01_multi_calculator.c {{END}}"
+  @echo -e "{{INFO}} Tip:"
+  @echo -e "{{GRAY}}  Use TAB for path autocompletion {{END}}"
+
+[no-exit-message]
 commands:
-  @echo "{{info}} Available commands:"
-  @echo "{{gray}}  just run <file> {{reset}}"
-  @echo "{{gray}}  just list {{reset}}"
-  @echo "{{gray}}  just help {{reset}}"
+  @echo -e "{{INFO}} Available commands:"
+  @echo -e "{{GRAY}}  just run <file> {{END}}"
+  @echo -e "{{GRAY}}  just list       {{END}}"
+  @echo -e "{{GRAY}}  just check      {{END}}"
+  @echo -e "{{GRAY}}  just help       {{END}}"
