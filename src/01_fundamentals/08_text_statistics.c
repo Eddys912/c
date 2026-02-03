@@ -24,7 +24,7 @@
 #define ALPHABET_SIZE 26
 #define VOWEL_COUNT 5
 
-typedef enum { SUCCESS, ERR_INVALID_INPUT, ERR_BUFFER_OVERFLOW } Status;
+typedef enum { SUCCESS, ERR_BUFFER_OVERFLOW } Status;
 
 typedef struct {
   int total_chars;
@@ -62,7 +62,7 @@ void run_text_analysis(void);
 Status read_text_input(char *buffer, int max_size);
 
 TextAnalysisResult analyze_text_logic(const char *text);
-int is_vowel_logic(char c);
+int is_vowel(char c);
 int get_vowel_index(char c);
 
 int main(void) {
@@ -86,11 +86,12 @@ void show_analysis_results(const TextAnalysisResult *result) {
 
   if (result->chars.words > 0) {
     printf("\nWord Analysis:\n");
-    printf("  - Average word length: %.2f characters\n", result->words.average_length);
-    printf("  - Longest word: \"%s\" (%d characters)\n", result->words.longest,
-           (int)strlen(result->words.longest));
-    printf("  - Shortest word: \"%s\" (%d characters)\n", result->words.shortest,
-           (int)strlen(result->words.shortest));
+    printf("  - Average word length: %.2f characters\n",
+           result->words.average_length);
+    printf("  - Longest word: \"%s\" (%zu characters)\n", result->words.longest,
+           strlen(result->words.longest));
+    printf("  - Shortest word: \"%s\" (%zu characters)\n",
+           result->words.shortest, strlen(result->words.shortest));
   }
 
   printf("\nCharacter Distribution:\n");
@@ -111,14 +112,16 @@ void show_analysis_results(const TextAnalysisResult *result) {
   }
 
   printf("\n\nPangram Detection:\n");
-  printf("  - Unique letters used: %d/%d\n", result->alphabet.unique_letters, ALPHABET_SIZE);
+  printf("  - Unique letters used: %d/%d\n", result->alphabet.unique_letters,
+         ALPHABET_SIZE);
   printf("  - Is pangram? ");
   if (result->alphabet.unique_letters == ALPHABET_SIZE) {
     printf("YES\n");
     printf("  - (Contains all 26 letters of the alphabet)\n");
   } else {
     printf("NO\n");
-    printf("  - (Missing %d letters)\n", ALPHABET_SIZE - result->alphabet.unique_letters);
+    printf("  - (Missing %d letters)\n",
+           ALPHABET_SIZE - result->alphabet.unique_letters);
   }
 }
 
@@ -126,14 +129,12 @@ void run_text_analysis(void) {
   char buffer[MAX_BUFFER] = "";
 
   Status status = read_text_input(buffer, MAX_BUFFER);
-
   if (status != SUCCESS) {
     printf("Error: Failed to read input.\n");
     return;
   }
 
   TextAnalysisResult result = analyze_text_logic(buffer);
-
   if (result.status == SUCCESS) {
     show_analysis_results(&result);
   }
@@ -148,7 +149,8 @@ Status read_text_input(char *buffer, int max_size) {
       break;
     }
 
-    if (strncmp(line, "END", 3) == 0 && (line[3] == '\n' || line[3] == '\r')) {
+    if (strncmp(line, "END", 3) == 0 &&
+        (line[3] == '\n' || line[3] == '\r' || line[3] == '\0')) {
       break;
     }
 
@@ -170,7 +172,7 @@ TextAnalysisResult analyze_text_logic(const char *text) {
   result.chars.total_chars = strlen(text);
 
   char current_word[MAX_WORD_LENGTH];
-  int word_idx = 0;
+  size_t word_idx = 0;
   double total_word_len = 0;
 
   for (int i = 0; i <= result.chars.total_chars; i++) {
@@ -184,13 +186,13 @@ TextAnalysisResult analyze_text_logic(const char *text) {
       result.chars.sentences++;
     }
 
-    if (isalpha(c)) {
+    if (isalpha((unsigned char)c)) {
       result.chars.letters++;
       result.chars.chars_no_space++;
       result.alphabet.alpha_present[tolower(c) - 'a'] = TRUE;
 
-      if (is_vowel_logic(c)) {
-        int idx = get_vowel_index(tolower(c));
+      if (is_vowel(c)) {
+        int idx = get_vowel_index(c);
         if (idx >= 0) {
           result.alphabet.vowel_counts[idx]++;
         }
@@ -200,11 +202,11 @@ TextAnalysisResult analyze_text_logic(const char *text) {
         current_word[word_idx++] = c;
       }
     } else {
-      if (isspace(c)) {
+      if (isspace((unsigned char)c)) {
         if (c != '\n' && c != '\r') {
           result.chars.spaces++;
         }
-      } else if (ispunct(c)) {
+      } else if (ispunct((unsigned char)c)) {
         result.chars.punctuation++;
         result.chars.chars_no_space++;
       }
@@ -214,11 +216,13 @@ TextAnalysisResult analyze_text_logic(const char *text) {
         result.chars.words++;
         total_word_len += word_idx;
 
-        if (strlen(result.words.longest) == 0 || word_idx > (int)strlen(result.words.longest)) {
+        if (strlen(result.words.longest) == 0 ||
+            word_idx > strlen(result.words.longest)) {
           strcpy(result.words.longest, current_word);
         }
 
-        if (strlen(result.words.shortest) == 0 || word_idx < (int)strlen(result.words.shortest)) {
+        if (strlen(result.words.shortest) == 0 ||
+            word_idx < strlen(result.words.shortest)) {
           strcpy(result.words.shortest, current_word);
         }
 
@@ -240,13 +244,13 @@ TextAnalysisResult analyze_text_logic(const char *text) {
   return result;
 }
 
-int is_vowel_logic(char c) {
-  c = tolower(c);
+int is_vowel(char c) {
+  c = tolower((unsigned char)c);
   return (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u');
 }
 
 int get_vowel_index(char c) {
-  switch (c) {
+  switch (tolower((unsigned char)c)) {
   case 'a':
     return 0;
   case 'e':

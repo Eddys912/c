@@ -117,7 +117,8 @@ void handle_error(Status status) {
 void run_game_session(SessionStats *stats) {
   int secret = generate_secret_number(DEFAULT_MIN, DEFAULT_MAX);
 
-  printf("\nGame Started! Guess the number between %d and %d.\n", DEFAULT_MIN, DEFAULT_MAX);
+  printf("\nGame Started! Guess the number between %d and %d.\n", DEFAULT_MIN,
+         DEFAULT_MAX);
   printf("You have %d attempts.\n", MAX_ATTEMPTS);
 
   GameResult result = process_game_session(secret);
@@ -188,4 +189,6 @@ GameResult process_game_session(int secret_number) {
   return res;
 }
 
-int generate_secret_number(int min, int max) { return min + rand() % (max - min + 1); }
+int generate_secret_number(int min, int max) {
+  return min + rand() % (max - min + 1);
+}

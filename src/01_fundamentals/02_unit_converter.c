@@ -20,21 +20,26 @@
 #define MIN_OPTION 1
 #define MAX_OPTION 5
 
-static const double KELVIN_OFFSET = 273.15;
-static const double FAHRENHEIT_RATIO = 1.8;
-static const double FAHRENHEIT_OFFSET = 32.0;
+#define KELVIN_OFFSET 273.15
+#define FAHRENHEIT_RATIO 1.8
+#define FAHRENHEIT_OFFSET 32.0
 
-static const double METERS_PER_KM = 1000.0;
-static const double METERS_PER_MILE = 1609.34;
-static const double METERS_PER_FOOT = 0.3048;
+#define METERS_PER_KM 1000.0
+#define METERS_PER_MILE 1609.34
+#define METERS_PER_FOOT 0.3048
 
-static const double KG_PER_POUND = 0.453592;
-static const double KG_PER_OUNCE = 0.0283495;
+#define KG_PER_POUND 0.453592
+#define KG_PER_OUNCE 0.0283495
 
-static const double SECONDS_PER_MINUTE = 60.0;
-static const double SECONDS_PER_HOUR = 3600.0;
+#define SECONDS_PER_MINUTE 60.0
+#define SECONDS_PER_HOUR 3600.0
 
-typedef enum { SUCCESS, ERR_INVALID_UNIT, ERR_INVALID_OPTION, ERR_INVALID_INPUT } Status;
+typedef enum {
+  SUCCESS,
+  ERR_INVALID_UNIT,
+  ERR_INVALID_OPTION,
+  ERR_INVALID_INPUT
+} Status;
 
 typedef struct {
   Status status;
@@ -214,7 +219,8 @@ void run_time_conversion(void) {
 }
 
 void clear_input_buffer(void) {
-  while (getchar() != '\n') {
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF) {
     ;
   }
 }

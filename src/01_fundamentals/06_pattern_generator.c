@@ -20,7 +20,12 @@
 #define MIN_HEIGHT 1
 #define MAX_HEIGHT 50
 
-typedef enum { SUCCESS, ERR_INVALID_INPUT, ERR_OUT_OF_RANGE, ERR_INVALID_OPTION } Status;
+typedef enum {
+  SUCCESS,
+  ERR_INVALID_INPUT,
+  ERR_OUT_OF_RANGE,
+  ERR_INVALID_OPTION
+} Status;
 
 typedef struct {
   Status status;

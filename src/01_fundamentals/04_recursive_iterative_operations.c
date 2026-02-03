@@ -210,7 +210,7 @@ void run_comparison(int option) {
   printf("\n----- Comparison -----\n\n");
   if (time_rec < MIN_MEASURABLE_TIME && time_ite < MIN_MEASURABLE_TIME) {
     printf("  - Both methods executed too fast to measure accurately\n");
-    printf("  - Recommendation: Either method is suitable for this input size\n\n");
+    printf("  - Recommendation: Either method is acceptable\n\n");
     return;
   }
 
@@ -222,14 +222,14 @@ void run_comparison(int option) {
   }
 
   if (speed_factor >= MIN_SPEED_DIFF) {
-    printf("  - %s method was %.2fx faster\n", (time_ite < time_rec) ? "Iterative" : "Recursive",
-           speed_factor);
+    printf("  - %s method was %.2fx faster\n",
+           (time_ite < time_rec) ? "Iterative" : "Recursive", speed_factor);
   } else {
     printf("  - Negligible speed difference\n");
   }
 
   printf("  - Recommendation: %s\n\n",
-         (time_ite < time_rec) ? "Use iterative method" : "Both offer similar performance");
+         (time_ite < time_rec) ? "Use iterative method" : "Both are valid");
 }
 
 void clear_input_buffer(void) {

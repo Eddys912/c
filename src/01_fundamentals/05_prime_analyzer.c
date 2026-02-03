@@ -25,7 +25,6 @@
 typedef enum {
   SUCCESS,
   ERR_INVALID_INPUT,
-  ERR_OUT_OF_RANGE,
   ERR_INVALID_RANGE,
   ERR_MEMORY_FAILURE,
   ERR_MIN_VALUE
@@ -107,9 +106,6 @@ void handle_error(Status status) {
   case ERR_INVALID_INPUT:
     printf("Error: Invalid input. Please enter an integer.\n\n");
     break;
-  case ERR_OUT_OF_RANGE:
-    printf("Error: Value exceeds allowed limit.\n\n");
-    break;
   case ERR_INVALID_RANGE:
     printf("Error: Invalid range. 0 <= start <= end <= %d.\n\n", MAX_RANGE);
     break;
@@ -187,7 +183,8 @@ void run_check_primality(void) {
 
   Result res = is_prime(num);
   if (res.status == SUCCESS) {
-    printf("\n  - Result: %s\n\n", (res.value > 0.5) ? "IS PRIME" : "NOT PRIME");
+    printf("\n  - Result: %s\n\n",
+           (res.value > 0.5) ? "IS PRIME" : "NOT PRIME");
   } else {
     handle_error(res.status);
   }

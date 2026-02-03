@@ -17,7 +17,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define TRUE 1
 #define MAX_STUDENTS 50
 #define MAX_NAME_LENGTH 100
 #define NUM_GRADES 5
@@ -25,7 +24,12 @@
 #define EXCELLENT_GRADE 90.0
 #define MAX_STATUS_LENGTH 20
 
-typedef enum { SUCCESS, ERR_INVALID_COUNT, ERR_INVALID_GRADE, ERR_INVALID_INPUT } Status;
+typedef enum {
+  SUCCESS,
+  ERR_INVALID_COUNT,
+  ERR_INVALID_GRADE,
+  ERR_INVALID_INPUT
+} Status;
 
 typedef struct {
   Status status;
@@ -46,7 +50,8 @@ void run_student_entry(int *num_students, char names[][MAX_NAME_LENGTH],
                        double grades[][NUM_GRADES], double averages[]);
 void show_student_report(int num_students, char names[][MAX_NAME_LENGTH],
                          double grades[][NUM_GRADES], double averages[]);
-void show_group_statistics(int num_students, char names[][MAX_NAME_LENGTH], double averages[]);
+void show_group_statistics(int num_students, char names[][MAX_NAME_LENGTH],
+                           double averages[]);
 
 void clear_input_buffer(void);
 Status read_integer(int *value);
@@ -156,7 +161,8 @@ void show_student_report(int num_students, char names[][MAX_NAME_LENGTH],
   }
 }
 
-void show_group_statistics(int num_students, char names[][MAX_NAME_LENGTH], double averages[]) {
+void show_group_statistics(int num_students, char names[][MAX_NAME_LENGTH],
+                           double averages[]) {
   int passed_indices[MAX_STUDENTS];
   int pass_index_count = 0;
 
@@ -168,7 +174,8 @@ void show_group_statistics(int num_students, char names[][MAX_NAME_LENGTH], doub
          averages[stats.best_student_idx]);
   printf("Worst student: %s (%.2f)\n", names[stats.worst_student_idx],
          averages[stats.worst_student_idx]);
-  printf("Pass rate: %.2f%% (%d/%d)\n", stats.pass_rate, stats.pass_count, num_students);
+  printf("Pass rate: %.2f%% (%d/%d)\n", stats.pass_rate, stats.pass_count,
+         num_students);
 
   if (stats.pass_count > 0) {
     for (int i = 0; i < num_students; i++) {
@@ -261,7 +268,9 @@ GroupStatistics calculate_group_statistics(int num_students, double avgs[]) {
   }
 
   stats.group_average = (num_students > 0) ? (group_sum / num_students) : 0.0;
-  stats.pass_rate = (num_students > 0) ? ((double)stats.pass_count * 100.0 / num_students) : 0.0;
+  stats.pass_rate = (num_students > 0)
+                        ? ((double)stats.pass_count * 100.0 / num_students)
+                        : 0.0;
 
   return stats;
 }

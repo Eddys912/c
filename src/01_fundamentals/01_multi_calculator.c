@@ -215,7 +215,8 @@ void run_factorial_operation(void) {
 }
 
 void clear_input_buffer(void) {
-  while (getchar() != '\n') {
+  int c;
+  while ((c = getchar()) != '\n' && c != EOF) {
     ;
   }
 }
