@@ -82,27 +82,27 @@ void show_analysis_results(const TextAnalysisResult *result) {
   printf("  - Characters (no spaces): %d\n", result->chars.chars_no_space);
   printf("  - Words: %d\n", result->chars.words);
   printf("  - Sentences: %d\n", result->chars.sentences);
-  printf("  - Lines: %d\n", result->chars.lines);
+  printf("  - Lines: %d\n\n", result->chars.lines);
 
   if (result->chars.words > 0) {
-    printf("\nWord Analysis:\n");
+    printf("Word Analysis:\n");
     printf("  - Average word length: %.2f characters\n",
            result->words.average_length);
     printf("  - Longest word: \"%s\" (%zu characters)\n", result->words.longest,
            strlen(result->words.longest));
-    printf("  - Shortest word: \"%s\" (%zu characters)\n",
+    printf("  - Shortest word: \"%s\" (%zu characters)\n\n",
            result->words.shortest, strlen(result->words.shortest));
   }
 
-  printf("\nCharacter Distribution:\n");
+  printf("Character Distribution:\n");
   printf("  - Letters: %d (%.2f%%)\n", result->chars.letters,
          (result->chars.letters * 100.0) / result->chars.total_chars);
   printf("  - Spaces: %d (%.2f%%)\n", result->chars.spaces,
          (result->chars.spaces * 100.0) / result->chars.total_chars);
-  printf("  - Punctuation: %d (%.2f%%)\n", result->chars.punctuation,
+  printf("  - Punctuation: %d (%.2f%%)\n\n", result->chars.punctuation,
          (result->chars.punctuation * 100.0) / result->chars.total_chars);
 
-  printf("\nVowel Frequency:\n  ");
+  printf("Vowel Frequency:\n  ");
   const char vowels[] = "aeiou";
   for (int i = 0; i < VOWEL_COUNT; i++) {
     printf("%c: %d", vowels[i], result->alphabet.vowel_counts[i]);

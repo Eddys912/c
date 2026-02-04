@@ -9,10 +9,6 @@
 
 # Executables
 exercise
-exercise.exe
-*.exe
-*.out
-a.out
 
 # Temporary or backup files
 *~

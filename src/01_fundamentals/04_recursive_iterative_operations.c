@@ -200,14 +200,14 @@ void run_comparison(int option) {
   printf("Recursive:\n");
   printf("  - Result: %.2f\n", res_rec.value);
   printf("  - Time: %.8f seconds\n", time_rec);
-  printf("  - Calls: %ld\n", res_rec.count);
+  printf("  - Calls: %ld\n\n", res_rec.count);
 
-  printf("\nIterative:\n");
+  printf("Iterative:\n");
   printf("  - Result: %.2f\n", res_ite.value);
   printf("  - Time: %.8f seconds\n", time_ite);
-  printf("  - Iterations: %ld\n", res_ite.count);
+  printf("  - Iterations: %ld\n\n", res_ite.count);
 
-  printf("\n----- Comparison -----\n\n");
+  printf("----- Comparison -----\n\n");
   if (time_rec < MIN_MEASURABLE_TIME && time_ite < MIN_MEASURABLE_TIME) {
     printf("  - Both methods executed too fast to measure accurately\n");
     printf("  - Recommendation: Either method is acceptable\n\n");

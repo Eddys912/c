@@ -23,20 +23,21 @@ Practical examples include:
 
 ## 📂 Exercises
 
-| Category            | Count | Level | Description                                                          |
-| ------------------- | ----- | ----- | -------------------------------------------------------------------- |
-| **Fundamentals**    | 8     | 🟢    | Core C syntax, control structures, and recursive logic.              |
-| **Data Structures** | 12    | 🟡    | Implementation of dynamic structures (Lists, Stacks, Queues, Trees). |
-| **Algorithms**      | 10    | 🟡    | Implementation of sorting and search algorithms, graph traversal.    |
-| **File Handling**   | 4     | 🟡    | Handling text and binary files.                                      |
-| **Specialization**  | 10    | 🔴    | Implement of process management, IPC, Thread Pools, and Sockets.     |
+| Category            | Count | Level | Description                                                           |
+| ------------------- | ----- | ----- | --------------------------------------------------------------------- |
+| **Fundamentals**    | 8     | 🟢    | Core C syntax, control structures, and recursive logic.               |
+| **Data Structures** | 12    | 🟡    | Implementation of dynamic structures (Lists, Stacks, Queues, Trees).  |
+| **Algorithms**      | 10    | 🟡    | Implementation of sorting and search algorithms, graph traversal.     |
+| **File Handling**   | 4     | 🟡    | Handling text and binary files.                                       |
+| **Specialization**  | 10    | 🔴    | Implementation of process management, IPC, Thread Pools, and Sockets. |
 
 ## 📋 Installation Requirements
 
-- **Operating System**: Linux (Arch, Debian, Ubuntu, etc.) or WSL2 on Windows.
+- **Operating System**: Arch Linux or WSL2 on Windows.
 - **Architecture**: x86-64 (64-bit).
 - **C Compiler GCC**: version 15.2.1 or higher.
-- **C Debugger GDB**: version 16.3 or higher.
+- **C Debugger GDB**: version 17.1 or higher.
+- **Just command runner**: version 1.46.0 or higher.
 
 ## 🚀 Execution Instructions
 
@@ -52,25 +53,29 @@ Practical examples include:
    wsl --install -d archlinux
    ```
 3. **Restart the system** and access Arch Linux.
-4. **Install GDB and compilation tools**:
+4. **Install GDB, compilation tools and Just**:
    ```bash
    pacman -Syu
-   pacman -S gdb base-devel
+   pacman -S gdb base-devel just
    ```
 5. **Verify installation**:
    ```bash
    gcc --version    # e.g. gcc (GCC) 15.2.1 or higher
-   gdb --version    # e.g. GNU gdb (GDB) 16.3 or higher
+   gdb --version    # e.g. GNU gdb (GDB) 17.1 or higher
+   just --version   # e.g. just 1.46.0 or higher
    uname -m         # e.g. x86_64
    ```
 6. **Navigate to the directory**:
    ```bash
    cd c-systems-fundamentals
    ```
-7. **Execute exercises** use `make run` followed by the path to the file:
+7. **Execute exercises** use `just run` followed by the file name or path:
    ```bash
-   make help                                                  # view available commands
-   make run file=src/01_fundamentals/01_multi_calculator.c    # practical example
+   just                                                 # view available commands
+   just list                                            # display exercises by modules
+   just run 01_multi_calculator.c                       # practical example by file name
+   just run src/01_fundamentals/01_multi_calculator.c   # practical example by full path
+   just check                                           # verify that all exercises compile
    ```
 
 ### 🌐 OneCompiler (No Installation Required)
