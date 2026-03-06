@@ -1,13 +1,13 @@
 <div align="center">
-  <h1>💻 C Exercises 💻</h1>
+  <h1>C Exercises</h1>
   <p>Programming exercises in <strong>C</strong></p>
 
-![C](https://img.shields.io/badge/C-00599C?logo=c&logoColor=00599C&labelColor=fff&color=00599C)
 ![Arch](https://img.shields.io/badge/Arch-1793D1?logo=archlinux&logoColor=1793D1&labelColor=fff&color=1793D1)
+![C](https://img.shields.io/badge/C-00599C?logo=c&logoColor=00599C&labelColor=fff&color=00599C)
 
 </div>
 
-## 🌟 Description
+## Description
 
 This repository contains progressive programming exercises in C, designed to provide a comprehensive learning path from the fundamentals of the language to specialization in low-level systems.
 
@@ -21,17 +21,17 @@ Practical examples include:
 - **System calls**: `fork`, `exec`, `pipe`, `signals`, and process control.
 - **Networking & concurrency**: TCP sockets and multithreading with `pthreads`.
 
-## 📂 Exercises
+## Exercises
 
 | Category            | Count | Level | Description                                                           |
 | ------------------- | ----- | ----- | --------------------------------------------------------------------- |
 | **Fundamentals**    | 8     | 🟢    | Core C syntax, control structures, and recursive logic.               |
 | **Data Structures** | 12    | 🟡    | Implementation of dynamic structures (Lists, Stacks, Queues, Trees).  |
 | **Algorithms**      | 10    | 🟡    | Implementation of sorting and search algorithms, graph traversal.     |
-| **File Handling**   | 4     | 🟡    | Handling text and binary files.                                       |
+| **Files**           | 4     | 🟡    | Handling text and binary files.                                       |
 | **Specialization**  | 10    | 🔴    | Implementation of process management, IPC, Thread Pools, and Sockets. |
 
-## 📋 Installation Requirements
+## Installation Requirements
 
 - **Operating System**: Arch Linux or WSL2 on Windows.
 - **Architecture**: x86-64 (64-bit).
@@ -39,9 +39,9 @@ Practical examples include:
 - **C Debugger GDB**: version 17.1 or higher.
 - **Just command runner**: version 1.46.0 or higher.
 
-## 🚀 Execution Instructions
+## Execution Instructions
 
-### 🖥️ Arch Linux/WSL (Recommended)
+### Arch Linux/WSL (Recommended)
 
 1. **Clone the repository**:
    ```bash
@@ -60,9 +60,9 @@ Practical examples include:
    ```
 5. **Verify installation**:
    ```bash
-   gcc --version    # e.g. gcc (GCC) 15.2.1 or higher
-   gdb --version    # e.g. GNU gdb (GDB) 17.1 or higher
-   just --version   # e.g. just 1.46.0 or higher
+   gcc --version    # e.g. gcc (GCC) 15.2.1
+   gdb --version    # e.g. GNU gdb (GDB) 17.1
+   just --version   # e.g. just 1.46.0
    uname -m         # e.g. x86_64
    ```
 6. **Navigate to the directory**:
@@ -78,7 +78,7 @@ Practical examples include:
    just check                                           # verify that all exercises compile
    ```
 
-### 🌐 OneCompiler (No Installation Required)
+### OneCompiler (No Installation Required)
 
 Code execution without local installation:
 
@@ -91,7 +91,7 @@ Code execution without local installation:
 
 > **Note**: Online compilers will **not work** for the **Specialization** module (System Calls, Threads, Sockets) as they require a real OS environment.
 
-## 📖 Official Documentation
+## Official Documentation
 
 Additional resources:
 
@@ -102,7 +102,7 @@ Additional resources:
 <div align="center">
   <br>
   <img
-    src="https://img.shields.io/badge/Made%20with-C%20%26%20Dedication-00599C?style=for-the-badge"
+    src="https://img.shields.io/badge/Made%20with-C%20%26%20Systems-00599C?style=for-the-badge"
     alt="Made with C"
   />
   <br><br>

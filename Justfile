@@ -41,8 +41,7 @@ run file_input:
   elif [[ -f "{{SRC_DIR}}/$filename" ]]; then
     target="{{SRC_DIR}}/$filename"
   else
-    target=$(find {{SRC_DIR}} -type f -name "$filename" \
-             -print -quit)
+    target=$(find {{SRC_DIR}} -type f -name "$filename" -print -quit)
     [[ -z "$target" ]] && {
       echo -e "{{ERROR}} File '$filename' not found."
       exit 1
@@ -117,8 +116,7 @@ check:
     [[ -e "$file" ]] || continue
     found_files=1
 
-    if {{CC}} {{CFLAGS}} -fsyntax-only "$file" \
-       &>/dev/null; then
+    if {{CC}} {{CFLAGS}} -fsyntax-only "$file" &>/dev/null; then
       ((passed++))
     else
       echo -e "{{RED}}  -> FAIL {{END}} $file"
